@@ -1,3 +1,4 @@
+import abc
 from typing import (
     Generic,
     Mapping,
@@ -18,7 +19,15 @@ K = TypeVar("K", bound=Codable)
 V = TypeVar("V", bound=Codable)
 
 
-class Dictionary(dict, Codable, Generic[K, V]):
+class DictCheckMeta(abc.ABCMeta):
+    """Meta class to check if the instance is a dictionary with the same key and value types"""
+    def __instancecheck__(cls, instance):
+        _matches_key_type = getattr(cls, "_key_type", None) == getattr(instance, "_key_type", None)
+        _matches_value_type = getattr(cls, "_value_type", None) == getattr(instance, "_value_type", None)
+        return isinstance(instance, dict) and _matches_key_type and _matches_value_type
+
+
+class Dictionary(dict, Codable, Generic[K, V], metaclass=DictCheckMeta):
     """
     Dictionary implementation that supports codec operations.
 
@@ -44,7 +53,7 @@ class Dictionary(dict, Codable, Generic[K, V]):
     _value_name: Optional[str]
 
     def __class_getitem__(cls, params):
-        if len(params) < 2:
+        if len(params) >= 2:
             return type(cls.__name__, (cls,), {
                 "_key_type": params[0],
                 "_value_type": params[1],
@@ -52,14 +61,16 @@ class Dictionary(dict, Codable, Generic[K, V]):
                 "_value_name": params[3] if len(params) == 4 else None,
             })
         else:
-            raise ValueError("Dictionary must be initialized with two types")
+            raise ValueError("Dictionary must be initialized with types as such - Dictionary[K, V, key_name(optional), value_name(optional)]")
 
     def __init__(self, initial: Optional[Mapping[K, V]] = None):
         self.update(initial or {})
 
     def _validate(self, key: K, value: V):
-        if not isinstance(key, self._key_type) or not isinstance(value, self._value_type):
-            raise TypeError(f"Dictionary keys and values must be {self._key_type} and {self._value_type}")
+        if not isinstance(key, self._key_type):
+            raise TypeError(f"Dictionary keys must be {self._key_type} but got {type(key)}")
+        if not isinstance(value, self._value_type):
+            raise TypeError(f"Dictionary values must be {self._value_type} but got {type(value)}")
 
     def __setitem__(self, key: K, value: V) -> None:
         """Set value for key."""
@@ -95,7 +106,7 @@ class Dictionary(dict, Codable, Generic[K, V]):
         else:
             return cls(
                 {
-                    cls.key_type.from_json(k): cls.value_type.from_json(v)
+                    cls._key_type.from_json(k): cls._value_type.from_json(v)
                     for k, v in data.items()
                 }
             )

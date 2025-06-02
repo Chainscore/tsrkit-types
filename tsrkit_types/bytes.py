@@ -1,4 +1,5 @@
 from typing import Tuple, Union, ClassVar, Self
+import base64
 
 from tsrkit_types.integers import Uint
 from tsrkit_types.itf.codable import Codable
@@ -70,11 +71,9 @@ class Bytes(bytes, Codable):
     def encode_into(self, buf: bytearray, offset: int = 0) -> int:
         current_offset = offset
         _len = self._length
-        print(current_offset)
         if _len is None:
             _len = len(self)
             current_offset += Uint(_len).encode_into(buf, current_offset)
-            print(current_offset)
         buf[current_offset:current_offset+_len] = self
         current_offset += _len
         return current_offset - offset
@@ -87,3 +86,17 @@ class Bytes(bytes, Codable):
             _len, _inc_offset = Uint.decode_from(buffer, offset)
             current_offset += _inc_offset
         return cls(buffer[current_offset:current_offset+_len]), current_offset + _len - offset
+    
+    # ---------------------------------------------------------------------------- #
+    #                               JSON Serialization                             #
+    # ---------------------------------------------------------------------------- #
+    def to_json(self):
+        """Convert bytes to hex string for JSON serialization"""
+        return self.hex()
+    
+    @classmethod
+    def from_json(cls, data: str):
+        """Create Bytes instance from hex string"""
+        data = data.replace("0x", "")
+        return cls(bytes.fromhex(data))
+        

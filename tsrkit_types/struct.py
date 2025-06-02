@@ -40,14 +40,14 @@ def struct(_cls=None, *, frozen=False, **kwargs):
         @classmethod
         def decode_from(cls, buffer: Union[bytes, bytearray, memoryview], offset: int = 0) -> Tuple[Any, int]:
             current_offset = offset
-            decoded_values = []
+            decoded_values = {}
             for field in fields(cls): 
                 field_type = field.type
                 value, size = field_type.decode_from(buffer, current_offset)
-                decoded_values.append(value)
+                decoded_values[field.name] = value
                 current_offset += size
-            instance = cls(*decoded_values)
-            return instance, current_offset - offset 
+            instance = cls(**decoded_values)
+            return instance, current_offset - offset
         
         def to_json(self) -> dict:
             return {field.metadata.get("name", field.name): getattr(self, field.name).to_json() for field in fields(self)}
@@ -60,11 +60,11 @@ def struct(_cls=None, *, frozen=False, **kwargs):
                 v = data.get(k)
                 if v is None:
                     if field.metadata.get("default") is not None:
-                        init_data[k] = field.metadata.get("default")
+                        init_data[field.name] = field.metadata.get("default")
                     else:
                         raise ValueError(f"Field {k} not found in {cls}")
                 else:
-                    init_data[k] = field.type.from_json(v)
+                    init_data[field.name] = field.type.from_json(v)
             return cls(**init_data)
 
 

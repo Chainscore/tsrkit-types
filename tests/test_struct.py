@@ -22,7 +22,7 @@ def test_struct_codable():
         age: Uint[8]
 
     person = Person(name=String("John"), age=Uint[8](30))
-    assert person.encode_size() == 1 + 4
+    assert person.encode_size() == 5 + 1  # String("John") = 5 bytes, Uint[8] = 1 byte
     encoded = person.encode()
     assert encoded == b"\x04John\x1e"
     assert Person.decode(encoded) == person

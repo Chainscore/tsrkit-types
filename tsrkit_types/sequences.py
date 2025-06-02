@@ -1,11 +1,22 @@
-from typing import TypeVar, Type, ClassVar, Tuple, Generic, Self
+import abc
+from typing import TypeVar, Type, ClassVar, Tuple, Generic
 from tsrkit_types.integers import Uint
 from tsrkit_types.itf.codable import Codable
 
 T = TypeVar("T")
 
+class SeqCheckMeta(abc.ABCMeta):
+    """Meta class to check if the instance is an integer with the same byte size"""
+    def __instancecheck__(cls, instance):
+        # String comparison is used to avoid identity comparison issues - like Uint[8] and Uint[8]
+        # TODO - This needs more false positive testing
+        _matches_element_type = str(getattr(cls, "_element_type", None)) == str(getattr(instance, "_element_type", None))
+        _matches_min_length = getattr(cls, "_min_length", 0) == getattr(instance, "_min_length", 0)
+        _matches_max_length = getattr(cls, "_max_length", 2**64) == getattr(instance, "_max_length", 2**64)
+        return isinstance(instance, list) and _matches_element_type and _matches_min_length and _matches_max_length
 
-class Seq(list, Codable, Generic[T]):
+
+class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
     """
     Sequence Type
 
@@ -133,7 +144,7 @@ class Seq(list, Codable, Generic[T]):
         current_offset = offset
         # If length is not defined
         if(self._min_length != len(self)) and (self._max_length != len(self)):
-            current_offset += Uint(len(self)).encode()
+            current_offset += Uint(len(self)).encode_into(buffer, current_offset)
 
         for item in self:
             written = item.encode_into(buffer, current_offset)
@@ -141,21 +152,42 @@ class Seq(list, Codable, Generic[T]):
 
         return current_offset - offset
     
-    def decode_from(cls, buffer: bytes, offset: int = 0) -> Tuple[Self, int]:
+    @classmethod
+    def decode_from(cls, buffer: bytes, offset: int = 0) -> Tuple["Seq", int]:
         current_offset = offset
-        _len = len(cls)
-        # If length is not defined
-        if(cls._min_length != _len) and (cls._max_length != _len):
-            _len, _inc_offset = Uint.decode_from(buffer, offset)
+        
+        # Determine if this is variable length
+        if cls._min_length == cls._max_length:
+            # Fixed length
+            _len = cls._min_length
+        else:
+            # Variable length - decode length from buffer
+            _len, _inc_offset = Uint.decode_from(buffer, current_offset)
             current_offset += _inc_offset
 
         items = []
         for _ in range(_len):
-            item, _inc_offset = cls._element_type.decode_from(buffer, offset)
+            item, _inc_offset = cls._element_type.decode_from(buffer, current_offset)
             current_offset += _inc_offset
             items.append(item)
 
         return cls(items), current_offset - offset
+
+    # ---------------------------------------------------------------------------- #
+    #                                  JSON Serde                                  #
+    # ---------------------------------------------------------------------------- #
+    def to_json(self):
+        """Convert to JSON representation."""
+        return [item.to_json() for item in self]
+
+    @classmethod
+    def from_json(cls, data):
+        """Create instance from JSON representation."""
+        if cls._element_type:
+            items = [cls._element_type.from_json(item) for item in data]
+        else:
+            items = data
+        return cls(items)
 
 
 # All params supported-

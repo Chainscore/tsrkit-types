@@ -139,26 +139,26 @@ class Uint(int, Codable, metaclass=IntCheckMeta):
             return self.byte_size
         else:
             if self < 2**7:
-                buffer[offset] = self
+                buffer[offset:offset+1] = self.to_bytes(1, "little")
                 return 1
 
             size = self.encode_size()
             self._check_buffer_size(buffer, size, offset)
             if self < 2 ** (7 * 8):
                 _l = self.l(self)
-                buffer[offset : offset + 1] = self[1].encode(
-                    2**8
-                    - 2 ** (8 - _l)
-                    + math.floor(Decimal(self) / (Decimal(2) ** (_l * 8)))
-                )
+                # Create temporary U8 for encoding the prefix
+                prefix_value = (2**8 - 2 ** (8 - _l) + 
+                               math.floor(Decimal(self) / (Decimal(2) ** (_l * 8))))
+                buffer[offset] = int(prefix_value)
                 offset += 1
-                buffer[offset : offset + _l] = self[_l].encode(
-                    self % 2 ** (_l * 8)
-                )
+                # Encode the remaining bytes
+                remaining = self % (2 ** (_l * 8))
+                remaining_bytes = remaining.to_bytes(_l, "little")
+                buffer[offset : offset + _l] = remaining_bytes
             elif self < 2**64:
-                buffer[offset : offset + 1] = self[1].encode(2**8 - 1)
+                buffer[offset] = 2**8 - 1  # Full 64-bit marker
                 offset += 1
-                buffer[offset : offset + 8] = self[8].encode(self)
+                buffer[offset : offset + 8] = self.to_bytes(8, "little")
             else:
                 raise ValueError(
                     f"Value too large for encoding. General Uint support up to 2**64 - 1, got {self}"
@@ -173,25 +173,28 @@ class Uint(int, Codable, metaclass=IntCheckMeta):
             value, size = int.from_bytes(buffer[offset : offset + cls.byte_size], "little"), cls.byte_size
             return cls.__new__(cls, value), size
         else:
-            tag = buffer[offset]
+            tag = int.from_bytes(buffer[offset:offset+1], "little")
 
             if tag < 2**7:
-                return tag, 1
+                return cls(tag), 1
 
             if tag == 2**8 - 1:
                 # Full 64-bit encoding
-                cls._check_buffer_size(buffer, 9, offset)
-                value, _ = cls[8].decode_from(buffer, offset + 1)
-                return value, 9
+                if len(buffer) - offset < 9:
+                    raise ValueError("Buffer too small to decode 64-bit integer")
+                value = int.from_bytes(buffer[offset + 1 : offset + 9], "little")
+                return cls(value), 9
             else:
                 # Variable length encoding
                 _l = math.floor(
                     Decimal(8) - (Decimal(2**8) - Decimal(tag)).ln() / Decimal(2).ln()
                 )
-                cls._check_buffer_size(buffer, _l + 1, offset)
+                if len(buffer) - offset < _l + 1:
+                    raise ValueError("Buffer too small to decode variable-length integer")
                 alpha = tag + 2 ** (8 - _l) - 2**8
-                beta, _ = cls[_l].decode_from(buffer, offset + 1)
-                return alpha * 2 ** (_l * 8) + beta, _l + 1
+                beta = int.from_bytes(buffer[offset + 1 : offset + 1 + _l], "little")
+                value = alpha * 2 ** (_l * 8) + beta
+                return cls(value), _l + 1
 
 
 U8 = Uint[8]

@@ -27,6 +27,10 @@ class Enum(metaclass=EnumMeta):
     @property
     def value(self) -> Any:
         return self._value_
+    
+    @classmethod
+    def _missing_(cls, value: Any) -> T:
+        raise ValueError(f"Invalid value: {value}")
 
     # ---------------------------------------------------------------------------- #
     #                                 Serialization                                #
@@ -35,6 +39,13 @@ class Enum(metaclass=EnumMeta):
     def encode_size(self) -> int:
         """Return the size in bytes needed to encode this enum value"""
         return 1
+
+    def encode(self) -> bytes:
+        """Encode the value into a new bytes object."""
+        size = self.encode_size()
+        buffer = bytearray(size)
+        written = self.encode_into(buffer)
+        return bytes(buffer[:written])
 
     def encode_into(self, buffer: bytearray, offset: int = 0) -> int:
         """Encode this enum value into the given buffer at the given offset
@@ -52,7 +63,7 @@ class Enum(metaclass=EnumMeta):
         # Get the index of the enum value in all enums
         # Encode the index as a byte
         all_enums = self.__class__._member_names_
-        index = all_enums.index(self.name)
+        index = all_enums.index(self._name_)
         if index > 255:
             raise ValueError("Enum index is too large to encode into a single byte")
         return Uint(index).encode_into(buffer, offset)
@@ -109,3 +120,9 @@ class Enum(metaclass=EnumMeta):
             The enum's value for JSON serialization
         """
         return self._value_
+
+    @classmethod
+    def decode(cls, buffer: Union[bytes, bytearray, memoryview], offset: int = 0) -> T:
+        """Decode a value from the provided buffer starting at the specified offset."""
+        value, bytes_read = cls.decode_from(buffer, offset)
+        return value

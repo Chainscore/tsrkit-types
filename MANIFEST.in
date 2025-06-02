@@ -1,0 +1,19 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include CONTRIBUTING.md
+include pytest.ini
+include pyproject.toml
+include setup.py
+
+recursive-include tsrkit_types *.py
+recursive-include tests *.py
+
+exclude .gitignore
+exclude .github/*
+exclude examples/*
+exclude .pytest_cache/*
+exclude __pycache__/*
+exclude *.pyc
+exclude .coverage
+exclude htmlcov/* 

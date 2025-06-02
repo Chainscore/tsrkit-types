@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar
+from typing import Generic, Optional, TypeVar
 from tsrkit_types.choice import Choice
 from tsrkit_types.null import Null, NullType
 
@@ -20,6 +20,11 @@ class Option(Choice, Generic[T]):
 
     def __init__(self, val: T|NullType = Null):
         super().__init__(val)
+
+    def set(self, value: T|NullType = Null, key: Optional[str] = None):
+        if value is None:
+            value = Null
+        super().set(value, key)
 
     def __bool__(self):
         return self._value != Null

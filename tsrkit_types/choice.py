@@ -1,4 +1,5 @@
-from typing import ClassVar, Optional, Union, Tuple, Any
+from typing import ClassVar, Optional, Union, Tuple, Any, get_origin
+from typing_extensions import get_args
 
 from tsrkit_types.integers import Uint
 from tsrkit_types.itf.codable import Codable
@@ -54,6 +55,12 @@ class Choice(Codable):
         return type(name,
                     (Choice,),
                     {"_opt_types": tuple(_opt_types)})
+    
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        ann = getattr(cls, "__annotations__", {})
+        if ann:
+            cls._opt_types = tuple((field, ann[field]) for field in ann)
 
     def __init__(self, value: Any, key: Optional[str] = None) -> None:
         super().__init__()
