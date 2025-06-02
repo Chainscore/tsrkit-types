@@ -1,7 +1,7 @@
 [project]
 name = "tsrkit-types"
 version = "0.1.0"
-description = "High-performance Python library for type-safe binary serialization, JSON encoding, and data validation with zero dependencies"
+description = "Performant Python library for type-safe binary serialization, JSON encoding, and data validation with zero dependencies"
 authors = [
     {name = "chainscore-labs", email = "hello@chainscore.finance"},
     {name = "prasad-kumkar", email = "prasad@chainscore.finance"}
