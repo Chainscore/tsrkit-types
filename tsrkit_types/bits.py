@@ -1,8 +1,8 @@
 from typing import ClassVar, Sequence, Tuple, Union
 
-from pytypes.bytes import Bytes
-from pytypes.integers import Uint
-from pytypes.sequences import Seq
+from tsrkit_types.bytes import Bytes
+from tsrkit_types.integers import Uint
+from tsrkit_types.sequences import Seq
 
 
 class Bits(Seq):
@@ -40,7 +40,7 @@ class Bits(Seq):
 	#                                 Serialization                                #
 	# ---------------------------------------------------------------------------- #
 	
-	def encode_size(self, value: Sequence[bool]) -> int:
+	def encode_size(self) -> int:
 		# Calculate the number of bytes needed
 		bit_enc = 0
 		if self._length is None:
@@ -49,9 +49,9 @@ class Bits(Seq):
 		return bit_enc + ((len(self) + 7) // 8)
 
 	def encode_into(
-		self, value: Sequence[bool], buffer: bytearray, offset: int = 0
+		self, buffer: bytearray, offset: int = 0
 	) -> int:
-		total_size = self.encode_size(value)
+		total_size = self.encode_size()
 		self._check_buffer_size(buffer, total_size, offset)
 
 		# Initialize all bytes to 0
@@ -60,20 +60,20 @@ class Bits(Seq):
 
 		if self._length is None:
 			# Encode the bit length first
-			offset += Uint(len(value)).encode_into(buffer, offset)
+			offset += Uint(len(self)).encode_into(buffer, offset)
 		else:
 			# Ensure bit length is size of value
-			if len(value) != self._length:
+			if len(self) != self._length:
 				raise ValueError("Bit sequence length mismatch")
 
 		if not all(
 			isinstance(bit, (bool, int)) and bit in (0, 1, True, False)
-			for bit in value
+			for bit in self
 		):
-			raise ValueError(f"Bit sequence must contain only 0s and 1s, got an sequence of {value}")
+			raise ValueError(f"Bit sequence must contain only 0s and 1s, got an sequence of {self}")
 
 		buffer[offset : offset + total_size] = Bytes.from_bits(
-			value, bit_order=self._order
+			self, bit_order=self._order
 		)
 
 		return total_size

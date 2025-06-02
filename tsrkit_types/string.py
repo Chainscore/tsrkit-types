@@ -1,7 +1,7 @@
 from typing import Union, Tuple
 
-from pytypes.integers import Uint
-from pytypes.itf.codable import Codable
+from tsrkit_types.integers import Uint
+from tsrkit_types.itf.codable import Codable
 
 
 class String(str, Codable):

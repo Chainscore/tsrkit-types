@@ -1,7 +1,7 @@
 from typing import ClassVar, Optional, Union, Tuple, Any
 
-from pytypes.integers import Uint
-from pytypes.itf.codable import Codable
+from tsrkit_types.integers import Uint
+from tsrkit_types.itf.codable import Codable
 
 ChoiceType = Tuple[Optional[str], type] | type
 
@@ -44,19 +44,18 @@ class Choice(Codable):
         return tuple(self._choice[0] for self._choice in self._opt_types)
 
     def __class_getitem__(cls, opt_t: Tuple[type] | type):
-        _opt_types = tuple([])
+        _opt_types = []
         if isinstance(opt_t, type):
-            _opt_types.append(ChoiceType(None, opt_t))
+            _opt_types.append((None, opt_t))
         else:
             for op in opt_t:
-                _opt_types.append(ChoiceType(None, op))
+                _opt_types.append((None, op))
         name = f"Choice[{'/'.join(op[1].__class__.__name__ for op in _opt_types)}]"
         return type(name,
                     (Choice,),
-                    {"_opt_types": _opt_types})
+                    {"_opt_types": tuple(_opt_types)})
 
     def __init__(self, value: Any, key: Optional[str] = None) -> None:
-        # None is always allowed
         super().__init__()
         self.set(value, key)
 
@@ -76,7 +75,7 @@ class Choice(Codable):
             raise TypeError(f"{value!r} is not a {self._choice_types}")
         
         key = key or tuple(self._choice[0] for self._choice in self._opt_types if isinstance(value, self._choice[1]))[0]
-        if key is None or key not in self._choice_keys:
+        if key not in self._choice_keys:
             raise ValueError(f"Key {key!r} not in {self._choice_keys}")
         
         self._choice_key = key
@@ -107,7 +106,7 @@ class Choice(Codable):
 
     def encode_into(self, buf: bytearray, offset: int = 0) -> int:
         current_offset = offset
-        current_offset += Uint(self._opt_types.index(type(self._value))).encode_into(buf, current_offset)
+        current_offset += Uint(self._choice_types.index(type(self._value))).encode_into(buf, current_offset)
         current_offset += self._value.encode_into(buf, current_offset)
         return current_offset - offset
 
@@ -116,6 +115,6 @@ class Choice(Codable):
         cls, buffer: Union[bytes, bytearray, memoryview], offset: int = 0
     ) -> Tuple[Any, int]:
         tag, tag_size = Uint.decode_from(buffer, offset)
-        value, val_size = cls._opt_types[tag].decode_from(buffer, offset+tag_size)
+        value, val_size = cls._opt_types[tag][1].decode_from(buffer, offset+tag_size)
 
         return cls(value), tag_size+val_size

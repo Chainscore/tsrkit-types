@@ -1,6 +1,6 @@
 from typing import TypeVar, Type, ClassVar, Tuple, Generic, Self
-from pytypes.integers import Uint
-from pytypes.itf.codable import Codable
+from tsrkit_types.integers import Uint
+from tsrkit_types.itf.codable import Codable
 
 T = TypeVar("T")
 
@@ -24,7 +24,6 @@ class Seq(list, Codable, Generic[T]):
     _max_length: ClassVar[int] = 2 ** 64
 
     def __class_getitem__(cls, params):
-        print("im in seq")
         # To overwrite previous cls values
         min_l, max_l, elem_t = 0, 2**64, None
 
@@ -107,6 +106,12 @@ class Seq(list, Codable, Generic[T]):
     def __repr__(self):
         return f"{self.__class__.__name__}({list(self)})"
     
+    @property
+    def _length(self):
+        if self._min_length == self._max_length:
+            return self._min_length
+        return None
+    
     # ---------------------------------------------------------------------------- #
     #                                 Serialization                                #
     # ---------------------------------------------------------------------------- #
@@ -114,7 +119,7 @@ class Seq(list, Codable, Generic[T]):
         size = 0
 
         # If length is not defined
-        if(self._min_length != len(self)) and (self._max_length != len(self)):
+        if self._length is None:
             size += Uint(len(self)).encode_size()
             
         for item in self:

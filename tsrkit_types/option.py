@@ -1,6 +1,6 @@
-from types import NoneType
 from typing import Generic, TypeVar
-from pytypes.choice import Choice
+from tsrkit_types.choice import Choice
+from tsrkit_types.null import Null, NullType
 
 
 T = TypeVar("T")
@@ -16,13 +16,10 @@ class Option(Choice, Generic[T]):
         name = f"Option[{opt_t.__class__.__name__}]"
         return type(name,
                     (Option,),
-                    {"_opt_types": ((None, opt_t), (None, NoneType))})
+                    {"_opt_types": ((None, opt_t), (None, NullType))})
 
-    def __init__(self, val: T|None = None):
+    def __init__(self, val: T|NullType = Null):
         super().__init__(val)
 
-    def set(self, value: T):
-        super().set(value)
-
     def __bool__(self):
-        return self._value is not None
+        return self._value != Null

@@ -1,7 +1,7 @@
 from typing import Tuple, Union, ClassVar, Self
 
-from pytypes.integers import Uint
-from pytypes.itf.codable import Codable
+from tsrkit_types.integers import Uint
+from tsrkit_types.itf.codable import Codable
 
 class Bytes(bytes, Codable):
 
@@ -65,20 +65,25 @@ class Bytes(bytes, Codable):
     def encode_size(self) -> int:
         if self._length is None:
             return Uint(len(self)).encode_size() + len(self)
-        return len(self) if self._length is None else self._length
+        return self._length
     
     def encode_into(self, buf: bytearray, offset: int = 0) -> int:
+        current_offset = offset
         _len = self._length
+        print(current_offset)
         if _len is None:
-            offset += Uint(len(self)).encode_into(buf, offset)
             _len = len(self)
-        buf[offset:offset+_len] = self
-        return _len
+            current_offset += Uint(_len).encode_into(buf, current_offset)
+            print(current_offset)
+        buf[current_offset:current_offset+_len] = self
+        current_offset += _len
+        return current_offset - offset
     
     @classmethod
     def decode_from(cls, buffer: Union[bytes, bytearray, memoryview], offset: int = 0) -> Tuple[Self, int]:
+        current_offset = offset
         _len = cls._length
         if _len is None:
             _len, _inc_offset = Uint.decode_from(buffer, offset)
-            offset += _inc_offset
-        return cls(buffer[offset:offset+_len]), _inc_offset
+            current_offset += _inc_offset
+        return cls(buffer[current_offset:current_offset+_len]), current_offset + _len - offset

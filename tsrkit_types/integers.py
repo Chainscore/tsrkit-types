@@ -1,10 +1,17 @@
+import abc
 from decimal import Decimal
 import math
 from typing import Any, Tuple, Union, Callable
-from pytypes.itf.codable import Codable
+from tsrkit_types.itf.codable import Codable
 
 
-class Uint(int, Codable):
+class IntCheckMeta(abc.ABCMeta):
+    """Meta class to check if the instance is an integer with the same byte size"""
+    def __instancecheck__(cls, instance):
+        return isinstance(instance, int) and getattr(instance, "byte_size", 0) == cls.byte_size
+
+
+class Uint(int, Codable, metaclass=IntCheckMeta):
     """
     Unsigned integer type.
     
@@ -70,7 +77,7 @@ class Uint(int, Codable):
     def _wrap_op(self, other: Any, op: Callable[[int, int], int]):
         res = op(int(self), int(other))
         return type(self)(res)
-
+    
     # ---------------------------------------------------------------------------- #
     #                                  Arithmetic                                  #
     # ---------------------------------------------------------------------------- #
@@ -99,7 +106,7 @@ class Uint(int, Codable):
     #                                  JSON Serde                                  #
     # ---------------------------------------------------------------------------- #
     def to_json(self) -> str:
-        return str(self)
+        return int(self)
     
     @classmethod
     def from_json(cls, json_str: str) -> "Uint":
@@ -185,5 +192,9 @@ class Uint(int, Codable):
                 alpha = tag + 2 ** (8 - _l) - 2**8
                 beta, _ = cls[_l].decode_from(buffer, offset + 1)
                 return alpha * 2 ** (_l * 8) + beta, _l + 1
-            
-    
+
+
+U8 = Uint[8]
+U16 = Uint[16]
+U32 = Uint[32]
+U64 = Uint[64]

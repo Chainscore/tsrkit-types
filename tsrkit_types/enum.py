@@ -1,6 +1,6 @@
 from enum import EnumMeta
 from typing import Tuple, Type, Union, Any, TypeVar, cast
-from pytypes.integers import Uint
+from tsrkit_types.integers import Uint
 
 T = TypeVar("T", bound="Enum")
 

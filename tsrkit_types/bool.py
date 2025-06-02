@@ -1,5 +1,5 @@
 from typing import Tuple, Union
-from pytypes.itf.codable import Codable
+from tsrkit_types.itf.codable import Codable
 
 
 class Bool(Codable):

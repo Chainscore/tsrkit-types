@@ -11,8 +11,8 @@ from typing import (
     Sequence,
 )
 
-from pytypes.integers import Uint
-from pytypes.itf.codable import Codable
+from tsrkit_types.integers import Uint
+from tsrkit_types.itf.codable import Codable
 
 K = TypeVar("K", bound=Codable)
 V = TypeVar("V", bound=Codable)
@@ -26,8 +26,8 @@ class Dictionary(dict, Codable, Generic[K, V]):
     dictionary operations and codec functionality for serialization/deserialization.
 
     Examples:
-        >>> from pytypes.string import String
-        >>> from pytypes.integers import Uint
+        >>> from tsrkit_types.string import String
+        >>> from tsrkit_types.integers import Uint
         >>> d = Dictionary({String("key"): Uint(42)})
         >>> d[String("key")]
         Uint(42)
