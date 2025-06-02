@@ -112,7 +112,13 @@ class Choice(Codable):
 
     def encode_into(self, buf: bytearray, offset: int = 0) -> int:
         current_offset = offset
-        current_offset += Uint(self._choice_types.index(type(self._value))).encode_into(buf, current_offset)
+        # Find the first isinstance(self._value, type) for self._choice_types
+        for i, t in enumerate(self._choice_types):
+            if isinstance(self._value, t):
+                current_offset += Uint(i).encode_into(buf, current_offset)
+                break
+        else:
+            raise ValueError(f"Value {self._value} is not a valid choice")
         current_offset += self._value.encode_into(buf, current_offset)
         return current_offset - offset
 

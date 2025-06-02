@@ -1,6 +1,6 @@
 import pytest
 from dataclasses import field
-from tsrkit_types.integers import U8, U16, U32, U64
+from tsrkit_types.integers import Uint
 from tsrkit_types.string import String
 from tsrkit_types.bool import Bool
 from tsrkit_types.sequences import TypedVector
@@ -14,13 +14,13 @@ def test_basic_struct():
     @struct
     class Person:
         name: String
-        age: U8
+        age: Uint[8]
         email: String
     
     # Create struct instance
     person = Person(
         name=String("Alice Smith"),
-        age=U8(30),
+        age=Uint[8](30),
         email=String("alice@example.com")
     )
     
@@ -46,7 +46,7 @@ def test_struct_with_defaults():
         username: String
         active: Bool = field(metadata={"default": Bool(True)})
         role: String = field(metadata={"default": String("user")})
-        login_count: U32 = field(metadata={"default": U32(0)})
+        login_count: Uint[32] = field(metadata={"default": Uint[32](0)})
     
     # Create with only required fields
     user1 = User(username=String("john_doe"))
@@ -77,16 +77,16 @@ def test_custom_json_field_names():
     """Test custom JSON field names using metadata."""
     @struct
     class ApiResponse:
-        status_code: U16 = field(metadata={"name": "status"})
+        status_code: Uint[16] = field(metadata={"name": "status"})
         message: String = field(metadata={"name": "msg"})
         data_payload: String = field(metadata={"name": "data"})
-        timestamp: U64 = field(metadata={"name": "ts"})
+        timestamp: Uint[64] = field(metadata={"name": "ts"})
     
     response = ApiResponse(
-        status_code=U16(200),
+        status_code=Uint[16](200),
         message=String("Success"),
         data_payload=String("Hello World"),
-        timestamp=U64(1703001234567)
+        timestamp=Uint[64](1703001234567)
     )
     
     # JSON uses custom field names
@@ -119,16 +119,16 @@ def test_nested_structs():
     
     @struct
     class Employee:
-        id: U32
+        id: Uint[32]
         name: String
         address: Address
         contact: Contact
-        salary: U32
+        salary: Uint[32]
         active: Bool = field(metadata={"default": Bool(True)})
     
     # Create nested structure
     employee = Employee(
-        id=U32(12345),
+        id=Uint[32](12345),
         name=String("John Doe"),
         address=Address(
             street=String("123 Main St"),
@@ -139,7 +139,7 @@ def test_nested_structs():
             email=String("john.doe@company.com"),
             phone=String("555-0123")
         ),
-        salary=U32(75000)
+        salary=Uint[32](75000)
     )
     
     assert str(employee.name) == "John Doe"
@@ -165,7 +165,7 @@ def test_struct_with_collections():
     
     @struct
     class Task:
-        id: U32
+        id: Uint[32]
         title: String
         priority: Priority
         completed: Bool = field(metadata={"default": Bool(False)})
@@ -184,17 +184,17 @@ def test_struct_with_collections():
         description=String("Complete overhaul of company website"),
         tasks=TypedVector[Task]([
             Task(
-                id=U32(1),
+                id=Uint[32](1),
                 title=String("Design mockups"),
                 priority=Priority.HIGH
             ),
             Task(
-                id=U32(2),
+                id=Uint[32](2),
                 title=String("Implement frontend"),
                 priority=Priority.MEDIUM
             ),
             Task(
-                id=U32(3),
+                id=Uint[32](3),
                 title=String("Test deployment"),
                 priority=Priority.LOW
             )
@@ -220,7 +220,7 @@ def test_optional_fields():
     """Test structs with optional fields using Option."""
     @struct
     class ProfileInfo:
-        user_id: U32
+        user_id: Uint[32]
         username: String
         full_name: Option[String]
         bio: Option[String]
@@ -229,7 +229,7 @@ def test_optional_fields():
     
     # Profile with minimal info
     basic_profile = ProfileInfo(
-        user_id=U32(123),
+        user_id=Uint[32](123),
         username=String("jane_doe"),
         full_name=Option[String](),  # Empty
         bio=Option[String](),        # Empty
@@ -238,7 +238,7 @@ def test_optional_fields():
     
     # Profile with complete info
     complete_profile = ProfileInfo(
-        user_id=U32(456),
+        user_id=Uint[32](456),
         username=String("john_smith"),
         full_name=Option[String](String("John Smith")),
         bio=Option[String](String("Software developer and coffee enthusiast")),
@@ -276,8 +276,8 @@ def test_frozen_structs():
     """Test immutable (frozen) structs."""
     @struct(frozen=True)
     class Point:
-        x: U16
-        y: U16
+        x: Uint[16]
+        y: Uint[16]
     
     @struct(frozen=True)
     class Rectangle:
@@ -291,8 +291,8 @@ def test_frozen_structs():
             return width * height
     
     # Create immutable instances
-    point1 = Point(x=U16(10), y=U16(20))
-    point2 = Point(x=U16(100), y=U16(80))
+    point1 = Point(x=Uint[16](10), y=Uint[16](20))
+    point2 = Point(x=Uint[16](100), y=Uint[16](80))
     rect = Rectangle(top_left=point1, bottom_right=point2)
     
     assert point1.x == 10
@@ -303,7 +303,7 @@ def test_frozen_structs():
     
     # Frozen structs cannot be modified
     with pytest.raises(AttributeError):
-        point1.x = U16(15)  # This should fail
+        point1.x = Uint[16](15)  # This should fail
     
     # But they can still be encoded/decoded
     encoded = rect.encode()
@@ -317,18 +317,18 @@ def test_struct_inheritance():
     class Vehicle:
         make: String
         model: String
-        year: U16
+        year: Uint[16]
     
     @struct
     class Car:
         vehicle: Vehicle  # Composition instead of inheritance
-        doors: U8
+        doors: Uint[8]
         fuel_type: String
     
     @struct
     class Motorcycle:
         vehicle: Vehicle  # Composition instead of inheritance
-        engine_cc: U16
+        engine_cc: Uint[16]
         has_sidecar: Bool = field(metadata={"default": Bool(False)})
     
     # Create vehicles using composition
@@ -336,9 +336,9 @@ def test_struct_inheritance():
         vehicle=Vehicle(
             make=String("Toyota"),
             model=String("Camry"),
-            year=U16(2022)
+            year=Uint[16](2022)
         ),
-        doors=U8(4),
+        doors=Uint[8](4),
         fuel_type=String("Gasoline")
     )
     
@@ -346,9 +346,9 @@ def test_struct_inheritance():
         vehicle=Vehicle(
             make=String("Harley-Davidson"),
             model=String("Street 750"),
-            year=U16(2021)
+            year=Uint[16](2021)
         ),
-        engine_cc=U16(750)
+        engine_cc=Uint[16](750)
     )
     
     assert car.vehicle.year == 2022
@@ -369,14 +369,14 @@ def test_struct_validation():
     @struct
     class BankAccount:
         account_number: String
-        balance: U32  # Balance in cents
+        balance: Uint[32]  # Balance in cents
         owner: String
         active: Bool = field(metadata={"default": Bool(True)})
     
     # Valid account creation
     account = BankAccount(
         account_number=String("12345-67890"),
-        balance=U32(100000),  # $1000.00
+        balance=Uint[32](100000),  # $1000.00
         owner=String("Alice Johnson")
     )
     assert str(account.owner) == "Alice Johnson"
@@ -403,9 +403,9 @@ def test_struct_edge_cases():
     # Struct with single field
     @struct
     class SingleField:
-        value: U32
+        value: Uint[32]
     
-    single = SingleField(value=U32(42))
+    single = SingleField(value=Uint[32](42))
     assert single.value == 42
     
     encoded = single.encode()
@@ -421,7 +421,7 @@ def test_struct_comprehensive():
     
     @struct
     class ComplexStruct:
-        id: U32
+        id: Uint[32]
         name: String
         status: Status
         optional_data: Option[String]
@@ -429,7 +429,7 @@ def test_struct_comprehensive():
     
     # Create complex struct
     complex_struct = ComplexStruct(
-        id=U32(12345),
+        id=Uint[32](12345),
         name=String("Test Entity"),
         status=Status.ACTIVE,
         optional_data=Option[String](String("Some data")),
@@ -460,12 +460,12 @@ def test_struct_json_round_trip():
     @struct
     class TestStruct:
         text: String
-        number: U32
+        number: Uint[32]
         flag: Bool
     
     original = TestStruct(
         text=String("Hello World"),
-        number=U32(42),
+        number=Uint[32](42),
         flag=Bool(True)
     )
     

@@ -30,13 +30,13 @@ The `Uint` class provides both fixed-size and variable-size unsigned integers.
 
 **Fixed-Size Integers:**
 ```python
-from tsrkit_types.integers import Uint, U8, U16, U32, U64
+from tsrkit_types.integers import Uint
 
 # Pre-defined types
-value = U8(255)        # 8-bit unsigned integer (0-255)
-value = U16(65535)     # 16-bit unsigned integer (0-65535) 
-value = U32(42949)     # 32-bit unsigned integer
-value = U64(1844674)   # 64-bit unsigned integer
+value = Uint[8](255)        # 8-bit unsigned integer (0-255)
+value = Uint[16](65535)     # 16-bit unsigned integer (0-65535) 
+value = Uint[32](42949)     # 32-bit unsigned integer
+value = Uint[64](1844674)   # 64-bit unsigned integer
 
 # Dynamic size specification
 U128 = Uint[128]       # 128-bit unsigned integer
@@ -56,9 +56,9 @@ encoded = num.encode()
 decoded = Uint.decode(encoded)
 
 # Arithmetic operations preserve type
-a = U8(10)
-b = U8(20)
-result = a + b         # result is U8(30)
+a = Uint[8](10)
+b = Uint[8](20)
+result = a + b         # result is Uint[8](30)
 ```
 
 **Encoding Details:**

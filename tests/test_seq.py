@@ -1,17 +1,17 @@
 import pytest
 
-from tsrkit_types.integers import U32, U8, Uint
+from tsrkit_types.integers import Uint
 from tsrkit_types.sequences import Vector, TypedArray, TypedVector, TypedBoundedVector
 
 
 def test_list_init():
-	class MyList(TypedVector[U32]): ...
-	a = MyList([U32(10)])
-	assert a == [U32(10)]
+	class MyList(TypedVector[Uint[32]]): ...
+	a = MyList([Uint[32](10)])
+	assert a == [Uint[32](10)]
 
 def test_list_typecheck():
-	class MyList(TypedVector[U32]): ...
-	a = MyList([U32(10)])
+	class MyList(TypedVector[Uint[32]]): ...
+	a = MyList([Uint[32](10)])
 
 	with pytest.raises(TypeError):
 		MyList([10])
@@ -19,32 +19,32 @@ def test_list_typecheck():
 		a.append(100)
 
 	b = Vector([100])
-	b.append(U32(100))
+	b.append(Uint[32](100))
 
 def test_array_init():
-	class Arr10(TypedArray[U32, 10]): ...
+	class Arr10(TypedArray[Uint[32], 10]): ...
 
-	a = Arr10([U32(1000)] * 10)
+	a = Arr10([Uint[32](1000)] * 10)
 	assert len(a) == 10
 
 	with pytest.raises(ValueError):
 		Arr10([])
 
 def test_typed_array_init():
-	a = TypedArray[U32, 10]([U32(1000)] * 10)
+	a = TypedArray[Uint[32], 10]([Uint[32](1000)] * 10)
 	assert len(a) == 10
 
 	with pytest.raises(ValueError):
-		TypedArray[U32, 10]([])
+		TypedArray[Uint[32], 10]([])
 	with pytest.raises(TypeError):
-		TypedArray[U32, 10]([10] * 10)
+		TypedArray[Uint[32], 10]([10] * 10)
 
 def test_cls_flow():
 	class IntVec(TypedVector[Uint]): ...
 	a = IntVec([])
 
-	class U32Vec(TypedVector[U32]): ...
-	b = U32Vec([U32(10)] * 10)
+	class Uint32Vec(TypedVector[Uint[32]]): ...
+	b = Uint32Vec([Uint[32](10)] * 10)
 
 	class BytesVec(TypedVector[bytes]): ...
 	
@@ -54,20 +54,20 @@ def test_cls_flow():
 		b.append(100)
 
 	with pytest.raises(TypeError):
-		a.append(U8(100))
+		a.append(Uint[8](100))
 
 	with pytest.raises(TypeError):
-		a.append(U32(100))
+		a.append(Uint[32](100))
 
 def test_codec():
-	a = TypedArray[U32, 10]([U32(1)] * 10)
+	a = TypedArray[Uint[32], 10]([Uint[32](1)] * 10)
 	assert a.encode_size() == 4*10
 	assert len(a.encode()) == 4*10
 
-	b = TypedArray[U32, 20]([U32(1)] * 20)
+	b = TypedArray[Uint[32], 20]([Uint[32](1)] * 20)
 
 	assert b._min_length == 20
 	assert a._min_length == 10
 
 def test_repr_vector():
-	assert TypedBoundedVector[U32, 0, 10]([]).__class__.__name__ == "TypedBoundedVector[U32,max=10]"
+	assert TypedBoundedVector[Uint[32], 0, 10]([]).__class__.__name__ == "TypedBoundedVector[U32,max=10]"

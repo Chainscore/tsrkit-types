@@ -22,8 +22,9 @@ V = TypeVar("V", bound=Codable)
 class DictCheckMeta(abc.ABCMeta):
     """Meta class to check if the instance is a dictionary with the same key and value types"""
     def __instancecheck__(cls, instance):
-        _matches_key_type = getattr(cls, "_key_type", None) == getattr(instance, "_key_type", None)
-        _matches_value_type = getattr(cls, "_value_type", None) == getattr(instance, "_value_type", None)
+        # TODO - This needs more false positive testing
+        _matches_key_type = str(getattr(cls, "_key_type", None)) == str(getattr(instance, "_key_type", None))
+        _matches_value_type = str(getattr(cls, "_value_type", None)) == str(getattr(instance, "_value_type", None))
         return isinstance(instance, dict) and _matches_key_type and _matches_value_type
 
 

@@ -1,14 +1,14 @@
 import pytest
-from tsrkit_types.integers import Uint, U8, U16, U32, U64
+from tsrkit_types.integers import Uint
 
 
 def test_fixed_size_integers():
     """Test fixed-size integer types and their usage."""
     # Pre-defined integer types
-    age = U8(25)        # 8-bit: 0-255
-    port = U16(8080)    # 16-bit: 0-65535
-    user_id = U32(123456789)  # 32-bit
-    timestamp = U64(1703001234567)  # 64-bit
+    age = Uint[8](25)        # 8-bit: 0-255
+    port = Uint[16](8080)    # 16-bit: 0-65535
+    user_id = Uint[32](123456789)  # 32-bit
+    timestamp = Uint[64](1703001234567)  # 64-bit
     
     assert age == 25
     assert port == 8080
@@ -46,9 +46,9 @@ def test_variable_size_integers():
 def test_encoding_decoding():
     """Test encoding and decoding operations."""
     # Fixed-size encoding
-    value = U16(12345)
+    value = Uint[16](12345)
     encoded = value.encode()
-    decoded = U16.decode(encoded)
+    decoded = Uint[16].decode(encoded)
     
     assert len(encoded) == 2  # U16 should be 2 bytes
     assert decoded == value
@@ -64,27 +64,27 @@ def test_encoding_decoding():
 
 def test_arithmetic_operations():
     """Test arithmetic operations that preserve types."""
-    a = U8(100)
-    b = U8(50)
+    a = Uint[8](100)
+    b = Uint[8](50)
     
     # All operations preserve the U8 type
-    assert isinstance(a + b, U8)
-    assert isinstance(a - b, U8)
-    assert isinstance(a * U8(2), U8)
-    assert isinstance(a // U8(3), U8)
-    assert isinstance(a & U8(0xFF), U8)
-    assert isinstance(a | U8(0x0F), U8)
-    assert isinstance(a ^ U8(0xAA), U8)
+    assert isinstance(a + b, Uint[8])
+    assert isinstance(a - b, Uint[8])
+    assert isinstance(a * Uint[8](2), Uint[8])
+    assert isinstance(a // Uint[8](3), Uint[8])
+    assert isinstance(a & Uint[8](0xFF), Uint[8])
+    assert isinstance(a | Uint[8](0x0F), Uint[8])
+    assert isinstance(a ^ Uint[8](0xAA), Uint[8])
     
     # Test actual values
     assert a + b == 150
     assert a - b == 50
-    assert a * U8(2) == 200
+    assert a * Uint[8](2) == 200
 
 
 def test_json_serialization():
     """Test JSON serialization of integers."""
-    values = [U8(255), U16(65535), U32(12345), Uint(1000000)]
+    values = [Uint[8](255), Uint[16](65535), Uint[32](12345), Uint(1000000)]
     
     for value in values:
         json_data = value.to_json()
@@ -97,18 +97,18 @@ def test_json_serialization():
 def test_range_validation():
     """Test range validation for fixed-size integers."""
     # Valid values
-    valid_u8 = U8(255)  # Maximum value for U8
+    valid_u8 = Uint[8](255)  # Maximum value for U8
     assert valid_u8 == 255
     
     # Invalid values should raise ValueError
     with pytest.raises(ValueError):
-        U8(256)  # exceeds maximum
+        Uint[8](256)  # exceeds maximum
     
     with pytest.raises(ValueError):
-        U8(-1)  # below minimum
+        Uint[8](-1)  # below minimum
     
     with pytest.raises(ValueError):
-        U16(70000)  # exceeds maximum
+        Uint[16](70000)  # exceeds maximum
     
     with pytest.raises(ValueError):
         Uint(-5)  # negative value
@@ -118,10 +118,10 @@ def test_integer_types_comprehensive():
     """Comprehensive test of all integer type features."""
     # Test each predefined type
     types_and_values = [
-        (U8, 255, 1),
-        (U16, 65535, 2),
-        (U32, 4294967295, 4),
-        (U64, 18446744073709551615, 8),
+        (Uint[8], 255, 1),
+        (Uint[16], 65535, 2),
+        (Uint[32], 4294967295, 4),
+        (Uint[64], 18446744073709551615, 8),
     ]
     
     for int_type, max_val, expected_size in types_and_values:
@@ -168,9 +168,9 @@ def test_custom_integer_sizes():
 
 def test_integer_comparison():
     """Test integer comparison operations."""
-    a = U16(100)
-    b = U16(200)
-    c = U16(100)
+    a = Uint[16](100)
+    b = Uint[16](200)
+    c = Uint[16](100)
     
     assert a == c
     assert a != b
