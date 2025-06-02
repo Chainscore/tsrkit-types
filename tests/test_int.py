@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from jam.types.base.integers import Uint as UInt
+from tsrkit_types.integers import Uint as UInt
 
 
 def test_int_type():

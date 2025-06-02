@@ -1,5 +1,4 @@
-from typing import ClassVar, Optional, Union, Tuple, Any, get_origin
-from typing_extensions import get_args
+from typing import ClassVar, Optional, Union, Tuple, Any
 
 from tsrkit_types.integers import Uint
 from tsrkit_types.itf.codable import Codable
