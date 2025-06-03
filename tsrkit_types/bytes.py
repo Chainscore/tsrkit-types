@@ -1,6 +1,4 @@
-from typing import Tuple, Union, ClassVar, Self
-import base64
-
+from typing import Tuple, Union, ClassVar
 from tsrkit_types.integers import Uint
 from tsrkit_types.itf.codable import Codable
 
@@ -22,7 +20,7 @@ class Bytes(bytes, Codable):
         return f"{self.__class__.__name__}({self.hex()})"
 
     @classmethod
-    def from_bits(cls, bits: list[bool], bit_order = "msb") -> Self:
+    def from_bits(cls, bits: list[bool], bit_order = "msb") -> "Bytes":
         # Sanitize input: make sure bits are 0 or 1
         bits = [int(bool(b)) for b in bits]
         n = len(bits)
@@ -79,7 +77,7 @@ class Bytes(bytes, Codable):
         return current_offset - offset
     
     @classmethod
-    def decode_from(cls, buffer: Union[bytes, bytearray, memoryview], offset: int = 0) -> Tuple[Self, int]:
+    def decode_from(cls, buffer: Union[bytes, bytearray, memoryview], offset: int = 0) -> Tuple["Bytes", int]:
         current_offset = offset
         _len = cls._length
         if _len is None:

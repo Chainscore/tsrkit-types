@@ -693,6 +693,6 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for gui
 
 ## Requirements
 
-- **Python**: >= 3.10
+- **Python**: >= 3.11
 - **Runtime Dependencies**: None (zero dependencies!)
 - **Development Dependencies**: pytest and plugins (see `pyproject.toml`) 

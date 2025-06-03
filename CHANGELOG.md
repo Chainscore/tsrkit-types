@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Type validation at construction and assignment time
 - Support for nested and complex type compositions
 - Zero-dependency core library
-- Python 3.10+ support
+- Python 3.11+ support
 
 ## [Unreleased]
 

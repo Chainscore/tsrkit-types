@@ -1,4 +1,4 @@
-from typing import Optional, Self, Tuple, Union
+from typing import Optional, Tuple, Union
 
 
 class NullType:
@@ -22,7 +22,7 @@ class NullType:
         return 0
     
     @classmethod
-    def decode_from(cls, buffer: Union[bytes, bytearray, memoryview], offset: int = 0) -> Tuple[Self, int]:
+    def decode_from(cls, buffer: Union[bytes, bytearray, memoryview], offset: int = 0) -> Tuple['NullType', int]:
         return cls(), 0
     
     # ---------------------------------------------------------------------------- #
@@ -33,7 +33,7 @@ class NullType:
         return None
     
     @classmethod
-    def from_json(cls, json_str: Optional[str]) -> Self:
+    def from_json(cls, json_str: Optional[str]) -> 'NullType':
         if json_str is None:
             return cls()
         raise ValueError("Invalid JSON string for NullType")

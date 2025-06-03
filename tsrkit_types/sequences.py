@@ -84,7 +84,7 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
                 raise TypeError(f"{value!r} is not an instance of {self._element_type!r}")
 
     def _validate_self(self):
-        """For Resultant Self check - added to fns that alter size"""
+        """For Resultant self check - added to fns that alter size"""
         if  len(self) < self._min_length:
             raise ValueError(f"Vector: Expected sequence size to be >= {self._min_length}, resultant size {len(self)}")
         elif len(self) > self._max_length:

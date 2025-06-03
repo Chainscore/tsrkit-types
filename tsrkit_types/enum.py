@@ -20,8 +20,8 @@ class Enum(metaclass=EnumMeta):
     >>> assert decoded == value
     >>> assert bytes_read == 1
     >>>
-    >>> assert MyEnum.from_json(1,) == MyEnum.A
-    >>> assert MyEnum.from_json("A",) == MyEnum.A
+    >>> assert MyEnum.from_json(1) == MyEnum.A
+    >>> assert MyEnum.from_json("A") == MyEnum.A
     """
     
     @property
@@ -106,7 +106,7 @@ class Enum(metaclass=EnumMeta):
             The corresponding enum value
 
         Raises:
-            JsonDeserializationError: If the value is invalid
+            ValueError: If the value is invalid
         """
         for v in cls.__members__.values():
             if v._value_ == data or v._name_ == data:
