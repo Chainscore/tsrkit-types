@@ -3,11 +3,11 @@ from typing import Any, Tuple, Union
 from tsrkit_types.itf.codable import Codable
 
 
-def struct(_cls=None, *, frozen=False, **kwargs):
+def structure(_cls=None, *, frozen=False, **kwargs):
     """Extension of dataclass to support serialization and json operations. 
 
     Usage:
-        >>> @struct
+        >>> @structure
         >>> class Person:
         >>>     name: String = field(metadata={"name": "first_name"})
         >>>     age: Uint[8] = field(metadata={"default": 0})
@@ -80,3 +80,7 @@ def struct(_cls=None, *, frozen=False, **kwargs):
         return new_cls
 
     return wrap if _cls is None else wrap(_cls)
+
+
+# Backward compatibility alias
+struct = structure

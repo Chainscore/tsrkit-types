@@ -1,6 +1,6 @@
 # TSRKit Types
 
-Performant Python library for type-safe binary serialization, JSON encoding, and data validation with zero dependencies.
+Performant Python Typings library for type-safe binary serialization, JSON encoding, and data validation with zero dependencies.
 
 Perfect for network protocols, game state serialization, configuration files, and any application requiring efficient, validated data handling.
 
@@ -218,7 +218,7 @@ decoded = TypedDynamicVector.decode(encoded)
 
 **Sequence Types:**
 - `Array[N]`: Fixed size, any element type
-- `Vector[max]`: Variable size up to max, any element type  
+- `Vector`: Variable size, any element type  
 - `TypedArray[T, N]`: Fixed size with typed elements
 - `TypedVector[T]`: Variable size with typed elements
 - `BoundedVector[min, max]`: Size constrained vector
@@ -347,12 +347,12 @@ from tsrkit_types.string import String
 from tsrkit_types.integers import U8, U32
 from dataclasses import field
 
-@struct
+@structure
 class Person:
     name: String
     age: U8
     
-@struct  
+@structure  
 class Employee:
     person: Person
     employee_id: U32
@@ -375,7 +375,7 @@ encoded = employee.encode()      # Concatenated field encodings
 decoded = Employee.decode(encoded)
 
 # JSON serialization with custom field names
-@struct
+@structure
 class CustomPerson:
     name: String = field(metadata={"name": "full_name"})
     age: U8
@@ -427,7 +427,7 @@ class Point3D(Codable):
 
 ```python
 # Optimize for specific use cases
-@struct(frozen=True)             # Immutable structs
+@structure(frozen=True)             # Immutable structs
 class ImmutableData:
     value: U64
 
@@ -524,7 +524,7 @@ offset += value2.encode_into(buffer, offset)
 ### Network Protocol
 
 ```**python**
-@struct
+@structure
 class NetworkPacket:
     packet_type: U8
     session_id: U32
@@ -549,7 +549,7 @@ received_packet = NetworkPacket.decode(wire_data)
 ### Configuration File
 
 ```python
-@struct
+@structure
 class DatabaseConfig:
     host: String
     port: U16
@@ -585,19 +585,19 @@ class GameEntityType(Enum):
     ENEMY = 1
     ITEM = 2
 
-@struct
+@structure
 class Position:
     x: U16
     y: U16
 
-@struct  
+@structure  
 class GameEntity:
     entity_type: GameEntityType
     position: Position
     health: U8
     name: String
 
-@struct
+@structure
 class GameState:
     level: U8
     score: U32
@@ -693,6 +693,6 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for gui
 
 ## Requirements
 
-- **Python**: >= 3.12
+- **Python**: >= 3.10
 - **Runtime Dependencies**: None (zero dependencies!)
 - **Development Dependencies**: pytest and plugins (see `pyproject.toml`) 

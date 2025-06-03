@@ -1,17 +1,20 @@
 import pytest
 from dataclasses import field
-from tsrkit_types.integers import Uint
+from tsrkit_types.integers import Uint, U8, U16, U32
 from tsrkit_types.string import String
 from tsrkit_types.bool import Bool
-from tsrkit_types.sequences import TypedVector
+from tsrkit_types.choice import Choice
 from tsrkit_types.option import Option
-from tsrkit_types.struct import struct
+from tsrkit_types.sequences import TypedVector
 from tsrkit_types.enum import Enum
+from tsrkit_types.struct import struct, structure
+from tsrkit_types.bytes import Bytes
+from tsrkit_types.itf.codable import Codable
 
 
 def test_basic_struct():
     """Test basic struct definition and usage."""
-    @struct
+    @structure
     class Person:
         name: String
         age: Uint[8]
@@ -41,7 +44,7 @@ def test_basic_struct():
 
 def test_struct_with_defaults():
     """Test structs with default values."""
-    @struct
+    @structure
     class User:
         username: String
         active: Bool = field(metadata={"default": Bool(True)})
@@ -75,7 +78,7 @@ def test_struct_with_defaults():
 
 def test_custom_json_field_names():
     """Test custom JSON field names using metadata."""
-    @struct
+    @structure
     class ApiResponse:
         status_code: Uint[16] = field(metadata={"name": "status"})
         message: String = field(metadata={"name": "msg"})
@@ -105,19 +108,19 @@ def test_custom_json_field_names():
 
 def test_nested_structs():
     """Test nested struct composition."""
-    @struct
+    @structure
     class Address:
         street: String
         city: String
         zip_code: String
         country: String = field(metadata={"default": String("USA")})
     
-    @struct
+    @structure
     class Contact:
         email: String
         phone: String = field(metadata={"default": String("")})
     
-    @struct
+    @structure
     class Employee:
         id: Uint[32]
         name: String
@@ -163,14 +166,14 @@ def test_struct_with_collections():
         MEDIUM = 2
         HIGH = 3
     
-    @struct
+    @structure
     class Task:
         id: Uint[32]
         title: String
         priority: Priority
         completed: Bool = field(metadata={"default": Bool(False)})
     
-    @struct
+    @structure
     class Project:
         name: String
         description: String
@@ -218,7 +221,7 @@ def test_struct_with_collections():
 
 def test_optional_fields():
     """Test structs with optional fields using Option."""
-    @struct
+    @structure
     class ProfileInfo:
         user_id: Uint[32]
         username: String
@@ -274,12 +277,12 @@ def test_optional_fields():
 
 def test_frozen_structs():
     """Test immutable (frozen) structs."""
-    @struct(frozen=True)
+    @structure(frozen=True)
     class Point:
         x: Uint[16]
         y: Uint[16]
     
-    @struct(frozen=True)
+    @structure(frozen=True)
     class Rectangle:
         top_left: Point
         bottom_right: Point
@@ -313,19 +316,19 @@ def test_frozen_structs():
 
 def test_struct_inheritance():
     """Test struct inheritance patterns."""
-    @struct
+    @structure
     class Vehicle:
         make: String
         model: String
         year: Uint[16]
     
-    @struct
+    @structure
     class Car:
         vehicle: Vehicle  # Composition instead of inheritance
         doors: Uint[8]
         fuel_type: String
     
-    @struct
+    @structure
     class Motorcycle:
         vehicle: Vehicle  # Composition instead of inheritance
         engine_cc: Uint[16]
@@ -366,7 +369,7 @@ def test_struct_inheritance():
 
 def test_struct_validation():
     """Test struct field validation and type safety."""
-    @struct
+    @structure
     class BankAccount:
         account_number: String
         balance: Uint[32]  # Balance in cents
@@ -391,7 +394,7 @@ def test_struct_validation():
 def test_struct_edge_cases():
     """Test edge cases for struct handling."""
     # Empty struct
-    @struct
+    @structure
     class EmptyStruct:
         pass
     
@@ -401,7 +404,7 @@ def test_struct_edge_cases():
     assert isinstance(decoded, EmptyStruct)
     
     # Struct with single field
-    @struct
+    @structure
     class SingleField:
         value: Uint[32]
     
@@ -419,7 +422,7 @@ def test_struct_comprehensive():
         ACTIVE = 1
         INACTIVE = 0
     
-    @struct
+    @structure
     class ComplexStruct:
         id: Uint[32]
         name: String
@@ -457,7 +460,7 @@ def test_struct_comprehensive():
 
 def test_struct_json_round_trip():
     """Test JSON serialization round-trip for structs."""
-    @struct
+    @structure
     class TestStruct:
         text: String
         number: Uint[32]

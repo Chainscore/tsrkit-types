@@ -1,14 +1,14 @@
 [project]
 name = "tsrkit-types"
-version = "0.1.0"
-description = "Performant Python library for type-safe binary serialization, JSON encoding, and data validation with zero dependencies"
+version = "0.1.1"
+description = "Performant Python Typings library for type-safe binary serialization, JSON encoding, and data validation with zero dependencies"
 authors = [
     {name = "chainscore-labs", email = "hello@chainscore.finance"},
     {name = "prasad-kumkar", email = "prasad@chainscore.finance"}
 ]
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 keywords = [
     "serialization", "binary", "encoding", "types", "codable", "json", 
     "validation", "data-types", "type-safety", "zero-copy", "protocol",
@@ -20,6 +20,8 @@ classifiers = [
     "Intended Audience :: System Administrators",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development :: Libraries :: Python Modules",

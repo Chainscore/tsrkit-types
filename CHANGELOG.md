@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.0] - 2024-12-19
+## [0.1.0] - 2025-06-03
 
 ### Added
 - Initial release of tsrkit-types library
@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Dictionary type: `Dictionary[K, V]` with typed keys and values
 - Bytes types: `Bytes` for raw binary data and `BitArray` for bit sequences
 - Enumeration type: `Enum` with integer backing and string names
-- Structured types: `@struct` decorator for automatic `Codable` implementation
+- Structured types: `@structure` decorator for automatic `Codable` implementation
 - Binary serialization with efficient encoding formats
 - JSON serialization with customizable field mapping
 - Type safety with runtime validation
@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Type validation at construction and assignment time
 - Support for nested and complex type compositions
 - Zero-dependency core library
-- Python 3.12+ support
+- Python 3.10+ support
 
 ## [Unreleased]
 
