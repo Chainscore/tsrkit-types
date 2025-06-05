@@ -258,7 +258,9 @@ restored = StringToInt.from_json(json_data)
 
 ### Bytes Types
 
-#### Bytes (extension of Python in-built bytes)
+The library provides two complementary byte array types: immutable `Bytes` (extending Python's built-in `bytes`) and mutable `ByteArray` (extending Python's `bytearray`). Both types share common functionality through a mixin architecture for bit conversion, JSON serialization, and binary encoding.
+
+#### Bytes (Immutable - extension of Python bytes)
 
 ```python
 from tsrkit_types.bytes import Bytes
@@ -266,47 +268,115 @@ from tsrkit_types.bytes import Bytes
 # Creation
 data = Bytes(b"Hello, binary world!")
 data = Bytes([0x01, 0x02, 0x03, 0x04])
+data = Bytes("48656c6c6f")        # From hex string
 
-# Bytes <-> Bits Operations
-data.to_bits()          # [True, False, True, ...]
-Bytes.from_bits([True, False, True, ...])
+# Shared Operations (via BytesMixin)
+bits = data.to_bits()            # Convert to bit list [True, False, True, ...]
+data2 = Bytes.from_bits(bits)    # Create from bit list
 
-# Operations
+# Properties
 length = len(data)               # Byte length
 raw_bytes = bytes(data)         # Convert to Python bytes
 
-# Encoding
+# Encoding/Decoding
 encoded = data.encode()          # [length][raw_bytes]
 decoded = Bytes.decode(encoded)
 
 # JSON serialization (hex encoded)
 json_str = data.to_json()        # "48656c6c6f2c2062696e61727920776f726c6421"
 restored = Bytes.from_json(json_str)
+restored2 = Bytes.from_json("0x48656c6c6f")  # Supports 0x prefix
 ```
 
-#### Bit Arrays (Sequence of bool)
+#### ByteArray (Mutable - extension of Python bytearray)
 
 ```python
-from tsrkit_types.bits import BitArray
+from tsrkit_types.bytearray import ByteArray
 
 # Creation
-bits = BitArray([True, False, True, True, False])
-bits = BitArray.from_hex("1A3F")    # From hex string
-bits = BitArray.from_int(42, 8)     # From integer with bit width
+data = ByteArray(b"Hello, binary world!")
+data = ByteArray([0x01, 0x02, 0x03, 0x04])
+data = ByteArray("48656c6c6f")   # From hex string
+
+# Mutable Operations
+data.append(0xFF)                # Add single byte
+data.extend([0xAB, 0xCD])       # Add multiple bytes
+data.insert(0, 0x00)            # Insert byte at position
+data.pop()                      # Remove and return last byte
+data.remove(0xFF)               # Remove first occurrence
+data.clear()                    # Remove all bytes
+data.reverse()                  # Reverse in-place
+
+# Indexing and Slicing (mutable)
+data[0] = 0x42                  # Set byte at index
+data[1:3] = [0x43, 0x44]       # Set slice
+del data[0]                     # Delete byte at index
+
+# Shared Operations (via BytesMixin) - same as Bytes
+bits = data.to_bits()           # Convert to bit list
+data2 = ByteArray.from_bits(bits)  # Create from bit list
+
+# Properties and Conversion
+length = len(data)              # Byte length  
+raw_bytes = bytes(data)         # Convert to immutable bytes
+immutable = Bytes(data)         # Convert to immutable Bytes
+
+# Encoding/Decoding (same interface as Bytes)
+encoded = data.encode()         # [length][raw_bytes]
+decoded = ByteArray.decode(encoded)
+
+# JSON serialization (same interface as Bytes)
+json_str = data.to_json()       # "48656c6c6f..."
+restored = ByteArray.from_json(json_str)
+```
+
+**Key Differences:**
+- **Bytes**: Immutable, extends `bytes`, memory-efficient for read-only data
+- **ByteArray**: Mutable, extends `bytearray`, suitable for dynamic byte manipulation
+- **Shared Functionality**: Both support identical bit conversion, JSON serialization, and binary encoding through `BytesMixin`
+
+**Common Features (Both Types):**
+- Bit-level conversion with MSB/LSB support
+- Hex string JSON serialization with 0x prefix support
+- Efficient binary encoding with length prefix
+- String representation and validation
+- Memory-efficient operations
+
+#### Bits (Bit Arrays - Sequence of bool)
+
+```python
+from tsrkit_types.bits import Bits
+
+# Creation
+bits = Bits([True, False, True, True, False])
+bits = Bits.from_hex("1A3F")       # From hex string
+bits = Bits.from_int(42, 8)        # From integer with bit width
+
+# Fixed-size parameterized bits
+FixedBits = Bits[8]                # Exactly 8 bits
+fixed = FixedBits([True, False, True, True, False, False, True, False])
 
 # Operations
-bit_val = bits[0]                # Get bit at index
-bits[1] = True                   # Set bit at index
-bits.append(False)               # Add bit
-bits.extend([True, False])       # Add multiple bits
+bit_val = bits[0]                  # Get bit at index
+bits[1] = True                     # Set bit at index
+bits.append(False)                 # Add bit
+bits.extend([True, False])         # Add multiple bits
 
 # Conversion
-hex_str = bits.to_hex()          # Convert to hex string
-int_val = bits.to_int()          # Convert to integer
+hex_str = bits.to_hex()            # Convert to hex string
+int_val = bits.to_int()            # Convert to integer
+
+# Bit order specification
+bits_msb = Bits([True, False], bit_order="MSB")  # Most significant bit first
+bits_lsb = Bits([True, False], bit_order="LSB")  # Least significant bit first
 
 # Encoding
-encoded = bits.encode()          # [length][packed_bits]
-decoded = BitArray.decode(encoded)
+encoded = bits.encode()            # [length][packed_bits]
+decoded = Bits.decode(encoded)
+
+# JSON serialization
+json_str = bits.to_json()          # Hex string representation
+restored = Bits.from_json(json_str)
 ```
 
 ### Enum (Extension of Python Enum, with Codable + JSON support)
@@ -517,6 +587,16 @@ buffer = bytearray(1024)
 offset = 0
 offset += value1.encode_into(buffer, offset)
 offset += value2.encode_into(buffer, offset)
+
+# Choose appropriate byte type for your use case
+# Use Bytes for immutable binary data (memory efficient, read-only)
+config_data = Bytes(b"static configuration")
+
+# Use ByteArray for dynamic binary buffers (mutable, growing data)
+dynamic_buffer = ByteArray()
+dynamic_buffer.extend([0x01, 0x02])
+dynamic_buffer.append(0x03)
+dynamic_buffer.insert(0, 0x00)  # Result: [0x00, 0x01, 0x02, 0x03]
 ```
 
 ## Examples
