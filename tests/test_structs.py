@@ -7,9 +7,7 @@ from tsrkit_types.choice import Choice
 from tsrkit_types.option import Option
 from tsrkit_types.sequences import TypedVector
 from tsrkit_types.enum import Enum
-from tsrkit_types.struct import struct, structure
-from tsrkit_types.bytes import Bytes
-from tsrkit_types.itf.codable import Codable
+from tsrkit_types.struct import structure
 
 
 def test_basic_struct():
@@ -479,3 +477,21 @@ def test_struct_json_round_trip():
     assert str(original.text) == str(restored.text)
     assert original.number == restored.number
     assert bool(original.flag) == bool(restored.flag) 
+
+def test_struct_with_null_type():
+    """Test structs with null type."""
+    @structure
+    class TestStruct:
+        text: Option[String]
+        number: Uint[32]
+        flag: Bool
+    
+    original = TestStruct.from_json({
+        "text": None,
+        "number": 42,
+        "flag": True
+    })
+    assert not original.text
+    assert original.number == 42
+    assert bool(original.flag) is True
+    

@@ -24,6 +24,11 @@ def test_ba32_enc():
 	enc = a.encode()
 	assert a == Bytes[32].decode_from(enc)[0]
 
+def test_bytes_to_from_bits():
+	a = Bytes([160, 0])
+	bits = a.to_bits()
+	assert a == Bytes.from_bits(bits)
+
 def test_bitarr_init():
 	a = Bits([True, False, True, False])
 	assert len(a) == 4

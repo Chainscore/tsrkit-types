@@ -29,13 +29,9 @@ class Bool(Codable):
     #                                  JSON Parse                                  #
     # ---------------------------------------------------------------------------- #
     
-    def to_json(self) -> str:
-        return "true" if self._value else "false"
+    def to_json(self) -> bool:
+        return bool(self)
     
     @classmethod
-    def from_json(cls, json_str: str) -> "Bool":
-        if json_str == "true":
-            return cls(True)
-        if json_str == "false":
-            return cls(False)
-        raise ValueError("Invalid JSON string for Bool")
+    def from_json(cls, data: bool) -> "Bool":
+        return cls(data)

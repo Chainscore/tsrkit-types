@@ -34,7 +34,13 @@ class Bits(Seq):
 	
 	@classmethod
 	def from_json(cls, json_str: str) -> "Bits":
-		return cls(Bytes.from_hex(json_str).to_bits(bit_order=cls._order))
+		bits = Bytes.from_json(json_str).to_bits(bit_order=cls._order)
+		
+		# For fixed-length types, trim to exact size
+		if cls._min_length == cls._max_length and cls._min_length > 0:
+			bits = bits[:cls._min_length]
+		
+		return cls(bits)
 
 	# ---------------------------------------------------------------------------- #
 	#                                 Serialization                                #
@@ -43,7 +49,9 @@ class Bits(Seq):
 	def encode_size(self) -> int:
 		# Calculate the number of bytes needed
 		bit_enc = 0
-		if self._length is None:
+		# Check if this is a variable-length type (needs length prefix)
+		is_fixed_length = (self._min_length == self._max_length and self._min_length > 0)
+		if not is_fixed_length:
 			bit_enc = Uint(len(self)).encode_size()
 
 		return bit_enc + ((len(self) + 7) // 8)
@@ -54,17 +62,18 @@ class Bits(Seq):
 		total_size = self.encode_size()
 		self._check_buffer_size(buffer, total_size, offset)
 
-		# Initialize all bytes to 0
-		for i in range(0, total_size):
-			buffer[offset + i] = 0
-
-		if self._length is None:
+		current_offset = offset
+		
+		# Check if this is a variable-length type (needs length prefix)
+		is_fixed_length = (self._min_length == self._max_length and self._min_length > 0)
+		
+		if not is_fixed_length:
 			# Encode the bit length first
-			offset += Uint(len(self)).encode_into(buffer, offset)
+			current_offset += Uint(len(self)).encode_into(buffer, current_offset)
 		else:
-			# Ensure bit length is size of value
-			if len(self) != self._length:
-				raise ValueError("Bit sequence length mismatch")
+			# Ensure bit length matches expected size for fixed-length types
+			if len(self) != self._min_length:
+				raise ValueError(f"Bit sequence length mismatch: expected {self._min_length}, got {len(self)}")
 
 		if not all(
 			isinstance(bit, (bool, int)) and bit in (0, 1, True, False)
@@ -72,9 +81,9 @@ class Bits(Seq):
 		):
 			raise ValueError(f"Bit sequence must contain only 0s and 1s, got an sequence of {self}")
 
-		buffer[offset : offset + total_size] = Bytes.from_bits(
-			self, bit_order=self._order
-		)
+		# Convert bits to bytes and write to buffer
+		bit_bytes = Bytes.from_bits(self, bit_order=self._order)
+		buffer[current_offset : current_offset + len(bit_bytes)] = bit_bytes
 
 		return total_size
 
@@ -98,18 +107,28 @@ class Bits(Seq):
 		Raises:
 			DecodeError: If buffer too small or bit_length not specified
 		"""
-		_len = cls._length
-		if _len is None:
-			# Assume first byte is the bit length
+		# Check if this is a fixed-length Bits type
+		is_fixed_length = (cls._min_length == cls._max_length and cls._min_length > 0)
+		
+		original_offset = offset
+		
+		if is_fixed_length:
+			_len = cls._min_length
+		else:
+			# Variable length - decode length from buffer
 			_len, size = Uint.decode_from(buffer, offset)
 			offset += size
 
 		if _len == 0:
-			return [], 0
+			return cls([]), offset - original_offset
 
 		# Calculate required bytes
 		byte_count = (_len + 7) // 8
 		cls._check_buffer_size(buffer, byte_count, offset)
 
-		result = Bytes(buffer[offset : offset + byte_count]).to_bits(bit_order=cls._order)
-		return cls(result), byte_count
+		result_bits = Bytes(buffer[offset : offset + byte_count]).to_bits(bit_order=cls._order)
+		# Trim to exact bit length
+		result_bits = result_bits[:_len]
+		
+		total_bytes_read = offset + byte_count - original_offset
+		return cls(result_bits), total_bytes_read

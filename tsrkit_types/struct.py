@@ -1,6 +1,8 @@
 from dataclasses import dataclass, fields
 from typing import Any, Tuple, Union
 from tsrkit_types.itf.codable import Codable
+from tsrkit_types.null import NullType
+from tsrkit_types.option import Option
 
 
 def structure(_cls=None, *, frozen=False, **kwargs):
@@ -58,22 +60,26 @@ def structure(_cls=None, *, frozen=False, **kwargs):
             for field in fields(cls):
                 k = field.metadata.get("name", field.name)
                 v = data.get(k)
-                if v is None:
-                    if field.metadata.get("default") is not None:
-                        init_data[field.name] = field.metadata.get("default")
-                    else:
-                        raise ValueError(f"Field {k} not found in {cls}")
+                if v is None and field.metadata.get("default") is not None:
+                    init_data[field.name] = field.metadata.get("default")
                 else:
                     init_data[field.name] = field.type.from_json(v)
             return cls(**init_data)
 
 
         new_cls.__init__ = __init__
-        new_cls.encode_size = encode_size
-        new_cls.decode_from = decode_from
-        new_cls.encode_into = encode_into
-        new_cls.to_json = to_json
-        new_cls.from_json = from_json
+
+        # Only overwrite if the method is not already defined
+        if not new_cls.__dict__.get("encode_size"):
+            new_cls.encode_size = encode_size
+        if not new_cls.__dict__.get("decode_from"):
+            new_cls.decode_from = decode_from
+        if not new_cls.__dict__.get("encode_into"):
+            new_cls.encode_into = encode_into
+        if not new_cls.__dict__.get("to_json"):
+            new_cls.to_json = to_json
+        if not new_cls.__dict__.get("from_json"):
+            new_cls.from_json = from_json
 
         new_cls = type(new_cls.__name__, (Codable, new_cls), dict(new_cls.__dict__))
 

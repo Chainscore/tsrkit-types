@@ -102,7 +102,7 @@ class Dictionary(dict, Codable, Generic[K, V], metaclass=DictCheckMeta):
         if not isinstance(data, dict):
             _value = cls({})
             for val in data:
-                _value[cls.key_type.from_json(val[cls.key_name])] = cls.value_type.from_json(val[cls.value_name])
+                _value[cls._key_type.from_json(val[cls._key_name])] = cls._value_type.from_json(val[cls._value_name])
             return _value
         else:
             return cls(

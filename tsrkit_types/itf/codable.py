@@ -69,7 +69,8 @@ class Codable(ABC, Generic[T]):
         value, bytes_read = cls.decode_from(buffer, offset)
         return value
     
-    def _check_buffer_size(self, buffer: bytearray, size: int, offset: int) -> None:
+    @classmethod
+    def _check_buffer_size(cls, buffer: bytearray, size: int, offset: int) -> None:
         """
         Check if the buffer has enough space to encode the value.
 

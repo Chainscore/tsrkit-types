@@ -195,6 +195,23 @@ class Uint(int, Codable, metaclass=IntCheckMeta):
                 beta = int.from_bytes(buffer[offset + 1 : offset + 1 + _l], "little")
                 value = alpha * 2 ** (_l * 8) + beta
                 return cls(value), _l + 1
+            
+    def to_bits(self, bit_order: str = "msb") -> list[bool]:
+        """Convert an int to bits"""
+        if bit_order == "msb":
+            return [bool((self >> i) & 1) for i in reversed(range(self.byte_size * 8 if self.byte_size > 0 else 64))]
+        elif bit_order == "lsb":
+            return [bool((self >> i) & 1) for i in range(self.byte_size * 8 if self.byte_size > 0 else 64)]
+        else:
+            raise ValueError(f"Invalid bit order: {bit_order}")
+        
+    @classmethod
+    def from_bits(cls, bits: list[bool], bit_order: str = "msb") -> "Uint":
+        """Convert bits to an int"""
+        if bit_order == "msb":
+            return cls(int("".join(str(int(b)) for b in bits), 2))
+        elif bit_order == "lsb":
+            return cls(int("".join(str(int(b)) for b in reversed(bits)), 2))
 
 
 U8 = Uint[8]

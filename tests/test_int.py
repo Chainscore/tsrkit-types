@@ -30,6 +30,11 @@ def test_gen_int_type():
 	a = UInt(1000)
 	assert a
 
+def test_int_to_bits():
+	a = UInt[8](160)
+	bits = a.to_bits()
+	assert a == UInt[8].from_bits(bits)
+
 def test_gen_int_decodable():
 	a = UInt.decode_from(b'08')[0]
 	assert a > 0

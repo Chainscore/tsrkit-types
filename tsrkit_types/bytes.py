@@ -1,8 +1,19 @@
+import abc
 from typing import Tuple, Union, ClassVar
 from tsrkit_types.integers import Uint
 from tsrkit_types.itf.codable import Codable
+from tsrkit_types.bytes_common import BytesMixin
 
-class Bytes(bytes, Codable):
+class BytesCheckMeta(abc.ABCMeta):
+    """Meta class to check if the instance is a bytes with the same key and value types"""
+    def __instancecheck__(cls, instance):
+        # TODO - This needs more false positive testing
+        _matches_length = str(getattr(cls, "_length", None)) == str(getattr(instance, "_length", None))
+        return isinstance(instance, bytes) and _matches_length
+
+
+class Bytes(bytes, Codable, BytesMixin, metaclass=BytesCheckMeta):
+    """Fixed Size Bytes"""
 
     _length: ClassVar[Union[None, int]] = None
 
@@ -16,47 +27,7 @@ class Bytes(bytes, Codable):
             "_length": _len,
         })
 
-    def __str__(self):
-        return f"{self.__class__.__name__}({self.hex()})"
-
-    @classmethod
-    def from_bits(cls, bits: list[bool], bit_order = "msb") -> "Bytes":
-        # Sanitize input: make sure bits are 0 or 1
-        bits = [int(bool(b)) for b in bits]
-        n = len(bits)
-        # Pad with zeros to multiple of 8
-        pad = (8 - n % 8) % 8
-        bits += [0] * pad
-
-        byte_arr = []
-        for i in range(0, len(bits), 8):
-            byte_bits = bits[i:i + 8]
-            if bit_order == "msb":
-                # Most significant bit first
-                val = 0
-                for bit in byte_bits:
-                    val = (val << 1) | bit
-            elif bit_order == "lsb":
-                # Least significant bit first
-                val = 0
-                for bit in reversed(byte_bits):
-                    val = (val << 1) | bit
-            else:
-                raise ValueError(f"Unknown bit_order: {bit_order}")
-            # noinspection PyUnreachableCode
-            byte_arr.append(val)
-        return cls(bytes(byte_arr))
-
-    def to_bits(self, bit_order="msb") -> list[bool]:
-        bits = []
-        for byte in self:
-            if bit_order == "msb":
-                bits.extend([(byte >> i) & 1 for i in reversed(range(8))])
-            elif bit_order == "lsb":
-                bits.extend([(byte >> i) & 1 for i in range(8)])
-            else:
-                raise ValueError(f"Unknown bit_order: {bit_order}")
-        return bits
+    # Bit conversion methods inherited from BytesMixin
     
     # ---------------------------------------------------------------------------- #
     #                                 Serialization                                #
@@ -88,13 +59,12 @@ class Bytes(bytes, Codable):
     # ---------------------------------------------------------------------------- #
     #                               JSON Serialization                             #
     # ---------------------------------------------------------------------------- #
-    def to_json(self):
-        """Convert bytes to hex string for JSON serialization"""
-        return self.hex()
-    
-    @classmethod
-    def from_json(cls, data: str):
-        """Create Bytes instance from hex string"""
-        data = data.replace("0x", "")
-        return cls(bytes.fromhex(data))
+    # JSON methods inherited from BytesMixin
         
+ByteArray16 = Bytes[16]
+ByteArray32 = Bytes[32]
+ByteArray64 = Bytes[64]
+ByteArray128 = Bytes[128]
+ByteArray256 = Bytes[256]
+ByteArray512 = Bytes[512]
+ByteArray1024 = Bytes[1024]

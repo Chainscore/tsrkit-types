@@ -1,6 +1,6 @@
 [project]
 name = "tsrkit-types"
-version = "0.1.1"
+version = "0.1.2"
 description = "Performant Python Typings library for type-safe binary serialization, JSON encoding, and data validation with zero dependencies"
 authors = [
     {name = "chainscore-labs", email = "hello@chainscore.finance"},

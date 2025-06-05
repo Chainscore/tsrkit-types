@@ -16,7 +16,7 @@ class Option(Choice, Generic[T]):
         name = f"Option[{opt_t.__class__.__name__}]"
         return type(name,
                     (Option,),
-                    {"_opt_types": ((None, opt_t), (None, NullType))})
+                    {"_opt_types": ((None, NullType), (None, opt_t))})
 
     def __init__(self, val: T|NullType = Null):
         super().__init__(val)
@@ -28,3 +28,21 @@ class Option(Choice, Generic[T]):
 
     def __bool__(self):
         return self._value != Null
+    
+    # ---------------------------------------------------------------------------- #
+    #                                  JSON Serde                                  #
+    # ---------------------------------------------------------------------------- #
+    
+    def to_json(self):
+        """Convert Option to JSON. Returns None for empty Options."""
+        if self._value == Null:
+            return None
+        return self._value.to_json()
+    
+    @classmethod
+    def from_json(cls, data):
+        """Create Option from JSON data. None creates empty Option."""
+        if data is None:
+            return cls()  # Empty Option
+        # Try to create the wrapped type from the data
+        return cls(cls._opt_types[1][1].from_json(data))

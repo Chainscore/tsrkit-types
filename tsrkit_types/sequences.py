@@ -1,5 +1,5 @@
 import abc
-from typing import TypeVar, Type, ClassVar, Tuple, Generic
+from typing import TypeVar, Type, ClassVar, Tuple, Generic, Optional
 from tsrkit_types.integers import Uint
 from tsrkit_types.itf.codable import Codable
 
@@ -118,7 +118,7 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
         return f"{self.__class__.__name__}({list(self)})"
     
     @property
-    def _length(self):
+    def _length(self) -> Optional[int]:
         if self._min_length == self._max_length:
             return self._min_length
         return None
