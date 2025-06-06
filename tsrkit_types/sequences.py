@@ -143,7 +143,7 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
     def encode_into(self, buffer: bytearray, offset: int = 0) -> int:
         current_offset = offset
         # If length is not defined
-        if(self._min_length != len(self)) and (self._max_length != len(self)):
+        if(self._min_length != self._max_length):
             current_offset += Uint(len(self)).encode_into(buffer, current_offset)
 
         for item in self:

@@ -61,10 +61,10 @@ class Bytes(bytes, Codable, BytesMixin, metaclass=BytesCheckMeta):
     # ---------------------------------------------------------------------------- #
     # JSON methods inherited from BytesMixin
         
-ByteArray16 = Bytes[16]
-ByteArray32 = Bytes[32]
-ByteArray64 = Bytes[64]
-ByteArray128 = Bytes[128]
-ByteArray256 = Bytes[256]
-ByteArray512 = Bytes[512]
-ByteArray1024 = Bytes[1024]
+Bytes16 = Bytes[16]
+Bytes32 = Bytes[32]
+Bytes64 = Bytes[64]
+Bytes128 = Bytes[128]
+Bytes256 = Bytes[256]
+Bytes512 = Bytes[512]
+Bytes1024 = Bytes[1024]

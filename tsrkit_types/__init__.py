@@ -35,7 +35,7 @@ from .sequences import (
 from .dictionary import Dictionary
 
 # Bytes types
-from .bytes import Bytes, ByteArray16, ByteArray32, ByteArray64, ByteArray128, ByteArray256, ByteArray512, ByteArray1024
+from .bytes import Bytes, Bytes16, Bytes32, Bytes64, Bytes128, Bytes256, Bytes512, Bytes1024
 from .bytearray import ByteArray
 
 # Bit types
@@ -76,7 +76,7 @@ __all__ = [
     "Dictionary",
     
     # Bytes types
-    "Bytes", "ByteArray16", "ByteArray32", "ByteArray64", "ByteArray128", "ByteArray256", "ByteArray512", "ByteArray1024",
+    "Bytes", "Bytes16", "Bytes32", "Bytes64", "Bytes128", "Bytes256", "Bytes512", "Bytes1024",
     "ByteArray",
     
     # Bit types

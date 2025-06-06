@@ -37,6 +37,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Zero-dependency core library
 - Python 3.11+ support
 
+## [0.1.4] - 2025-06-06
+
+### Fixed
+- **Bytes type**: Corrected the name of the Bytes type from `ByteArrayNUM` to `BytesNUM`
+
+## [0.1.3] - 2025-06-06
+
+### Fixed
+- **Option JSON handling**: Fixed `Option.from_json()` to properly handle `None` values by creating empty Options
+- **Choice serialization**: Improved `Choice.encode_into()` to correctly identify choice variants using both key and type matching, fixing issues with duplicate keys (like in Option types)
+- **Struct None handling**: Enhanced `struct.from_json()` to properly handle `None` values for Option and NullType fields without requiring explicit defaults
+
+### Added
+- **Option JSON methods**: Added dedicated `to_json()` and `from_json()` methods to Option class for cleaner JSON serialization
+- **Improved type hints**: Enhanced struct decorator to provide better IDE support and type hints for Codable interface methods
+
+### Changed
+- **Choice from_json**: Simplified Choice.from_json() by moving Option-specific logic to Option class
+- **Serialization robustness**: Made Choice encoding more reliable for complex type hierarchies
+
 ## [Unreleased]
 
 ### Planned
