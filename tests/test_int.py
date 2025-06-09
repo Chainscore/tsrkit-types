@@ -56,3 +56,22 @@ def test_static_type_checker():
 	# This is fine
 	DataStore(a=UInt[8](19), b=UInt[16](288))
 
+def test_int_sub():
+	a = UInt[8](100)
+	b = UInt[8](80)
+	assert a - b == UInt[8](20)
+	assert str(a - b) == 'U8(20)'
+
+def test_int_compare_with_int():
+	a = UInt[8](100)
+	assert a > 80
+	assert a < 120
+	assert a >= 100
+	assert a <= 100
+	assert a != 101
+	assert a == 100
+	assert a != 101
+
+def test_int_min_max():
+	assert min(UInt[8](100), UInt[8](80)) == UInt[8](80)
+	assert max(UInt[8](100), UInt[8](80)) == UInt[8](100)
