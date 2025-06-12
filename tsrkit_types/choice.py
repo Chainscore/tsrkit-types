@@ -68,6 +68,9 @@ class Choice(Codable):
     def unwrap(self) -> Any:
         return self._value
 
+    def get_key(self):
+        return self._choice_key
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self._value!r})"
 
