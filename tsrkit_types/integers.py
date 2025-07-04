@@ -53,9 +53,9 @@ class Int(int, Codable, metaclass=IntCheckMeta):
     # Otherwise, the integer is General Integer (supports up to 2**64 - 1)
     byte_size: int = 0
     signed = False
-    _bound = 0
+    _bound = 1 << 64
 
-    def __class_getitem__(cls, data: int | tuple):
+    def __class_getitem__(cls, data: int | tuple | bool | None):
         """
         Args:
             data: either byte_size or (byte_size, signed)
@@ -69,7 +69,8 @@ class Int(int, Codable, metaclass=IntCheckMeta):
             else: 
                 size, signed = 0, bool(data)
         else:
-            size, signed = data
+            size, signed = data 
+
         return type(f"U{size}" if size else "Int", (cls,), {
             "byte_size": size // 8, 
             "signed": signed, 
@@ -238,7 +239,7 @@ class Int(int, Codable, metaclass=IntCheckMeta):
 
 
 Uint = Int
-U8 = Uint[8]
-U16 = Uint[16]
-U32 = Uint[32]
-U64 = Uint[64]
+U8 = Int[8]
+U16 = Int[16]
+U32 = Int[32]
+U64 = Int[64]
