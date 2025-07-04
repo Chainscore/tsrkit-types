@@ -9,7 +9,7 @@ serialization capabilities, including integers, strings, containers, and more.
 from .itf.codable import Codable
 
 # Integer types
-from .integers import Uint, U8, U16, U32, U64, Int, I8, I16, I32, I64
+from .integers import Uint, U8, U16, U32, U64
 
 # String types
 from .string import String
@@ -53,7 +53,7 @@ __all__ = [
     "Codable",
     
     # Integer types
-    "Uint", "U8", "U16", "U32", "U64", "Int", "I8", "I16", "I32", "I64",
+    "Uint", "U8", "U16", "U32", "U64",
     
     # String types
     "String",

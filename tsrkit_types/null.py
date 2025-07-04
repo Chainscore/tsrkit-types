@@ -1,7 +1,7 @@
 from typing import Optional, Tuple, Union
+from tsrkit_types.itf.codable import Codable
 
-
-class NullType:
+class NullType(Codable):
     def __repr__(self):
         return "Null"
 
