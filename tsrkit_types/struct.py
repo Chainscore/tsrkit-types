@@ -1,5 +1,5 @@
 from dataclasses import dataclass, fields
-from typing import Any, Tuple, Union
+from typing import Any, Tuple, Union, Self
 from tsrkit_types.itf.codable import Codable
 from tsrkit_types.null import NullType
 from tsrkit_types.option import Option
@@ -40,7 +40,7 @@ def structure(_cls=None, *, frozen=False, **kwargs):
             return current_offset - offset
             
         @classmethod
-        def decode_from(cls, buffer: Union[bytes, bytearray, memoryview], offset: int = 0) -> Tuple[Any, int]:
+        def decode_from(cls, buffer: Union[bytes, bytearray, memoryview], offset: int = 0) -> Tuple[Self, int]:
             current_offset = offset
             decoded_values = {}
             for field in fields(cls): 
@@ -55,7 +55,7 @@ def structure(_cls=None, *, frozen=False, **kwargs):
             return {field.metadata.get("name", field.name): getattr(self, field.name).to_json() for field in fields(self)}
         
         @classmethod
-        def from_json(cls, data: dict) -> Any:
+        def from_json(cls, data: dict) -> Self:
             init_data = {}
             for field in fields(cls):
                 k = field.metadata.get("name", field.name)
