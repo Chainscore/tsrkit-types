@@ -54,6 +54,9 @@ class Int(int, Codable, metaclass=IntCheckMeta):
     byte_size: int = 0
     signed = False
     _bound = 1 << 64
+    
+    # Cache for parameterized types to ensure identity comparison works
+    _type_cache = {}
 
     def __class_getitem__(cls, data: int | tuple | bool | None):
         """
@@ -71,11 +74,24 @@ class Int(int, Codable, metaclass=IntCheckMeta):
         else:
             size, signed = data 
 
-        return type(f"U{size}" if size else "Int", (cls,), {
+        # Create a cache key based on the parameters
+        cache_key = (size, signed)
+        
+        # Check if we already have this type in the cache
+        if cache_key in cls._type_cache:
+            return cls._type_cache[cache_key]
+        
+        # Create the new type
+        new_type = type(f"U{size}" if size else "Int", (cls,), {
             "byte_size": size // 8, 
             "signed": signed, 
             "_bound": 1 << size if size > 0 else 1 << 64
         })
+        
+        # Cache the new type
+        cls._type_cache[cache_key] = new_type
+        
+        return new_type
 
     def __new__(cls, value: Any):
         value = int(value)

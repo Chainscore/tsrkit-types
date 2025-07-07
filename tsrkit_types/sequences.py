@@ -8,9 +8,8 @@ T = TypeVar("T")
 class SeqCheckMeta(abc.ABCMeta):
     """Meta class to check if the instance is an integer with the same byte size"""
     def __instancecheck__(cls, instance):
-        # String comparison is used to avoid identity comparison issues - like Uint[8] and Uint[8]
-        # TODO - This needs more false positive testing
-        _matches_element_type = str(getattr(cls, "_element_type", None)) == str(getattr(instance, "_element_type", None))
+        # Use proper type comparison now that parameterized types have identity consistency
+        _matches_element_type = getattr(cls, "_element_type", None) is getattr(instance, "_element_type", None)
         _matches_min_length = getattr(cls, "_min_length", 0) == getattr(instance, "_min_length", 0)
         _matches_max_length = getattr(cls, "_max_length", 2**64) == getattr(instance, "_max_length", 2**64)
         return isinstance(instance, list) and _matches_element_type and _matches_min_length and _matches_max_length
@@ -33,6 +32,9 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
     _element_type: ClassVar[Type[T]]
     _min_length: ClassVar[int] = 0
     _max_length: ClassVar[int] = 2 ** 64
+    
+    # Cache for parameterized types to ensure identity comparison works
+    _type_cache = {}
 
     def __class_getitem__(cls, params):
         # To overwrite previous cls values
@@ -57,6 +59,13 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
         else:
             raise TypeError(f"Invalid param to define {cls.__class__.__name__}: {params}")
 
+        # Create a cache key based on the parameters
+        cache_key = (elem_t, min_l, max_l)
+        
+        # Check if we already have this type in the cache
+        if cache_key in cls._type_cache:
+            return cls._type_cache[cache_key]
+
         # build a nice name
         parts = []
         if elem_t:
@@ -71,11 +80,17 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
 
         name = f"{cls.__name__}[{','.join(parts)}]"
 
-        return type(name, (cls,), {
+        # Create the new type
+        new_type = type(name, (cls,), {
             "_element_type": elem_t,
             "_min_length": min_l,
             "_max_length": max_l,
         })
+        
+        # Cache the new type
+        cls._type_cache[cache_key] = new_type
+        
+        return new_type
 
     def _validate(self, value):
         """For TypeChecks - added to fns that alter elements"""

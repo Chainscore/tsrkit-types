@@ -22,9 +22,9 @@ V = TypeVar("V", bound=Codable)
 class DictCheckMeta(abc.ABCMeta):
     """Meta class to check if the instance is a dictionary with the same key and value types"""
     def __instancecheck__(cls, instance):
-        # TODO - This needs more false positive testing
-        _matches_key_type = str(getattr(cls, "_key_type", None)) == str(getattr(instance, "_key_type", None))
-        _matches_value_type = str(getattr(cls, "_value_type", None)) == str(getattr(instance, "_value_type", None))
+        # Use proper type comparison now that parameterized types have identity consistency
+        _matches_key_type = getattr(cls, "_key_type", None) is getattr(instance, "_key_type", None)
+        _matches_value_type = getattr(cls, "_value_type", None) is getattr(instance, "_value_type", None)
         return isinstance(instance, dict) and _matches_key_type and _matches_value_type
 
 
@@ -52,15 +52,33 @@ class Dictionary(dict, Codable, Generic[K, V], metaclass=DictCheckMeta):
 
     _key_name: Optional[str]
     _value_name: Optional[str]
+    
+    # Cache for parameterized types to ensure identity comparison works
+    _type_cache = {}
 
     def __class_getitem__(cls, params):
         if len(params) >= 2:
-            return type(cls.__name__, (cls,), {
+            # Create a cache key based on the parameters
+            cache_key = (params[0], params[1], 
+                        params[2] if len(params) == 4 else None,
+                        params[3] if len(params) == 4 else None)
+            
+            # Check if we already have this type in the cache
+            if cache_key in cls._type_cache:
+                return cls._type_cache[cache_key]
+            
+            # Create the new type
+            new_type = type(cls.__name__, (cls,), {
                 "_key_type": params[0],
                 "_value_type": params[1],
                 "_key_name": params[2] if len(params) == 4 else None,
                 "_value_name": params[3] if len(params) == 4 else None,
             })
+            
+            # Cache the new type
+            cls._type_cache[cache_key] = new_type
+            
+            return new_type
         else:
             raise ValueError("Dictionary must be initialized with types as such - Dictionary[K, V, key_name(optional), value_name(optional)]")
 

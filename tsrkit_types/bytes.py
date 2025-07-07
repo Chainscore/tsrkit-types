@@ -7,8 +7,8 @@ from tsrkit_types.bytes_common import BytesMixin
 class BytesCheckMeta(abc.ABCMeta):
     """Meta class to check if the instance is a bytes with the same key and value types"""
     def __instancecheck__(cls, instance):
-        # TODO - This needs more false positive testing
-        _matches_length = str(getattr(cls, "_length", None)) == str(getattr(instance, "_length", None))
+        # Use proper type comparison now that parameterized types have identity consistency
+        _matches_length = getattr(cls, "_length", None) == getattr(instance, "_length", None)
         return isinstance(instance, bytes) and _matches_length
 
 
@@ -16,6 +16,9 @@ class Bytes(bytes, Codable, BytesMixin, metaclass=BytesCheckMeta):
     """Fixed Size Bytes"""
 
     _length: ClassVar[Union[None, int]] = None
+    
+    # Cache for parameterized types to ensure identity comparison works
+    _type_cache = {}
 
     def __class_getitem__(cls, params):
         _len = None
@@ -23,9 +26,23 @@ class Bytes(bytes, Codable, BytesMixin, metaclass=BytesCheckMeta):
         if params and params > 0:
             _len = params
             name = f"ByteArray{_len}"
-        return type(name, (cls,), {
+        
+        # Create a cache key based on the parameters
+        cache_key = _len
+        
+        # Check if we already have this type in the cache
+        if cache_key in cls._type_cache:
+            return cls._type_cache[cache_key]
+        
+        # Create the new type
+        new_type = type(name, (cls,), {
             "_length": _len,
         })
+        
+        # Cache the new type
+        cls._type_cache[cache_key] = new_type
+        
+        return new_type
 
     # Bit conversion methods inherited from BytesMixin
     
