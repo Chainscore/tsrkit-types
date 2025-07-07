@@ -1,10 +1,21 @@
+# PEP 681 – Data Class Transforms (built-in from Python 3.12).
+# Fall back to ``typing_extensions`` for older interpreters so that
+# static analysers can still understand the decorator without
+# adding a hard runtime dependency.
+
+from typing import Any, Tuple, Union
 from dataclasses import dataclass, fields
-from typing import Any, Tuple, Union, Self
+
+try:
+    from typing import dataclass_transform  # type: ignore
+except ImportError:  # pragma: no cover – <3.12
+    from typing_extensions import dataclass_transform  # type: ignore
 from tsrkit_types.itf.codable import Codable
 from tsrkit_types.null import NullType
 from tsrkit_types.option import Option
 
 
+@dataclass_transform(eq_default=True, order_default=False, kw_only_default=False)
 def structure(_cls=None, *, frozen=False, **kwargs):
     """Extension of dataclass to support serialization and json operations. 
 
@@ -40,7 +51,7 @@ def structure(_cls=None, *, frozen=False, **kwargs):
             return current_offset - offset
             
         @classmethod
-        def decode_from(cls, buffer: Union[bytes, bytearray, memoryview], offset: int = 0) -> Tuple[Self, int]:
+        def decode_from(cls, buffer: Union[bytes, bytearray, memoryview], offset: int = 0) -> Tuple[Any, int]:
             current_offset = offset
             decoded_values = {}
             for field in fields(cls): 
@@ -55,7 +66,7 @@ def structure(_cls=None, *, frozen=False, **kwargs):
             return {field.metadata.get("name", field.name): getattr(self, field.name).to_json() for field in fields(self)}
         
         @classmethod
-        def from_json(cls, data: dict) -> Self:
+        def from_json(cls, data: dict) -> Any:
             init_data = {}
             for field in fields(cls):
                 k = field.metadata.get("name", field.name)
