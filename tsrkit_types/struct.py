@@ -3,7 +3,7 @@
 # static analysers can still understand the decorator without
 # adding a hard runtime dependency.
 
-from typing import Any, Tuple, Union, Type, TypeVar, Sequence, cast
+from typing import Any, Tuple, Union, Type, TypeVar, Sequence, cast, Protocol, overload
 from dataclasses import dataclass, fields
 
 try:
@@ -13,6 +13,23 @@ except ImportError:  # pragma: no cover – <3.12
 from tsrkit_types.itf.codable import Codable
 from tsrkit_types.null import NullType
 from tsrkit_types.option import Option
+
+
+# Protocol for classes decorated with @structure
+class StructuredClass(Protocol):
+    """Protocol for classes decorated with @structure."""
+    
+    def encode_size(self) -> int: ...
+    def encode_into(self, buffer: bytearray, offset: int = 0) -> int: ...
+    def encode(self) -> bytes: ...
+    def to_json(self) -> dict: ...
+    
+    @classmethod
+    def decode_from(cls, buffer: Union[bytes, bytearray, memoryview], offset: int = 0) -> Tuple[Any, int]: ...
+    @classmethod
+    def decode(cls, buffer: Union[bytes, bytearray, memoryview], offset: int = 0) -> Any: ...
+    @classmethod
+    def from_json(cls, data: dict) -> Any: ...
 
 
 @dataclass_transform(eq_default=True, order_default=False, kw_only_default=False)

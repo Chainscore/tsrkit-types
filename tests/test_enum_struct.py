@@ -3,7 +3,7 @@ New tests for Enum fields inside @structure-decorated classes.
 These were previously failing when Enum wasn\'t treated as Codable.
 """
 
-from enum import Enum
+from tsrkit_types.enum import Enum
 
 import pytest
 
