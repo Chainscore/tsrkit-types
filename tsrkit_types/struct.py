@@ -38,10 +38,10 @@ if TYPE_CHECKING:
     _StructT = TypeVar("_StructT", bound=StructuredClass)
 
     @overload
-    def structure(cls: Type[_StructT]) -> Type[_StructT]: ...
+    def structure(_cls: Type[_StructT]) -> Type[_StructT]: ...
     
     @overload 
-    def structure(*, frozen: bool = False, **kwargs: Any) -> Any: ...
+    def structure(_cls: None = None, *, frozen: bool = False, **kwargs: Any) -> Any: ...
 
 else:
     # Runtime fallback - no typing_extensions dependency
@@ -62,7 +62,7 @@ else:
 
 
 @dataclass_transform(eq_default=True, order_default=False, kw_only_default=False)
-def structure(_cls=None, *, frozen=False, **kwargs):
+def structure(_cls: Type[Any] | None = None, *, frozen: bool = False, **kwargs: Any) -> Any:
     """Extension of dataclass to support serialization and json operations. 
 
     Usage:
