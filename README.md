@@ -753,6 +753,20 @@ pytest -v
 pytest -m "not slow"
 ```
 
+### Build and Publish
+
+1. Build the package:
+
+```bash
+python3 -m build --wheel
+```
+
+2. Publish the wheels:
+
+```bash
+twine upload dist/*
+```
+
 ### Test Coverage
 
 View the test coverage report:
