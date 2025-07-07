@@ -28,6 +28,8 @@ class ByteArray(bytearray, Codable, BytesMixin):
         current_offset = offset
         _len, _inc_offset = Uint.decode_from(buffer, offset)
         current_offset += _inc_offset
+        if len(buffer[current_offset:current_offset+_len]) < _len:
+            raise TypeError("Insufficient buffer")
         return cls(buffer[current_offset:current_offset+_len]), current_offset + _len - offset
     
     # ---------------------------------------------------------------------------- #
