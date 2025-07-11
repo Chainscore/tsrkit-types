@@ -80,13 +80,13 @@ class Int(int, Codable, metaclass=IntCheckMeta):
     def __new__(cls, value: Any):
         value = int(value)
         if cls.byte_size > 0:
-            max_v = cls._bound // 2 if cls.signed else cls._bound 
+            max_v = (cls._bound // 2 if cls.signed else cls._bound) - 1  
             min_v = -1 * cls._bound // 2 if cls.signed else 0
         else:
             min_v = -1 * cls._bound // 2 if cls.signed else 0
-            max_v = cls._bound // 2 if cls.signed else cls._bound - 1  
+            max_v = (cls._bound // 2 if cls.signed else cls._bound) - 1  
         
-        if not (min_v <= value < max_v):
+        if not (min_v <= value <= max_v):
                 raise ValueError(f"Int: {cls.__name__} out of range: {value!r} "
                                 f"not in [{min_v}, {max_v}]")
         return super().__new__(cls, value)
