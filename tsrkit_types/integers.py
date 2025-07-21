@@ -1,7 +1,7 @@
 import abc
 from decimal import Decimal
 import math
-from typing import Any, Tuple, Union, Callable
+from typing import Any, Optional, Self, Tuple, Union, Callable
 from tsrkit_types.itf.codable import Codable
 
 
@@ -54,8 +54,9 @@ class Int(int, Codable, metaclass=IntCheckMeta):
     byte_size: int = 0
     signed = False
     _bound = 1 << 64
-
-    def __class_getitem__(cls, data: int | tuple | bool | None):
+    
+    @classmethod
+    def __class_getitem__(cls, data: Optional[Union[int, tuple, bool]]):
         """
         Args:
             data: either byte_size or (byte_size, signed)
@@ -230,7 +231,7 @@ class Int(int, Codable, metaclass=IntCheckMeta):
             raise ValueError(f"Invalid bit order: {bit_order}")
         
     @classmethod
-    def from_bits(cls, bits: list[bool], bit_order: str = "msb") -> "Uint":
+    def from_bits(cls, bits: list[bool], bit_order: str = "msb") -> "Int":
         """Convert bits to an int"""
         if bit_order == "msb":
             return cls(int("".join(str(int(b)) for b in bits), 2))

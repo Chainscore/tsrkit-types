@@ -1,4 +1,5 @@
-from tsrkit_types.integers import Uint
+from typing import Literal
+from tsrkit_types.integers import Int, Uint
 from tsrkit_types.itf.codable import Codable
 from tsrkit_types.string import String
 from tsrkit_types.struct import struct, structure
@@ -57,6 +58,6 @@ def test_struct_inheritance():
         name: String 
         age: Uint[8] = field(metadata={"default": Uint[8](0)})
 
-    p = Person(name=String("John"), age=Uint[8](30))
+    p = Person(name=String("John"), age=Int[Literal[8]](30))
     assert isinstance(p, Codable)
     assert isinstance(p, Person)

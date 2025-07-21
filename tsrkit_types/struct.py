@@ -1,10 +1,11 @@
 from dataclasses import dataclass, fields
-from typing import Any, Tuple, Union
+from typing import Any, Tuple, Union, dataclass_transform
 from tsrkit_types.itf.codable import Codable
 from tsrkit_types.null import NullType
 from tsrkit_types.option import Option
 
 
+@dataclass_transform()
 def structure(_cls=None, *, frozen=False, **kwargs):
     """Extension of dataclass to support serialization and json operations. 
 
@@ -65,7 +66,6 @@ def structure(_cls=None, *, frozen=False, **kwargs):
                 else:
                     init_data[field.name] = field.type.from_json(v)
             return cls(**init_data)
-
 
         new_cls.__init__ = __init__
 
