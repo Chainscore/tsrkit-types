@@ -10,6 +10,7 @@ from .itf.codable import Codable
 
 # Integer types
 from .integers import Uint, U8, U16, U32, U64
+from .c_integers import C_U8, C_U16, C_U32, C_U64
 
 # String types
 from .string import String
