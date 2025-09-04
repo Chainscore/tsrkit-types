@@ -132,4 +132,4 @@ class Choice(Codable):
         tag, tag_size = Uint.decode_from(buffer, offset)
         value, val_size = cls._opt_types[tag][1].decode_from(buffer, offset+tag_size)
 
-        return cls(value), tag_size+val_size
+        return cls(value, key=cls._opt_types[tag][0]), tag_size+val_size

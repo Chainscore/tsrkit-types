@@ -18,7 +18,7 @@ class Option(Choice, Generic[T]):
                     (Option,),
                     {"_opt_types": ((None, NullType), (None, opt_t))})
 
-    def __init__(self, val: T|NullType = Null):
+    def __init__(self, val: T|NullType = Null, key = None):
         super().__init__(val)
 
     def set(self, value: T|NullType = Null, key: Optional[str] = None):
