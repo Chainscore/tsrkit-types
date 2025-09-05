@@ -126,7 +126,7 @@ class Dictionary(dict, Codable, Generic[K, V], metaclass=DictCheckMeta):
     def encode_into(self, buffer: bytearray, offset: int = 0) -> int:
         current_offset = offset
         current_offset += Uint(len(self)).encode_into(buffer, current_offset)
-        for k, v in sorted(self.items(), key=lambda x: x[0].encode()):
+        for k, v in sorted(self.items(), key=lambda x: x[0]):
             current_offset += k.encode_into(buffer, current_offset)
             current_offset += v.encode_into(buffer, current_offset)
         return current_offset - offset
