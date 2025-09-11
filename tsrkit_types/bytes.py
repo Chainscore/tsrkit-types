@@ -4,6 +4,32 @@ from tsrkit_types.integers import Uint
 from tsrkit_types.itf.codable import Codable
 from tsrkit_types.bytes_common import BytesMixin
 
+# Global decode cache for bytes performance optimization
+_BYTES_DECODE_CACHE = {}
+_BYTES_CACHE_MAX_SIZE = 1000
+_BYTES_CACHE_HITS = 0
+_BYTES_CACHE_MISSES = 0
+
+def clear_bytes_decode_cache():
+    """Clear the global decode cache"""
+    global _BYTES_DECODE_CACHE, _BYTES_CACHE_HITS, _BYTES_CACHE_MISSES
+    _BYTES_DECODE_CACHE.clear()
+    _BYTES_CACHE_HITS = 0
+    _BYTES_CACHE_MISSES = 0
+
+def get_bytes_cache_stats():
+    """Get cache statistics"""
+    global _BYTES_DECODE_CACHE, _BYTES_CACHE_HITS, _BYTES_CACHE_MISSES
+    total_requests = _BYTES_CACHE_HITS + _BYTES_CACHE_MISSES
+    hit_rate = (_BYTES_CACHE_HITS / total_requests * 100) if total_requests > 0 else 0
+    return {
+        'cache_size': len(_BYTES_DECODE_CACHE),
+        'max_size': _BYTES_CACHE_MAX_SIZE,
+        'hits': _BYTES_CACHE_HITS,
+        'misses': _BYTES_CACHE_MISSES,
+        'hit_rate': hit_rate
+    }
+
 class BytesCheckMeta(abc.ABCMeta):
     """Meta class to check if the instance is a bytes with the same key and value types"""
     def __instancecheck__(cls, instance):
@@ -49,6 +75,17 @@ class Bytes(bytes, Codable, BytesMixin, metaclass=BytesCheckMeta):
     
     @classmethod
     def decode_from(cls, buffer: Union[bytes, bytearray, memoryview], offset: int = 0) -> Tuple["Bytes", int]:
+        global _BYTES_DECODE_CACHE, _BYTES_CACHE_MAX_SIZE, _BYTES_CACHE_HITS, _BYTES_CACHE_MISSES
+        
+        # Create cache key for this decode operation
+        cache_key = (cls, cls._length, buffer[offset:offset+min(64, len(buffer)-offset)], offset)
+        
+        # Check cache first
+        if cache_key in _BYTES_DECODE_CACHE:
+            _BYTES_CACHE_HITS += 1
+            return _BYTES_DECODE_CACHE[cache_key]
+        
+        _BYTES_CACHE_MISSES += 1
         current_offset = offset
         _len = cls._length
 
@@ -58,7 +95,20 @@ class Bytes(bytes, Codable, BytesMixin, metaclass=BytesCheckMeta):
         
         if len(buffer[current_offset:current_offset+_len]) < _len:
             raise TypeError("Insufficient buffer")
-        return cls(buffer[current_offset:current_offset+_len]), current_offset + _len - offset
+        
+        result = (cls(buffer[current_offset:current_offset+_len]), current_offset + _len - offset)
+        
+        # Cache the result if we're not at capacity
+        if len(_BYTES_DECODE_CACHE) < _BYTES_CACHE_MAX_SIZE:
+            _BYTES_DECODE_CACHE[cache_key] = result
+        elif len(_BYTES_DECODE_CACHE) >= _BYTES_CACHE_MAX_SIZE:
+            # Simple eviction: clear 25% of cache when full
+            keys_to_remove = list(_BYTES_DECODE_CACHE.keys())[:_BYTES_CACHE_MAX_SIZE // 4]
+            for key in keys_to_remove:
+                del _BYTES_DECODE_CACHE[key]
+            _BYTES_DECODE_CACHE[cache_key] = result
+        
+        return result
     
     # ---------------------------------------------------------------------------- #
     #                               JSON Serialization                             #

@@ -1,7 +1,18 @@
 import abc
 from decimal import Decimal
 import math
-from typing import Any, Optional, Self, Tuple, Union, Callable
+from typing import Any, Optional, Tuple, Union, Callable
+
+try:
+    from typing import Self
+except ImportError:
+    # For Python < 3.11, use TYPE_CHECKING and forward reference
+    from typing import TYPE_CHECKING
+    if TYPE_CHECKING:
+        from typing import Self
+    else:
+        Self = "Uint"  # Forward reference string
+
 from tsrkit_types.itf.codable import Codable
 
 

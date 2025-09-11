@@ -3,7 +3,7 @@ from typing import ClassVar, Optional, Union, Tuple, Any
 from tsrkit_types.integers import Uint
 from tsrkit_types.itf.codable import Codable
 
-ChoiceType = Tuple[Optional[str], type] | type
+ChoiceType = Union[Tuple[Optional[str], type], type]
 
 class Choice(Codable):
     """
@@ -43,7 +43,7 @@ class Choice(Codable):
     def _choice_keys(self) -> Tuple[Optional[str]]:
         return tuple(self._choice[0] for self._choice in self._opt_types)
 
-    def __class_getitem__(cls, opt_t: Tuple[type] | type):
+    def __class_getitem__(cls, opt_t: Union[Tuple[type], type]):
         _opt_types = []
         if isinstance(opt_t, type):
             _opt_types.append((None, opt_t))
@@ -98,7 +98,7 @@ class Choice(Codable):
         return self._value.to_json() if not self._choice_key else {self._choice_key: self._value.to_json()}
 
     @classmethod
-    def from_json(cls, data: dict | Any) -> "Choice":
+    def from_json(cls, data: Union[dict, Any]) -> "Choice":
         if isinstance(data, dict):
             opt_type = next((x for x in cls._opt_types if x[0] == list(data.keys())[0]), None)
             if opt_type is None:
