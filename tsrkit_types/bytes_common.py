@@ -127,14 +127,6 @@ class BytesMixin:
         
         return [bool(b) for b in bits]
 
-    def key_bits_248(self) -> list[bool]:
-        """Fast extraction of key bits from encoded node (bits 8-255)."""
-        if len(self) < 32:
-            return [False] * 248
-        
-        # Extract bits 8-255 (248 bits total) efficiently
-        return self.slice_bits(8, 256)
-
 
 def validate_bit_order(bit_order: str) -> None:
     """Validate bit order parameter."""
