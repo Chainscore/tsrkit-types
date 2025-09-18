@@ -81,3 +81,6 @@ class Codable(ABC, Generic[T]):
         """
         if len(buffer) - offset < size:
             raise ValueError("Buffer too small to encode value")
+
+    def __reduce__(self):
+        return (self.__class__.decode, (self.encode(),))
