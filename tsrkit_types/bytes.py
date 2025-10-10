@@ -109,7 +109,16 @@ class Bytes(bytes, Codable, BytesMixin, metaclass=BytesCheckMeta):
             _BYTES_DECODE_CACHE[cache_key] = result
         
         return result
-    
+
+    def __deepcopy__(self, memo):
+        # immutable; safe to reuse or create a new same-typed instance
+        existing = memo.get(id(self))
+        if existing is not None:
+            return existing
+        new = type(self)(bytes(self))
+        memo[id(self)] = new
+        return new
+
     # ---------------------------------------------------------------------------- #
     #                               JSON Serialization                             #
     # ---------------------------------------------------------------------------- #
