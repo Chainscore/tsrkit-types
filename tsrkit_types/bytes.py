@@ -81,9 +81,10 @@ class Bytes(bytes, Codable, BytesMixin, metaclass=BytesCheckMeta):
         cache_key = (cls, cls._length, buffer[offset:offset+min(64, len(buffer)-offset)], offset)
         
         # Check cache first
-        if cache_key in _BYTES_DECODE_CACHE:
-            _BYTES_CACHE_HITS += 1
-            return _BYTES_DECODE_CACHE[cache_key]
+        # if cache_key in _BYTES_DECODE_CACHE:
+        #     _BYTES_CACHE_HITS += 1
+        #     print("MAI TO YAHIN SE CHALA GAYA")
+        #     return _BYTES_DECODE_CACHE[cache_key]
         
         _BYTES_CACHE_MISSES += 1
         current_offset = offset
@@ -107,7 +108,7 @@ class Bytes(bytes, Codable, BytesMixin, metaclass=BytesCheckMeta):
             for key in keys_to_remove:
                 del _BYTES_DECODE_CACHE[key]
             _BYTES_DECODE_CACHE[cache_key] = result
-        
+
         return result
 
     def __deepcopy__(self, memo):
