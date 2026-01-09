@@ -80,3 +80,9 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
       # Note: We rely on Trusted Publishing (OIDC). 
       # verification: configured in PyPI project settings.
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/*
+        generate_release_notes: true
