@@ -2,6 +2,7 @@ import abc
 from typing import TypeVar, Type, ClassVar, Tuple, Generic, Optional
 from tsrkit_types.integers import Uint
 from tsrkit_types.itf.codable import Codable
+from tsrkit_types import config as _config
 
 T = TypeVar("T")
 
@@ -79,12 +80,16 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
 
     def _validate(self, value):
         """For TypeChecks - added to fns that alter elements"""
+        if not _config.STRICT_VALIDATE:
+            return
         if getattr(self, "_element_type", None) is not None:
             if not isinstance(value, self._element_type):
                 raise TypeError(f"{value!r} is not an instance of {self._element_type!r}")
 
     def _validate_self(self):
         """For Resultant self check - added to fns that alter size"""
+        if not _config.STRICT_VALIDATE:
+            return
         if  len(self) < self._min_length:
             raise ValueError(f"Vector: Expected sequence size to be >= {self._min_length}, resultant size {len(self)}")
         elif len(self) > self._max_length:
@@ -92,27 +97,42 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
 
     def __init__(self, initial: list[T]):
         super().__init__()
-        self.extend(initial)
+        if _config.STRICT_VALIDATE:
+            self.extend(initial)
+        else:
+            list.extend(self, initial)
 
     def append(self, v: T):
-        self._validate(v)
-        super().append(v)
-        self._validate_self()
+        if _config.STRICT_VALIDATE:
+            self._validate(v)
+            super().append(v)
+            self._validate_self()
+        else:
+            super().append(v)
 
     def insert(self, i, v: T):
-        self._validate(v)
-        super().insert(i, v)
-        self._validate_self()
+        if _config.STRICT_VALIDATE:
+            self._validate(v)
+            super().insert(i, v)
+            self._validate_self()
+        else:
+            super().insert(i, v)
 
     def extend(self, seq: list[T]):
-        for val in seq:
-            self._validate(val)
-        super().extend(seq)
-        self._validate_self()
+        if _config.STRICT_VALIDATE:
+            for val in seq:
+                self._validate(val)
+            super().extend(seq)
+            self._validate_self()
+        else:
+            super().extend(seq)
 
     def __setitem__(self, i, v: T):
-        self._validate(v)
-        super().__setitem__(i, v)
+        if _config.STRICT_VALIDATE:
+            self._validate(v)
+            super().__setitem__(i, v)
+        else:
+            super().__setitem__(i, v)
 
     def __repr__(self):
         return f"{self.__class__.__name__}({list(self)})"
@@ -132,9 +152,19 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
         # If length is not defined
         if self._length is None:
             size += Uint(len(self)).encode_size()
-            
+
+        elem_t = getattr(self, "_element_type", None)
+        if isinstance(elem_t, type):
+            fixed_byte_size = getattr(elem_t, "byte_size", 0)
+            if fixed_byte_size and issubclass(elem_t, int) and issubclass(elem_t, Codable):
+                return size + (len(self) * fixed_byte_size)
+            if issubclass(elem_t, Codable):
+                for item in self:
+                    size += item.encode_size()
+                return size
+
         for item in self:
-            if not isinstance(item, Codable):
+            if _config.STRICT_VALIDATE and not isinstance(item, Codable):
                 raise TypeError(0, 0, f"Expected Codable, got {type(item)}")
             size += item.encode_size()
 
@@ -147,8 +177,7 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
             current_offset += Uint(len(self)).encode_into(buffer, current_offset)
 
         for item in self:
-            written = item.encode_into(buffer, current_offset)
-            current_offset += written
+            current_offset += item.encode_into(buffer, current_offset)
 
         return current_offset - offset
     
@@ -166,12 +195,23 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
             current_offset += _inc_offset
 
         items = []
+        append_item = items.append
+        decode_item = cls._element_type.decode_from
         for _ in range(_len):
-            item, _inc_offset = cls._element_type.decode_from(buffer, current_offset)
+            item, _inc_offset = decode_item(buffer, current_offset)
             current_offset += _inc_offset
-            items.append(item)
+            append_item(item)
 
-        return cls(items), current_offset - offset
+        return cls._from_decoded(items), current_offset - offset
+
+    @classmethod
+    def _from_decoded(cls, items: list[T]) -> "Seq":
+        if cls.__init__ is Seq.__init__:
+            inst = cls.__new__(cls)
+            list.__init__(inst, items)
+            inst._validate_self()
+            return inst
+        return cls(items)
 
     # ---------------------------------------------------------------------------- #
     #                                  JSON Serde                                  #

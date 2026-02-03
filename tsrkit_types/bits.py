@@ -1,8 +1,10 @@
 from typing import ClassVar, Sequence, Tuple, Union
 
 from tsrkit_types.bytes import Bytes
+from tsrkit_types.bytes_common import _BYTE_TO_BITS_MSB, _init_lookup_tables
 from tsrkit_types.integers import Uint
 from tsrkit_types.sequences import Seq
+from tsrkit_types import config as _config
 
 
 class Bits(Seq):
@@ -11,6 +13,7 @@ class Bits(Seq):
 	_min_length: ClassVar[int] = 0
 	_max_length: ClassVar[int] = 2 ** 64
 	_order: ClassVar[str] = "msb"
+	_bool_type = bool
 
 	def __class_getitem__(cls, params):
 		min_l, max_l, _bo = 0, 2**64, "msb"
@@ -23,6 +26,54 @@ class Bits(Seq):
 				_bo = params
 
 		return type(cls.__class__.__name__, (cls,), {"_min_length": min_l, "_max_length": max_l, "_order": _bo})
+
+	def __init__(self, initial: Sequence[bool]):
+		if _config.STRICT_VALIDATE:
+			isinstance_local = isinstance
+			bool_type = self._bool_type
+			for bit in initial:
+				if not isinstance_local(bit, bool_type):
+					raise TypeError(f"{bit!r} is not an instance of {bool_type!r}")
+			list.__init__(self, initial)
+			self._validate_self()
+		else:
+			list.__init__(self, initial)
+
+	def _validate(self, value):
+		if not _config.STRICT_VALIDATE:
+			return
+		if not isinstance(value, self._bool_type):
+			raise TypeError(f"{value!r} is not an instance of {self._bool_type!r}")
+
+	def append(self, v: bool):
+		if _config.STRICT_VALIDATE:
+			if not isinstance(v, self._bool_type):
+				raise TypeError(f"{v!r} is not an instance of {self._bool_type!r}")
+			list.append(self, v)
+			self._validate_self()
+		else:
+			list.append(self, v)
+
+	def insert(self, i, v: bool):
+		if _config.STRICT_VALIDATE:
+			if not isinstance(v, self._bool_type):
+				raise TypeError(f"{v!r} is not an instance of {self._bool_type!r}")
+			list.insert(self, i, v)
+			self._validate_self()
+		else:
+			list.insert(self, i, v)
+
+	def extend(self, seq: Sequence[bool]):
+		if _config.STRICT_VALIDATE:
+			isinstance_local = isinstance
+			bool_type = self._bool_type
+			for val in seq:
+				if not isinstance_local(val, bool_type):
+					raise TypeError(f"{val!r} is not an instance of {bool_type!r}")
+			list.extend(self, seq)
+			self._validate_self()
+		else:
+			list.extend(self, seq)
 	
 
 	# ---------------------------------------------------------------------------- #
@@ -59,31 +110,26 @@ class Bits(Seq):
 	def encode_into(
 		self, buffer: bytearray, offset: int = 0
 	) -> int:
-		total_size = self.encode_size()
+		bit_len = len(self)
+		is_fixed_length = (self._min_length == self._max_length and self._min_length > 0)
+
+		if _config.STRICT_VALIDATE and is_fixed_length and bit_len != self._min_length:
+			raise ValueError(f"Bit sequence length mismatch: expected {self._min_length}, got {bit_len}")
+
+		byte_count = (bit_len + 7) // 8
+		total_size = byte_count
+		if not is_fixed_length:
+			total_size += Uint(bit_len).encode_size()
+
 		self._check_buffer_size(buffer, total_size, offset)
 
 		current_offset = offset
-		
-		# Check if this is a variable-length type (needs length prefix)
-		is_fixed_length = (self._min_length == self._max_length and self._min_length > 0)
-		
 		if not is_fixed_length:
-			# Encode the bit length first
-			current_offset += Uint(len(self)).encode_into(buffer, current_offset)
-		else:
-			# Ensure bit length matches expected size for fixed-length types
-			if len(self) != self._min_length:
-				raise ValueError(f"Bit sequence length mismatch: expected {self._min_length}, got {len(self)}")
+			current_offset += Uint(bit_len).encode_into(buffer, current_offset)
 
-		if not all(
-			isinstance(bit, (bool, int)) and bit in (0, 1, True, False)
-			for bit in self
-		):
-			raise ValueError(f"Bit sequence must contain only 0s and 1s, got an sequence of {self}")
-
-		# Convert bits to bytes and write to buffer
-		bit_bytes = Bytes.from_bits(self, bit_order=self._order)
-		buffer[current_offset : current_offset + len(bit_bytes)] = bit_bytes
+		if bit_len:
+			bit_bytes = _pack_bits_to_bytes(self, bit_len, self._order)
+			buffer[current_offset : current_offset + byte_count] = bit_bytes
 
 		return total_size
 
@@ -126,9 +172,65 @@ class Bits(Seq):
 		byte_count = (_len + 7) // 8
 		cls._check_buffer_size(buffer, byte_count, offset)
 
-		result_bits = Bytes(buffer[offset : offset + byte_count]).to_bits(bit_order=cls._order)
+		view = memoryview(buffer)[offset : offset + byte_count]
+
+		if cls._order == "msb":
+			_init_lookup_tables()
+			table = _get_bits_table_msb()
+			result_bits = []
+			extend_bits = result_bits.extend
+			for byte in view:
+				extend_bits(table[byte])
+		else:
+			result_bits = []
+			extend_bits = result_bits.extend
+			for byte in view:
+				extend_bits([bool((byte >> i) & 1) for i in range(8)])
+
 		# Trim to exact bit length
 		result_bits = result_bits[:_len]
-		
+
 		total_bytes_read = offset + byte_count - original_offset
-		return cls(result_bits), total_bytes_read
+		return _bits_from_list(cls, result_bits), total_bytes_read
+
+
+_BYTE_TO_BITS_MSB_BOOL = None
+
+
+def _get_bits_table_msb():
+	global _BYTE_TO_BITS_MSB_BOOL
+	if _BYTE_TO_BITS_MSB_BOOL is None:
+		_init_lookup_tables()
+		_BYTE_TO_BITS_MSB_BOOL = [tuple(bool(b) for b in row) for row in _BYTE_TO_BITS_MSB]
+	return _BYTE_TO_BITS_MSB_BOOL
+
+
+def _pack_bits_to_bytes(bits: Sequence[bool], bit_len: int, order: str) -> bytearray:
+	byte_count = (bit_len + 7) // 8
+	out = bytearray(byte_count)
+	idx = 0
+	if order == "msb":
+		for i in range(byte_count):
+			val = 0
+			for j in range(8):
+				if idx < bit_len and bits[idx]:
+					val |= 1 << (7 - j)
+				idx += 1
+			out[i] = val
+	else:
+		for i in range(byte_count):
+			val = 0
+			for j in range(8):
+				if idx < bit_len and bits[idx]:
+					val |= 1 << j
+				idx += 1
+			out[i] = val
+	return out
+
+
+def _bits_from_list(cls, bits: list[bool]):
+	# Fast path to skip per-item validation in Seq.__init__
+	inst = cls.__new__(cls)
+	list.__init__(inst, bits)
+	inst._validate_self()
+	return inst

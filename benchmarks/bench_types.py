@@ -1,0 +1,642 @@
+#!/usr/bin/env python3
+"""
+Micro-benchmarks for tsrkit_types init/encode/decode + cProfile summaries.
+
+Usage:
+  python benchmarks/bench_types.py
+  python benchmarks/bench_types.py --runs 20000 --profile-runs 2000
+"""
+
+import argparse
+import cProfile
+import gc
+import json
+import os
+import pstats
+import time
+from dataclasses import dataclass
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Type
+
+from tsrkit_types import (
+    Array,
+    Bits,
+    Bool,
+    Bytes,
+    Bytes16,
+    Bytes32,
+    Bytes64,
+    Bytes128,
+    Bytes256,
+    Bytes512,
+    Bytes1024,
+    ByteArray,
+    Choice,
+    Dictionary,
+    Enum,
+    NullType,
+    Option,
+    Seq,
+    String,
+    TypedArray,
+    TypedBoundedVector,
+    TypedVector,
+    U8,
+    U16,
+    U32,
+    U64,
+    Uint,
+    Vector,
+    BoundedVector,
+    structure,
+)
+
+
+@dataclass
+class Case:
+    name: str
+    ctor: Optional[Callable[..., Any]]
+    init_args: List[Tuple[Tuple[Any, ...], Dict[str, Any]]]
+    encode_values: List[Any]
+    decode_fn: Optional[Callable[[bytes], Any]]
+    decode_buffers: List[bytes]
+
+
+def _make_bytes(length: int, seed: int) -> bytes:
+    return bytes(((seed + i) & 0xFF) for i in range(length))
+
+
+def _make_ascii(length: int, seed: int) -> str:
+    base = "abcdefghijklmnopqrstuvwxyz0123456789"
+    chars = [base[(seed + i) % len(base)] for i in range(length)]
+    return "".join(chars)
+
+
+def _timed_loop(runs: int, fn: Callable[[int], None]) -> float:
+    gc.collect()
+    gc.disable()
+    try:
+        start = time.perf_counter()
+        for i in range(runs):
+            fn(i)
+        end = time.perf_counter()
+    finally:
+        gc.enable()
+    return end - start
+
+
+def _profile_loop(runs: int, fn: Callable[[int], None]) -> pstats.Stats:
+    prof = cProfile.Profile()
+    prof.enable()
+    for i in range(runs):
+        fn(i)
+    prof.disable()
+    stats = pstats.Stats(prof)
+    stats.sort_stats("cumulative")
+    return stats
+
+
+def _stats_top(stats: pstats.Stats, limit: int = 8) -> List[Tuple[str, float, int]]:
+    rows = []
+    for func, stat in list(stats.stats.items()):
+        cc, nc, tt, ct, callers = stat
+        rows.append((func, ct, nc))
+    rows.sort(key=lambda x: x[1], reverse=True)
+    top = []
+    for func, ct, nc in rows[:limit]:
+        func_name = "%s:%d(%s)" % (func[0], func[1], func[2])
+        top.append((func_name, ct, nc))
+    return top
+
+
+def _encode_buffers(values: Iterable[Any]) -> List[bytes]:
+    return [v.encode() for v in values]
+
+
+def _args_from_values(values: Iterable[Any]) -> List[Tuple[Tuple[Any, ...], Dict[str, Any]]]:
+    return [((v,), {}) for v in values]
+
+def _decode_via_decode(cls: Type[Any]) -> Callable[[bytes], Any]:
+    def _fn(buf: bytes, _cls: Type[Any] = cls) -> Any:
+        return _cls.decode(buf)
+    return _fn
+
+
+def _decode_via_decode_from(cls: Type[Any]) -> Callable[[bytes], Any]:
+    def _fn(buf: bytes, _cls: Type[Any] = cls) -> Any:
+        return _cls.decode_from(buf)[0]
+    return _fn
+
+
+def _build_cases() -> List[Case]:
+    cases: List[Case] = []
+
+    uint_vals = [1, 127, 128, 1000, 2**32]
+    u8_vals = [1, 42, 255]
+    u16_vals = [1, 12345, 65535]
+    u32_vals = [1, 123456789, 2**32 - 1]
+    u64_vals = [1, 1234567890123, 2**40]
+
+    cases.append(
+        Case(
+            name="Uint",
+            ctor=Uint,
+            init_args=_args_from_values(uint_vals),
+            encode_values=[Uint(v) for v in uint_vals],
+            decode_fn=_decode_via_decode(Uint),
+            decode_buffers=_encode_buffers([Uint(v) for v in uint_vals]),
+        )
+    )
+    cases.append(
+        Case(
+            name="U8",
+            ctor=U8,
+            init_args=_args_from_values(u8_vals),
+            encode_values=[U8(v) for v in u8_vals],
+            decode_fn=_decode_via_decode(U8),
+            decode_buffers=_encode_buffers([U8(v) for v in u8_vals]),
+        )
+    )
+    cases.append(
+        Case(
+            name="U16",
+            ctor=U16,
+            init_args=_args_from_values(u16_vals),
+            encode_values=[U16(v) for v in u16_vals],
+            decode_fn=_decode_via_decode(U16),
+            decode_buffers=_encode_buffers([U16(v) for v in u16_vals]),
+        )
+    )
+    cases.append(
+        Case(
+            name="U32",
+            ctor=U32,
+            init_args=_args_from_values(u32_vals),
+            encode_values=[U32(v) for v in u32_vals],
+            decode_fn=_decode_via_decode(U32),
+            decode_buffers=_encode_buffers([U32(v) for v in u32_vals]),
+        )
+    )
+    cases.append(
+        Case(
+            name="U64",
+            ctor=U64,
+            init_args=_args_from_values(u64_vals),
+            encode_values=[U64(v) for v in u64_vals],
+            decode_fn=_decode_via_decode(U64),
+            decode_buffers=_encode_buffers([U64(v) for v in u64_vals]),
+        )
+    )
+
+    str_vals = [
+        _make_ascii(5, 1),
+        _make_ascii(16, 2),
+        _make_ascii(64, 3),
+    ]
+    cases.append(
+        Case(
+            name="String",
+            ctor=String,
+            init_args=_args_from_values(str_vals),
+            encode_values=[String(v) for v in str_vals],
+            decode_fn=_decode_via_decode(String),
+            decode_buffers=_encode_buffers([String(v) for v in str_vals]),
+        )
+    )
+
+    bool_vals = [True, False]
+    cases.append(
+        Case(
+            name="Bool",
+            ctor=Bool,
+            init_args=_args_from_values(bool_vals),
+            encode_values=[Bool(v) for v in bool_vals],
+            decode_fn=_decode_via_decode(Bool),
+            decode_buffers=_encode_buffers([Bool(v) for v in bool_vals]),
+        )
+    )
+
+    cases.append(
+        Case(
+            name="NullType",
+            ctor=NullType,
+            init_args=[((), {})],
+            encode_values=[NullType()],
+            decode_fn=_decode_via_decode(NullType),
+            decode_buffers=[NullType().encode()],
+        )
+    )
+
+    bytes_variants = [_make_bytes(64, i) for i in range(2048)]
+    bytes_vals = [Bytes(b) for b in bytes_variants]
+    cases.append(
+        Case(
+            name="Bytes(var,64B)",
+            ctor=Bytes,
+            init_args=_args_from_values(bytes_variants),
+            encode_values=bytes_vals,
+            decode_fn=_decode_via_decode_from(Bytes),
+            decode_buffers=_encode_buffers(bytes_vals),
+        )
+    )
+
+    fixed16_vals = [Bytes16(_make_bytes(16, i)) for i in range(512)]
+    cases.append(
+        Case(
+            name="Bytes16",
+            ctor=Bytes16,
+            init_args=_args_from_values([_make_bytes(16, i) for i in range(512)]),
+            encode_values=fixed16_vals,
+            decode_fn=_decode_via_decode_from(Bytes16),
+            decode_buffers=_encode_buffers(fixed16_vals),
+        )
+    )
+
+    fixed32_vals = [Bytes32(_make_bytes(32, i)) for i in range(512)]
+    cases.append(
+        Case(
+            name="Bytes32",
+            ctor=Bytes32,
+            init_args=_args_from_values([_make_bytes(32, i) for i in range(512)]),
+            encode_values=fixed32_vals,
+            decode_fn=_decode_via_decode_from(Bytes32),
+            decode_buffers=_encode_buffers(fixed32_vals),
+        )
+    )
+
+    fixed64_vals = [Bytes64(_make_bytes(64, i)) for i in range(512)]
+    cases.append(
+        Case(
+            name="Bytes64",
+            ctor=Bytes64,
+            init_args=_args_from_values([_make_bytes(64, i) for i in range(512)]),
+            encode_values=fixed64_vals,
+            decode_fn=_decode_via_decode_from(Bytes64),
+            decode_buffers=_encode_buffers(fixed64_vals),
+        )
+    )
+
+    fixed128_vals = [Bytes128(_make_bytes(128, i)) for i in range(256)]
+    cases.append(
+        Case(
+            name="Bytes128",
+            ctor=Bytes128,
+            init_args=_args_from_values([_make_bytes(128, i) for i in range(256)]),
+            encode_values=fixed128_vals,
+            decode_fn=_decode_via_decode_from(Bytes128),
+            decode_buffers=_encode_buffers(fixed128_vals),
+        )
+    )
+
+    fixed256_vals = [Bytes256(_make_bytes(256, i)) for i in range(128)]
+    cases.append(
+        Case(
+            name="Bytes256",
+            ctor=Bytes256,
+            init_args=_args_from_values([_make_bytes(256, i) for i in range(128)]),
+            encode_values=fixed256_vals,
+            decode_fn=_decode_via_decode_from(Bytes256),
+            decode_buffers=_encode_buffers(fixed256_vals),
+        )
+    )
+
+    fixed512_vals = [Bytes512(_make_bytes(512, i)) for i in range(64)]
+    cases.append(
+        Case(
+            name="Bytes512",
+            ctor=Bytes512,
+            init_args=_args_from_values([_make_bytes(512, i) for i in range(64)]),
+            encode_values=fixed512_vals,
+            decode_fn=_decode_via_decode_from(Bytes512),
+            decode_buffers=_encode_buffers(fixed512_vals),
+        )
+    )
+
+    fixed1024_vals = [Bytes1024(_make_bytes(1024, i)) for i in range(32)]
+    cases.append(
+        Case(
+            name="Bytes1024",
+            ctor=Bytes1024,
+            init_args=_args_from_values([_make_bytes(1024, i) for i in range(32)]),
+            encode_values=fixed1024_vals,
+            decode_fn=_decode_via_decode_from(Bytes1024),
+            decode_buffers=_encode_buffers(fixed1024_vals),
+        )
+    )
+
+    ba_vals = [ByteArray(_make_bytes(64, i)) for i in range(512)]
+    cases.append(
+        Case(
+            name="ByteArray",
+            ctor=ByteArray,
+            init_args=_args_from_values([_make_bytes(64, i) for i in range(512)]),
+            encode_values=ba_vals,
+            decode_fn=_decode_via_decode_from(ByteArray),
+            decode_buffers=_encode_buffers(ba_vals),
+        )
+    )
+
+    bits_list = [[bool((i + j) & 1) for j in range(64)] for i in range(128)]
+    bits_vals = [Bits(b) for b in bits_list]
+    cases.append(
+        Case(
+            name="Bits(var,64b)",
+            ctor=Bits,
+            init_args=_args_from_values(bits_list),
+            encode_values=bits_vals,
+            decode_fn=_decode_via_decode(Bits),
+            decode_buffers=_encode_buffers(bits_vals),
+        )
+    )
+
+    bits_fixed_cls = Bits[64, "msb"]
+    bits_fixed_vals = [bits_fixed_cls(b) for b in bits_list]
+    cases.append(
+        Case(
+            name="Bits[64,msb]",
+            ctor=bits_fixed_cls,
+            init_args=_args_from_values(bits_list),
+            encode_values=bits_fixed_vals,
+            decode_fn=_decode_via_decode(bits_fixed_cls),
+            decode_buffers=_encode_buffers(bits_fixed_vals),
+        )
+    )
+
+    # Sequence types
+    u16_items = [U16(i) for i in range(10)]
+
+    seq_cls = Seq[U16, 10]
+    cases.append(
+        Case(
+            name="Seq[U16,N=10]",
+            ctor=seq_cls,
+            init_args=[((u16_items,), {})],
+            encode_values=[seq_cls(u16_items)],
+            decode_fn=_decode_via_decode(seq_cls),
+            decode_buffers=_encode_buffers([seq_cls(u16_items)]),
+        )
+    )
+
+    vec_cls = Vector[U16]
+    cases.append(
+        Case(
+            name="Vector[U16]",
+            ctor=vec_cls,
+            init_args=[((u16_items,), {})],
+            encode_values=[vec_cls(u16_items)],
+            decode_fn=_decode_via_decode(vec_cls),
+            decode_buffers=_encode_buffers([vec_cls(u16_items)]),
+        )
+    )
+
+    arr_cls = Array[10]
+    # Array does not enforce element types by default; set for decode benchmark.
+    arr_cls._element_type = U16
+    cases.append(
+        Case(
+            name="Array[10]",
+            ctor=arr_cls,
+            init_args=[((u16_items,), {})],
+            encode_values=[arr_cls(u16_items)],
+            decode_fn=_decode_via_decode(arr_cls),
+            decode_buffers=_encode_buffers([arr_cls(u16_items)]),
+        )
+    )
+
+    tvec_cls = TypedVector[U16]
+    cases.append(
+        Case(
+            name="TypedVector[U16]",
+            ctor=tvec_cls,
+            init_args=[((u16_items,), {})],
+            encode_values=[tvec_cls(u16_items)],
+            decode_fn=_decode_via_decode(tvec_cls),
+            decode_buffers=_encode_buffers([tvec_cls(u16_items)]),
+        )
+    )
+
+    tarr_cls = TypedArray[U16, 10]
+    cases.append(
+        Case(
+            name="TypedArray[U16,10]",
+            ctor=tarr_cls,
+            init_args=[((u16_items,), {})],
+            encode_values=[tarr_cls(u16_items)],
+            decode_fn=_decode_via_decode(tarr_cls),
+            decode_buffers=_encode_buffers([tarr_cls(u16_items)]),
+        )
+    )
+
+    bvec_cls = BoundedVector[0, 10]
+    # BoundedVector lacks element type unless provided; set for decode benchmark.
+    bvec_cls._element_type = U16
+    cases.append(
+        Case(
+            name="BoundedVector[0,10]",
+            ctor=bvec_cls,
+            init_args=[((u16_items,), {})],
+            encode_values=[bvec_cls(u16_items)],
+            decode_fn=_decode_via_decode(bvec_cls),
+            decode_buffers=_encode_buffers([bvec_cls(u16_items)]),
+        )
+    )
+
+    tbvec_cls = TypedBoundedVector[U16, 0, 10]
+    cases.append(
+        Case(
+            name="TypedBoundedVector[U16,0,10]",
+            ctor=tbvec_cls,
+            init_args=[((u16_items,), {})],
+            encode_values=[tbvec_cls(u16_items)],
+            decode_fn=_decode_via_decode(tbvec_cls),
+            decode_buffers=_encode_buffers([tbvec_cls(u16_items)]),
+        )
+    )
+
+    # Dictionary
+    dict_cls = Dictionary[String, U16]
+    dict_val = dict_cls({String(f"k{i}"): U16(i) for i in range(10)})
+    cases.append(
+        Case(
+            name="Dictionary[String,U16]",
+            ctor=dict_cls,
+            init_args=[(({String(f'k{i}'): U16(i) for i in range(10)},), {})],
+            encode_values=[dict_val],
+            decode_fn=_decode_via_decode(dict_cls),
+            decode_buffers=_encode_buffers([dict_val]),
+        )
+    )
+
+    # Choice / Option
+    choice_cls = Choice[U8, String]
+    choice_vals = [U8(42), String("hello")]
+    cases.append(
+        Case(
+            name="Choice[U8,String]",
+            ctor=choice_cls,
+            init_args=[((choice_vals[0],), {}), ((choice_vals[1],), {})],
+            encode_values=[choice_cls(choice_vals[0]), choice_cls(choice_vals[1])],
+            decode_fn=_decode_via_decode(choice_cls),
+            decode_buffers=_encode_buffers([choice_cls(choice_vals[0]), choice_cls(choice_vals[1])]),
+        )
+    )
+
+    opt_cls = Option[U16]
+    opt_val = U16(12345)
+    cases.append(
+        Case(
+            name="Option[U16]",
+            ctor=opt_cls,
+            init_args=[((opt_val,), {}), ((), {})],
+            encode_values=[opt_cls(opt_val), opt_cls()],
+            decode_fn=_decode_via_decode(opt_cls),
+            decode_buffers=_encode_buffers([opt_cls(opt_val), opt_cls()]),
+        )
+    )
+
+    # Enum
+    class Color(Enum):
+        RED = 1
+        GREEN = 2
+        BLUE = 3
+
+    cases.append(
+        Case(
+            name="Enum(Color)",
+            ctor=Color,
+            init_args=[((1,), {}), ((2,), {}), ((3,), {})],
+            encode_values=[Color.RED, Color.GREEN, Color.BLUE],
+            decode_fn=_decode_via_decode(Color),
+            decode_buffers=_encode_buffers([Color.RED, Color.GREEN, Color.BLUE]),
+        )
+    )
+
+    # Structure
+    @structure
+    class Person:
+        name: String
+        age: U8
+        score: U16
+
+    person_vals = [
+        Person(name=String("alice"), age=U8(30), score=U16(900)),
+        Person(name=String("bob"), age=U8(22), score=U16(450)),
+    ]
+    cases.append(
+        Case(
+            name="structure(Person)",
+            ctor=Person,
+            init_args=[
+                ((String("alice"), U8(30), U16(900)), {}),
+                ((String("bob"), U8(22), U16(450)), {}),
+            ],
+            encode_values=person_vals,
+            decode_fn=_decode_via_decode(Person),
+            decode_buffers=_encode_buffers(person_vals),
+        )
+    )
+
+    return cases
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--runs", type=int, default=20000)
+    parser.add_argument("--profile-runs", type=int, default=2000)
+    parser.add_argument("--profile", action="store_true", default=True)
+    parser.add_argument("--no-profile", action="store_false", dest="profile")
+    parser.add_argument("--output-dir", default=os.path.join("benchmarks", "out"))
+    args = parser.parse_args()
+
+    os.makedirs(args.output_dir, exist_ok=True)
+
+    cases = _build_cases()
+    results: Dict[str, Dict[str, float]] = {}
+    profiles: Dict[str, Dict[str, List[Tuple[str, float, int]]]] = {}
+
+    for case in cases:
+        results[case.name] = {}
+
+        if case.ctor and case.init_args:
+            args_list = case.init_args
+            n = len(args_list)
+
+            def _init_loop(i: int) -> None:
+                args_i, kwargs_i = args_list[i % n]
+                case.ctor(*args_i, **kwargs_i)
+
+            init_seconds = _timed_loop(args.runs, _init_loop)
+            results[case.name]["init_s"] = init_seconds
+
+            if args.profile:
+                stats = _profile_loop(args.profile_runs, _init_loop)
+                profiles.setdefault(case.name, {})["init"] = _stats_top(stats)
+
+        if case.encode_values:
+            vals = case.encode_values
+            n = len(vals)
+
+            def _encode_loop(i: int) -> None:
+                vals[i % n].encode()
+
+            encode_seconds = _timed_loop(args.runs, _encode_loop)
+            results[case.name]["encode_s"] = encode_seconds
+
+            if args.profile:
+                stats = _profile_loop(args.profile_runs, _encode_loop)
+                profiles.setdefault(case.name, {})["encode"] = _stats_top(stats)
+
+        if case.decode_fn and case.decode_buffers:
+            bufs = case.decode_buffers
+            n = len(bufs)
+
+            def _decode_loop(i: int) -> None:
+                case.decode_fn(bufs[i % n])
+
+            decode_seconds = _timed_loop(args.runs, _decode_loop)
+            results[case.name]["decode_s"] = decode_seconds
+
+            if args.profile:
+                stats = _profile_loop(args.profile_runs, _decode_loop)
+                profiles.setdefault(case.name, {})["decode"] = _stats_top(stats)
+
+    # Write results to disk
+    results_path = os.path.join(args.output_dir, "bench_results.json")
+    with open(results_path, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "runs": args.runs,
+                "profile_runs": args.profile_runs,
+                "results": results,
+            },
+            f,
+            indent=2,
+            sort_keys=True,
+        )
+
+    if args.profile:
+        profile_path = os.path.join(args.output_dir, "bench_profiles.json")
+        with open(profile_path, "w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "runs": args.profile_runs,
+                    "profiles": profiles,
+                },
+                f,
+                indent=2,
+                sort_keys=True,
+            )
+
+    # Print a compact summary table to stdout
+    print("Benchmark results (seconds for %d runs):" % args.runs)
+    print("name, init_s, encode_s, decode_s")
+    for name, vals in results.items():
+        init_s = vals.get("init_s", 0.0)
+        enc_s = vals.get("encode_s", 0.0)
+        dec_s = vals.get("decode_s", 0.0)
+        print("%s, %.6f, %.6f, %.6f" % (name, init_s, enc_s, dec_s))
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
