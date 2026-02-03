@@ -1,8 +1,6 @@
 import abc
 from typing import Any, Optional, Tuple, Union, Callable
 
-from tsrkit_types import config as _config
-
 try:
     from tsrkit_types import _native as _native  # optional C extension
 except Exception:  # pragma: no cover - optional
@@ -70,8 +68,6 @@ class Int(int, Codable, metaclass=IntCheckMeta):
     byte_size: int = 0
     signed = False
     _bound = 1 << 64
-    _small_cache_limit = 0
-    _small_decode_cache = None
     
     @classmethod
     def __class_getitem__(cls, data: Optional[Union[int, tuple, bool]]):
@@ -90,48 +86,11 @@ class Int(int, Codable, metaclass=IntCheckMeta):
         else:
             size, signed = data 
 
-        byte_size = size // 8
-        small_cache_limit = 0
-        if size == 0:
-            small_cache_limit = 128
-        elif byte_size == 1:
-            small_cache_limit = 256
-
         return type(f"U{size}" if size else "Int", (cls,), {
             "byte_size": size // 8, 
             "signed": signed, 
             "_bound": 1 << size if size > 0 else 1 << 64,
-            "_small_cache_limit": small_cache_limit,
-            "_small_decode_cache": None,
         })
-
-    @classmethod
-    def _get_small_decode_cache(cls):
-        cache = cls._small_decode_cache
-        if cache is None:
-            limit = cls._small_cache_limit
-            if limit:
-                cache = [int.__new__(cls, i) for i in range(limit)]
-            else:
-                cache = ()
-            cls._small_decode_cache = cache
-        return cache
-
-    @classmethod
-    def _maybe_cached(cls, value: int):
-        cache = cls._get_small_decode_cache()
-        if cache and 0 <= value < len(cache):
-            return cache[value]
-        return None
-
-    @classmethod
-    def _construct_decoded(cls, value: int):
-        cached = cls._maybe_cached(value)
-        if cached is not None:
-            return cached
-        if _config.is_unsafe():
-            return int.__new__(cls, value)
-        return cls(value)
 
     def __new__(cls, value: Any):
         value = int(value)
@@ -288,27 +247,27 @@ class Int(int, Codable, metaclass=IntCheckMeta):
     ) -> Tuple[Any, int]:
         if _native is not None:
             value, size = _native.uint_decode(buffer, offset, cls.byte_size, bool(cls.signed))
-            return cls._construct_decoded(value), size
+            return cls(value), size
 
         if cls.byte_size > 0:
             size = cls.byte_size
             if size == 1:
                 value = buffer[offset]
-                return cls._construct_decoded(value), 1
+                return cls(value), 1
             value = int.from_bytes(buffer[offset : offset + size], "little")
-            return cls._construct_decoded(value), size
+            return cls(value), size
         else:
             tag = buffer[offset]
 
             if tag < 2**7:
-                return cls._construct_decoded(tag), 1
+                return cls(tag), 1
 
             if tag == 2**8 - 1:
                 # Full 64-bit encoding
                 if len(buffer) - offset < 9:
                     raise ValueError("Buffer too small to decode 64-bit integer")
                 value = int.from_bytes(buffer[offset + 1 : offset + 9], "little")
-                return cls._construct_decoded(value), 9
+                return cls(value), 9
             else:
                 # Variable length encoding
                 _l = 8 - ((tag ^ 0xFF).bit_length())
@@ -335,7 +294,7 @@ class Int(int, Codable, metaclass=IntCheckMeta):
                 else:
                     beta = int.from_bytes(buffer[offset + 1 : offset + 1 + _l], "little")
                 value = (alpha << (_l * 8)) | beta
-                return cls._construct_decoded(value), _l + 1
+                return cls(value), _l + 1
             
     def to_bits(self, bit_order: str = "msb") -> list[bool]:
         """Convert an int to bits"""

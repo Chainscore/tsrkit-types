@@ -1,5 +1,4 @@
 import abc
-import operator
 from typing import (
     Any,
     Dict,
@@ -19,7 +18,6 @@ from tsrkit_types.itf.codable import Codable
 K = TypeVar("K", bound=Codable)
 V = TypeVar("V", bound=Codable)
 
-_ITEMGETTER_0 = operator.itemgetter(0)
 _MISSING = object()
 
 
@@ -69,24 +67,7 @@ class Dictionary(dict, Codable, Generic[K, V], metaclass=DictCheckMeta):
             raise ValueError("Dictionary must be initialized with types as such - Dictionary[K, V, key_name(optional), value_name(optional)]")
 
     def __init__(self, initial: Optional[Mapping[K, V]] = None):
-        self._version = 0
-        self._sorted_cache_version = -1
-        self._sorted_items_cache = None
         self.update(initial or {})
-
-    def _mark_dirty(self) -> None:
-        self._version += 1
-        self._sorted_cache_version = -1
-        self._sorted_items_cache = None
-
-    def _get_sorted_items(self):
-        if self._sorted_cache_version != self._version:
-            if len(self) <= 1:
-                self._sorted_items_cache = list(self.items())
-            else:
-                self._sorted_items_cache = sorted(self.items(), key=_ITEMGETTER_0)
-            self._sorted_cache_version = self._version
-        return self._sorted_items_cache
 
     def _validate(self, key: K, value: V):
         if not isinstance(key, self._key_type):
@@ -98,11 +79,9 @@ class Dictionary(dict, Codable, Generic[K, V], metaclass=DictCheckMeta):
         """Set value for key."""
         self._validate(key, value)
         super().__setitem__(key, value)
-        self._mark_dirty()
 
     def __delitem__(self, key: K) -> None:
         super().__delitem__(key)
-        self._mark_dirty()
 
     def __repr__(self) -> str:
         """Get string representation."""
@@ -115,12 +94,10 @@ class Dictionary(dict, Codable, Generic[K, V], metaclass=DictCheckMeta):
         for key, value in other.items():
             self._validate(key, value)
         dict.update(self, other)
-        self._mark_dirty()
 
     def clear(self) -> None:
         if self:
             super().clear()
-            self._mark_dirty()
 
     def pop(self, key: K, default: object = _MISSING) -> V:
         value = super().pop(key, _MISSING)
@@ -128,19 +105,15 @@ class Dictionary(dict, Codable, Generic[K, V], metaclass=DictCheckMeta):
             if default is _MISSING:
                 raise KeyError(key)
             return default  # type: ignore[return-value]
-        self._mark_dirty()
         return value  # type: ignore[return-value]
 
     def popitem(self) -> Tuple[K, V]:
-        item = super().popitem()
-        self._mark_dirty()
-        return item
+        return super().popitem()
 
     def setdefault(self, key: K, default: Optional[V] = None) -> V:
         if key in self:
             return super().get(key)  # type: ignore[return-value]
         value = super().setdefault(key, default)  # type: ignore[arg-type]
-        self._mark_dirty()
         return value  # type: ignore[return-value]
 
     # ---------------------------------------------------------------------------- #
@@ -173,14 +146,14 @@ class Dictionary(dict, Codable, Generic[K, V], metaclass=DictCheckMeta):
 
     def encode_size(self) -> int:
         total_size = Uint(len(self)).encode_size()
-        for k, v in self._get_sorted_items():
+        for k, v in sorted(self.items(), key=lambda item: item[0]):
             total_size += k.encode_size() + v.encode_size()
         return total_size
     
     def encode_into(self, buffer: bytearray, offset: int = 0) -> int:
         current_offset = offset
         current_offset += Uint(len(self)).encode_into(buffer, current_offset)
-        for k, v in self._get_sorted_items():
+        for k, v in sorted(self.items(), key=lambda item: item[0]):
             current_offset += k.encode_into(buffer, current_offset)
             current_offset += v.encode_into(buffer, current_offset)
         return current_offset - offset

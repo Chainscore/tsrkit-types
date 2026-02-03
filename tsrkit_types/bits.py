@@ -4,7 +4,6 @@ from tsrkit_types.bytes import Bytes
 from tsrkit_types.bytes_common import _BYTE_TO_BITS_MSB, _init_lookup_tables
 from tsrkit_types.integers import Uint
 from tsrkit_types.sequences import Seq
-from tsrkit_types import config as _config
 
 
 class Bits(Seq):
@@ -28,52 +27,38 @@ class Bits(Seq):
 		return type(cls.__class__.__name__, (cls,), {"_min_length": min_l, "_max_length": max_l, "_order": _bo})
 
 	def __init__(self, initial: Sequence[bool]):
-		if _config.STRICT_VALIDATE:
-			isinstance_local = isinstance
-			bool_type = self._bool_type
-			for bit in initial:
-				if not isinstance_local(bit, bool_type):
-					raise TypeError(f"{bit!r} is not an instance of {bool_type!r}")
-			list.__init__(self, initial)
-			self._validate_self()
-		else:
-			list.__init__(self, initial)
+		isinstance_local = isinstance
+		bool_type = self._bool_type
+		for bit in initial:
+			if not isinstance_local(bit, bool_type):
+				raise TypeError(f"{bit!r} is not an instance of {bool_type!r}")
+		list.__init__(self, initial)
+		self._validate_self()
 
 	def _validate(self, value):
-		if not _config.STRICT_VALIDATE:
-			return
 		if not isinstance(value, self._bool_type):
 			raise TypeError(f"{value!r} is not an instance of {self._bool_type!r}")
 
 	def append(self, v: bool):
-		if _config.STRICT_VALIDATE:
-			if not isinstance(v, self._bool_type):
-				raise TypeError(f"{v!r} is not an instance of {self._bool_type!r}")
-			list.append(self, v)
-			self._validate_self()
-		else:
-			list.append(self, v)
+		if not isinstance(v, self._bool_type):
+			raise TypeError(f"{v!r} is not an instance of {self._bool_type!r}")
+		list.append(self, v)
+		self._validate_self()
 
 	def insert(self, i, v: bool):
-		if _config.STRICT_VALIDATE:
-			if not isinstance(v, self._bool_type):
-				raise TypeError(f"{v!r} is not an instance of {self._bool_type!r}")
-			list.insert(self, i, v)
-			self._validate_self()
-		else:
-			list.insert(self, i, v)
+		if not isinstance(v, self._bool_type):
+			raise TypeError(f"{v!r} is not an instance of {self._bool_type!r}")
+		list.insert(self, i, v)
+		self._validate_self()
 
 	def extend(self, seq: Sequence[bool]):
-		if _config.STRICT_VALIDATE:
-			isinstance_local = isinstance
-			bool_type = self._bool_type
-			for val in seq:
-				if not isinstance_local(val, bool_type):
-					raise TypeError(f"{val!r} is not an instance of {bool_type!r}")
-			list.extend(self, seq)
-			self._validate_self()
-		else:
-			list.extend(self, seq)
+		isinstance_local = isinstance
+		bool_type = self._bool_type
+		for val in seq:
+			if not isinstance_local(val, bool_type):
+				raise TypeError(f"{val!r} is not an instance of {bool_type!r}")
+		list.extend(self, seq)
+		self._validate_self()
 	
 
 	# ---------------------------------------------------------------------------- #
@@ -113,7 +98,7 @@ class Bits(Seq):
 		bit_len = len(self)
 		is_fixed_length = (self._min_length == self._max_length and self._min_length > 0)
 
-		if _config.STRICT_VALIDATE and is_fixed_length and bit_len != self._min_length:
+		if is_fixed_length and bit_len != self._min_length:
 			raise ValueError(f"Bit sequence length mismatch: expected {self._min_length}, got {bit_len}")
 
 		byte_count = (bit_len + 7) // 8

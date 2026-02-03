@@ -4,126 +4,126 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.017762287,
+          0.027275096000000002,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.017097854000000003,
+          0.026606223000000002,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.016742661000000002,
+          0.026233785000000003,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:164(decode_from)",
-          0.016257547,
+          0.025749351,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.008965231,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.018115191000000003,
           20000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.0021183530000000003,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.008588118,
+          20000
+        ],
+        [
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.002196467,
           22000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:187(_from_decoded)",
-          0.001542352,
+          0.001576293,
           2000
-        ],
-        [
-          "~:0(<method 'append' of 'list' objects>)",
-          0.001293679,
-          20000
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.013177494000000001,
+          0.013168057,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.012837978000000002,
+          0.012828795,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:153(encode_into)",
-          0.008654158,
+          0.008681292,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:224(encode_into)",
-          0.006521861,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:209(encode_into)",
+          0.006598348,
           20000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:129(encode_size)",
-          0.003237245,
+          0.003198288,
           2000
         ],
         [
           "~:0(<method 'to_bytes' of 'int' objects>)",
-          0.0016433630000000001,
+          0.0016336480000000001,
           20000
         ],
         [
           "~:0(<built-in method builtins.issubclass>)",
-          0.000979409,
+          0.000965448,
           4000
         ],
         [
           "<frozen abc>:121(__subclasscheck__)",
-          0.000464559,
+          0.000451803,
           2000
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.00950634,
+          0.009700507,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:93(__init__)",
-          0.008976564000000001,
+          0.009147213000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:107(extend)",
-          0.008355094,
+          0.00851592,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:80(_validate)",
-          0.0051370190000000005,
+          0.005239597,
           20000
         ],
         [
           "~:0(<built-in method builtins.getattr>)",
-          0.00095878,
+          0.000983841,
           20000
         ],
         [
           "~:0(<built-in method builtins.isinstance>)",
-          0.000887202,
+          0.0009290430000000001,
           20000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:86(_validate_self)",
-          0.000588705,
+          0.0006012540000000001,
           2000
         ],
         [
           "~:0(<built-in method builtins.len>)",
-          0.00019258600000000002,
+          0.00019543000000000002,
           4000
         ]
       ]
@@ -132,116 +132,116 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.014479131000000001,
+          0.014783559000000002,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.014043344000000001,
+          0.014343397,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.013676840000000001,
+          0.013980839,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bits.py:121(decode_from)",
-          0.012935987000000001,
+          0.013246999,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:130(_wrap_op)",
-          0.0034060180000000002,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:112(_wrap_op)",
+          0.0032892060000000002,
           4000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:137(__add__)",
-          0.002041441,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.002591996,
+          6000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:119(__add__)",
+          0.001980424,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:146(__floordiv__)",
-          0.001991641,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:128(__floordiv__)",
+          0.001949891,
           2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.0017839800000000001,
-          4000
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.017281772,
+          0.017196827,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.016925588000000002,
+          0.016855762,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bits.py:95(encode_into)",
-          0.013507399000000002,
+          0.013434041,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bits.py:193(_pack_bits_to_bytes)",
-          0.007730344,
+          0.007631507,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.002647393,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.002719799,
           6000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bits.py:85(encode_size)",
-          0.002489128,
+          0.0024841670000000002,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:224(encode_into)",
-          0.0009129040000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:209(encode_into)",
+          0.0009074440000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:72(_check_buffer_size)",
-          0.0006742600000000001,
+          0.0006730870000000001,
           4000
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.012156862000000001,
+          0.01223098,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bits.py:29(__init__)",
-          0.011618724,
+          0.011665684,
           2000
         ],
         [
           "~:0(<built-in method builtins.isinstance>)",
-          0.0048441510000000005,
+          0.004889043,
           128000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:86(_validate_self)",
-          0.0004929190000000001,
+          0.000494993,
           2000
         ],
         [
           "~:0(<built-in method builtins.len>)",
-          0.000158438,
+          0.00016333500000000002,
           4000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.6916000000000002e-05,
+          1.1042e-05,
           1
         ]
       ]
@@ -250,116 +250,116 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.007944652,
+          0.007924029,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.007514736,
+          0.007474153000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.007161042,
+          0.007122848,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bits.py:121(decode_from)",
-          0.006488384000000001,
+          0.006459954,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bits.py:216(_bits_from_list)",
-          0.001516668,
+          0.0015105630000000001,
           2000
         ],
         [
           "~:0(<method 'extend' of 'list' objects>)",
-          0.001262803,
+          0.0012449100000000001,
           16000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:86(_validate_self)",
-          0.000593159,
+          0.00059155,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:72(_check_buffer_size)",
-          0.00036276500000000003,
+          0.00035640300000000004,
           2000
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.018433083000000003,
+          0.01060775,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.017904299000000002,
+          0.010289176,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bits.py:95(encode_into)",
-          0.015627537,
+          0.008958123,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bits.py:193(_pack_bits_to_bytes)",
-          0.013436242000000001,
+          0.007571871000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bits.py:85(encode_size)",
-          0.00088027,
+          0.000418739,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:72(_check_buffer_size)",
-          0.000406265,
+          0.00031825,
           2000
         ],
         [
           "~:0(<built-in method builtins.len>)",
-          0.00037006100000000003,
+          0.000284592,
           6000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.7333e-05,
+          1.2792e-05,
           1
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.012323396,
+          0.012241037000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bits.py:29(__init__)",
-          0.011755555,
+          0.011691438,
           2000
         ],
         [
           "~:0(<built-in method builtins.isinstance>)",
-          0.004853939000000001,
+          0.004883149000000001,
           128000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:86(_validate_self)",
-          0.00048761700000000003,
+          0.000486663,
           2000
         ],
         [
           "~:0(<built-in method builtins.len>)",
-          0.000161635,
+          0.00016350000000000002,
           4000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.6125000000000002e-05,
+          2.1417000000000002e-05,
           1
         ]
       ]
@@ -368,665 +368,27 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.0014636310000000002,
+          0.001443084,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.001157121,
+          0.001142741,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.00086589,
+          0.000858255,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bool.py:24(decode_from)",
-          0.000540753,
+          0.0005348670000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bool.py:7(__init__)",
-          7.9354e-05,
-          2000
-        ],
-        [
-          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.0500000000000001e-05,
-          1
-        ]
-      ],
-      "encode": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.0012852990000000002,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.001018836,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bool.py:20(encode_into)",
-          0.00019480700000000002,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bool.py:17(encode_size)",
-          6.749800000000001e-05,
-          2000
-        ],
-        [
-          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          9.333e-06,
-          1
-        ]
-      ],
-      "init": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.000489966,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bool.py:7(__init__)",
-          7.1839e-05,
-          2000
-        ],
-        [
-          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          8.834e-06,
-          1
-        ]
-      ]
-    },
-    "BoundedVector[0,10]": {
-      "decode": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.019410685,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.018740635000000002,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.018369397000000003,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:164(decode_from)",
-          0.017813138000000003,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.010166392,
-          22000
-        ],
-        [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.002368386,
-          24000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:187(_from_decoded)",
-          0.001551653,
-          2000
-        ],
-        [
-          "~:0(<method 'append' of 'list' objects>)",
-          0.001283534,
-          20000
-        ]
-      ],
-      "encode": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.018361644,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.01799767,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:153(encode_into)",
-          0.011522323000000001,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:224(encode_into)",
-          0.007572629000000001,
-          22000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:129(encode_size)",
-          0.005521841,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.0019457130000000002,
-          4000
-        ],
-        [
-          "~:0(<method 'to_bytes' of 'int' objects>)",
-          0.001622774,
-          20000
-        ],
-        [
-          "~:0(<built-in method builtins.issubclass>)",
-          0.0009756900000000001,
-          4000
-        ]
-      ],
-      "init": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.009856409,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:93(__init__)",
-          0.009304981,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:107(extend)",
-          0.00865958,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:80(_validate)",
-          0.005331211000000001,
-          20000
-        ],
-        [
-          "~:0(<built-in method builtins.getattr>)",
-          0.0009941680000000001,
-          20000
-        ],
-        [
-          "~:0(<built-in method builtins.isinstance>)",
-          0.000969675,
-          20000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:86(_validate_self)",
-          0.0006012190000000001,
-          2000
-        ],
-        [
-          "~:0(<built-in method builtins.len>)",
-          0.000201745,
-          4000
-        ]
-      ]
-    },
-    "ByteArray": {
-      "decode": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.0027338320000000003,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:125(_fn)",
-          0.002418214,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytearray.py:26(decode_from)",
-          0.002060381,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.0009037670000000001,
-          2000
-        ],
-        [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.000194472,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:101(_get_small_decode_cache)",
-          0.00011392900000000001,
-          2000
-        ],
-        [
-          "~:0(<built-in method builtins.len>)",
-          9.723200000000001e-05,
-          2000
-        ],
-        [
-          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          8.834e-06,
-          1
-        ]
-      ],
-      "encode": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.006083205,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.0057590900000000006,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytearray.py:18(encode_into)",
-          0.002695336,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytearray.py:15(encode_size)",
-          0.00222756,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.001680899,
-          4000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:224(encode_into)",
-          0.0008673040000000001,
-          2000
-        ],
-        [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.000384878,
-          4000
-        ],
-        [
-          "~:0(<built-in method builtins.len>)",
-          0.00038396800000000005,
-          8000
-        ]
-      ],
-      "init": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.000300598,
-          2000
-        ],
-        [
-          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          8.084000000000001e-06,
-          1
-        ]
-      ]
-    },
-    "Bytes(var,64B)": {
-      "decode": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.0016625720000000002,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:125(_fn)",
-          0.0013697330000000001,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:76(decode_from)",
-          0.0010221990000000001,
-          2000
-        ],
-        [
-          "~:0(<built-in method builtins.min>)",
-          0.000204362,
-          2000
-        ],
-        [
-          "~:0(<built-in method builtins.len>)",
-          0.00010672200000000001,
-          2000
-        ],
-        [
-          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.4708e-05,
-          1
-        ]
-      ],
-      "encode": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.006496502,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.006162455000000001,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:66(encode_into)",
-          0.002907544,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:61(encode_size)",
-          0.002317918,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.0017348180000000002,
-          4000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:224(encode_into)",
-          0.000893042,
-          2000
-        ],
-        [
-          "~:0(<built-in method builtins.len>)",
-          0.00039958100000000004,
-          8000
-        ],
-        [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.00039211300000000003,
-          4000
-        ]
-      ],
-      "init": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.00034015900000000003,
-          2000
-        ],
-        [
-          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          9.625e-06,
-          1
-        ]
-      ]
-    },
-    "Bytes1024": {
-      "decode": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.00159698,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:125(_fn)",
-          0.0013413160000000002,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:76(decode_from)",
-          0.001012784,
-          2000
-        ],
-        [
-          "~:0(<built-in method builtins.min>)",
-          0.00019404400000000001,
-          2000
-        ],
-        [
-          "~:0(<built-in method builtins.len>)",
-          0.00011087,
-          2000
-        ],
-        [
-          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          8.750000000000001e-06,
-          1
-        ]
-      ],
-      "encode": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.0019344300000000002,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.001549208,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:66(encode_into)",
-          0.000471024,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:61(encode_size)",
-          0.000125012,
-          2000
-        ],
-        [
-          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.1750000000000001e-05,
-          1
-        ]
-      ],
-      "init": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.000390445,
-          2000
-        ],
-        [
-          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          8.084000000000001e-06,
-          1
-        ]
-      ]
-    },
-    "Bytes128": {
-      "decode": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.0015371900000000001,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:125(_fn)",
-          0.0012744750000000002,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:76(decode_from)",
-          0.0009508730000000001,
-          2000
-        ],
-        [
-          "~:0(<built-in method builtins.min>)",
-          0.00018514400000000001,
-          2000
-        ],
-        [
-          "~:0(<built-in method builtins.len>)",
-          9.262200000000001e-05,
-          2000
-        ],
-        [
-          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          9.208e-06,
-          1
-        ]
-      ],
-      "encode": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.001437441,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.001163004,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:66(encode_into)",
-          0.000300099,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:61(encode_size)",
-          0.00010306,
-          2000
-        ],
-        [
-          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          9.584e-06,
-          1
-        ]
-      ],
-      "init": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.00033580100000000005,
-          2000
-        ],
-        [
-          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          9e-06,
-          1
-        ]
-      ]
-    },
-    "Bytes16": {
-      "decode": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.0015359570000000001,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:125(_fn)",
-          0.001258357,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:76(decode_from)",
-          0.0009309990000000001,
-          2000
-        ],
-        [
-          "~:0(<built-in method builtins.min>)",
-          0.000186844,
-          2000
-        ],
-        [
-          "~:0(<built-in method builtins.len>)",
-          9.5808e-05,
-          2000
-        ],
-        [
-          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.7250000000000003e-05,
-          1
-        ]
-      ],
-      "encode": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.001463137,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.0011803640000000002,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:66(encode_into)",
-          0.00030920300000000003,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:61(encode_size)",
-          0.00010654300000000001,
-          2000
-        ],
-        [
-          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          8.833e-06,
-          1
-        ]
-      ],
-      "init": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.00033967400000000004,
-          2000
-        ],
-        [
-          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          8.625000000000001e-06,
-          1
-        ]
-      ]
-    },
-    "Bytes256": {
-      "decode": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.0016354610000000002,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:125(_fn)",
-          0.001358917,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:76(decode_from)",
-          0.0010001580000000001,
-          2000
-        ],
-        [
-          "~:0(<built-in method builtins.min>)",
-          0.00020343000000000002,
-          2000
-        ],
-        [
-          "~:0(<built-in method builtins.len>)",
-          9.807400000000001e-05,
-          2000
-        ],
-        [
-          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.2e-05,
-          1
-        ]
-      ],
-      "encode": [
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.001478067,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.0012036120000000002,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:66(encode_into)",
-          0.00031885800000000004,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:61(encode_size)",
-          0.00010658600000000001,
+          8.0103e-05,
           2000
         ],
         [
@@ -1035,83 +397,502 @@
           1
         ]
       ],
-      "init": [
+      "encode": [
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.00033845800000000003,
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
+          0.001345501,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
+          0.001074517,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bool.py:20(encode_into)",
+          0.00022852900000000002,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bool.py:17(encode_size)",
+          7.1369e-05,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          8.917000000000001e-06,
+          5.2584000000000003e-05,
+          1
+        ]
+      ],
+      "init": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
+          0.000504102,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bool.py:7(__init__)",
+          7.5797e-05,
+          2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          8.709e-06,
           1
         ]
       ]
     },
-    "Bytes32": {
+    "BoundedVector[0,10]": {
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.001459659,
+          0.032635955,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:125(_fn)",
-          0.001183451,
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
+          0.031826317,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:76(decode_from)",
-          0.000865842,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
+          0.031446322,
           2000
         ],
         [
-          "~:0(<built-in method builtins.min>)",
-          0.000179349,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:164(decode_from)",
+          0.030915051000000002,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.02090668,
+          22000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.010653784000000001,
+          22000
+        ],
+        [
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.002609085,
+          24000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:187(_from_decoded)",
+          0.001622752,
+          2000
+        ]
+      ],
+      "encode": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
+          0.018888013000000002,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
+          0.018480436000000003,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:153(encode_into)",
+          0.011825397000000001,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:209(encode_into)",
+          0.007872081000000001,
+          22000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:129(encode_size)",
+          0.005668955000000001,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.0019206630000000002,
+          4000
+        ],
+        [
+          "~:0(<method 'to_bytes' of 'int' objects>)",
+          0.001724513,
+          20000
+        ],
+        [
+          "~:0(<built-in method builtins.issubclass>)",
+          0.0009987400000000001,
+          4000
+        ]
+      ],
+      "init": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
+          0.009531175000000001,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:93(__init__)",
+          0.008994663,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:107(extend)",
+          0.008366465,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:80(_validate)",
+          0.005117056,
+          20000
+        ],
+        [
+          "~:0(<built-in method builtins.getattr>)",
+          0.0009562590000000001,
+          20000
+        ],
+        [
+          "~:0(<built-in method builtins.isinstance>)",
+          0.000883457,
+          20000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:86(_validate_self)",
+          0.000581322,
           2000
         ],
         [
           "~:0(<built-in method builtins.len>)",
-          9.1932e-05,
+          0.000195565,
+          4000
+        ]
+      ]
+    },
+    "ByteArray": {
+      "decode": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
+          0.0032624280000000004,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:125(_fn)",
+          0.002941753,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytearray.py:26(decode_from)",
+          0.002572083,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.0013810810000000001,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.0008825040000000001,
+          2000
+        ],
+        [
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.000191294,
+          2000
+        ],
+        [
+          "~:0(<built-in method builtins.len>)",
+          9.239900000000001e-05,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          8.583e-06,
+          1.6125000000000002e-05,
           1
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.0015345930000000001,
+          0.006252817000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.001250721,
+          0.0059229880000000006,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:66(encode_into)",
-          0.00033987400000000005,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytearray.py:18(encode_into)",
+          0.0027937490000000003,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:61(encode_size)",
-          0.00011036100000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytearray.py:15(encode_size)",
+          0.002273017,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.001710722,
+          4000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:209(encode_into)",
+          0.0009059070000000001,
+          2000
+        ],
+        [
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.000388052,
+          4000
+        ],
+        [
+          "~:0(<built-in method builtins.len>)",
+          0.00038517200000000003,
+          8000
+        ]
+      ],
+      "init": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
+          0.00030796,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.025e-05,
+          8.958000000000001e-06,
+          1
+        ]
+      ]
+    },
+    "Bytes(var,64B)": {
+      "decode": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
+          0.00156498,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:125(_fn)",
+          0.001285885,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:76(decode_from)",
+          0.0009542190000000001,
+          2000
+        ],
+        [
+          "~:0(<built-in method builtins.min>)",
+          0.000184203,
+          2000
+        ],
+        [
+          "~:0(<built-in method builtins.len>)",
+          9.363600000000001e-05,
+          2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          1.0667000000000001e-05,
+          1
+        ]
+      ],
+      "encode": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
+          0.0064154680000000006,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
+          0.006078029,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:66(encode_into)",
+          0.0029000230000000003,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:61(encode_size)",
+          0.0023146620000000003,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.0017278390000000001,
+          4000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:209(encode_into)",
+          0.0008988840000000001,
+          2000
+        ],
+        [
+          "~:0(<built-in method builtins.len>)",
+          0.000397069,
+          8000
+        ],
+        [
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.00038765800000000003,
+          4000
+        ]
+      ],
+      "init": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
+          0.00033539800000000004,
+          2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          8.459e-06,
+          1
+        ]
+      ]
+    },
+    "Bytes1024": {
+      "decode": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
+          0.0016111580000000001,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:125(_fn)",
+          0.001346514,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:76(decode_from)",
+          0.0010162370000000001,
+          2000
+        ],
+        [
+          "~:0(<built-in method builtins.min>)",
+          0.00019615000000000002,
+          2000
+        ],
+        [
+          "~:0(<built-in method builtins.len>)",
+          0.00011326100000000001,
+          2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          9.666e-06,
+          1
+        ]
+      ],
+      "encode": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
+          0.002011441,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
+          0.0015893910000000001,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:66(encode_into)",
+          0.0005129970000000001,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:61(encode_size)",
+          0.000111284,
+          2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          1.8750000000000002e-05,
           1
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.000338375,
+          0.00039871000000000004,
+          2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          9.333e-06,
+          1
+        ]
+      ]
+    },
+    "Bytes128": {
+      "decode": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
+          0.0017042960000000001,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:125(_fn)",
+          0.0013740570000000001,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:76(decode_from)",
+          0.0010242880000000002,
+          2000
+        ],
+        [
+          "~:0(<built-in method builtins.min>)",
+          0.00020029000000000002,
+          2000
+        ],
+        [
+          "~:0(<built-in method builtins.len>)",
+          9.817900000000001e-05,
+          2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          1.8041000000000002e-05,
+          1
+        ]
+      ],
+      "encode": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
+          0.001550441,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
+          0.0012612160000000001,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:66(encode_into)",
+          0.00031578300000000004,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:61(encode_size)",
+          0.00011397200000000001,
+          2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          1.6625e-05,
+          1
+        ]
+      ],
+      "init": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
+          0.000330362,
           2000
         ],
         [
@@ -1121,75 +902,294 @@
         ]
       ]
     },
-    "Bytes512": {
+    "Bytes16": {
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.0016780940000000002,
+          0.0014421940000000002,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:125(_fn)",
-          0.001409253,
+          0.001168886,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:76(decode_from)",
-          0.0010707070000000002,
+          0.000854894,
           2000
         ],
         [
           "~:0(<built-in method builtins.min>)",
-          0.00021975100000000002,
+          0.00017891600000000002,
           2000
         ],
         [
           "~:0(<built-in method builtins.len>)",
-          0.00011589400000000001,
+          9.4806e-05,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          9.250000000000001e-06,
+          8.125000000000001e-06,
           1
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.001961514,
+          0.001442366,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.001555203,
+          0.001167496,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:66(encode_into)",
-          0.00046535900000000004,
+          0.000307976,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:61(encode_size)",
-          0.00011157,
+          0.000103838,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          8.667e-06,
+          9.208e-06,
           1
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.00044828600000000005,
+          0.00038059400000000005,
+          2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          1.1958000000000001e-05,
+          1
+        ]
+      ]
+    },
+    "Bytes256": {
+      "decode": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
+          0.0027237620000000002,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:125(_fn)",
+          0.0024221470000000004,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:76(decode_from)",
+          0.0019952710000000003,
+          2000
+        ],
+        [
+          "~:0(<built-in method builtins.min>)",
+          0.000519799,
+          2000
+        ],
+        [
+          "~:0(<built-in method builtins.len>)",
+          0.00010544900000000001,
+          2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          2.0625e-05,
+          1
+        ]
+      ],
+      "encode": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
+          0.0014801740000000001,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
+          0.001203684,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:66(encode_into)",
+          0.000316673,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:61(encode_size)",
+          0.00010687600000000001,
+          2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          8.792e-06,
+          1
+        ]
+      ],
+      "init": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
+          0.00034177400000000004,
+          2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          9.125e-06,
+          1
+        ]
+      ]
+    },
+    "Bytes32": {
+      "decode": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
+          0.0014804920000000001,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:125(_fn)",
+          0.0012025570000000001,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:76(decode_from)",
+          0.0008793910000000001,
+          2000
+        ],
+        [
+          "~:0(<built-in method builtins.min>)",
+          0.00018099000000000001,
+          2000
+        ],
+        [
+          "~:0(<built-in method builtins.len>)",
+          9.529900000000001e-05,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
           9.875000000000001e-06,
+          1
+        ]
+      ],
+      "encode": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
+          0.001487369,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
+          0.001201674,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:66(encode_into)",
+          0.00031630600000000003,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:61(encode_size)",
+          0.00010854400000000001,
+          2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          9.125e-06,
+          1
+        ]
+      ],
+      "init": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
+          0.000344578,
+          2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          8.208e-06,
+          1
+        ]
+      ]
+    },
+    "Bytes512": {
+      "decode": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
+          0.0016581380000000002,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:125(_fn)",
+          0.0013902040000000001,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:76(decode_from)",
+          0.0010489380000000001,
+          2000
+        ],
+        [
+          "~:0(<built-in method builtins.min>)",
+          0.00020033800000000002,
+          2000
+        ],
+        [
+          "~:0(<built-in method builtins.len>)",
+          0.00011534,
+          2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          9.75e-06,
+          1
+        ]
+      ],
+      "encode": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
+          0.002205411,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
+          0.0017807090000000001,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:66(encode_into)",
+          0.00047049,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:61(encode_size)",
+          0.000115242,
+          2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          1.6459e-05,
+          1
+        ]
+      ],
+      "init": [
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
+          0.000489878,
+          2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          1.2417000000000002e-05,
           1
         ]
       ]
@@ -1198,71 +1198,71 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.0015943480000000002,
+          0.001505754,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:125(_fn)",
-          0.001303817,
+          0.001225308,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:76(decode_from)",
-          0.0009356910000000001,
+          0.0009006940000000001,
           2000
         ],
         [
           "~:0(<built-in method builtins.min>)",
-          0.000192887,
+          0.00018800200000000002,
           2000
         ],
         [
           "~:0(<built-in method builtins.len>)",
-          0.000100649,
+          9.3843e-05,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.3584e-05,
+          9.542000000000001e-06,
           1
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.001440179,
+          0.001528842,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.0011658460000000001,
+          0.001239377,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:66(encode_into)",
-          0.00030489700000000005,
+          0.000323797,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/bytes.py:61(encode_size)",
-          0.00010381600000000001,
+          0.00011034900000000001,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          9.959e-06,
+          1.5e-05,
           1
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.00034757200000000004,
+          0.0003574,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          9.708000000000001e-06,
+          9.459e-06,
           1
         ]
       ]
@@ -1271,126 +1271,126 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.012006985000000001,
+          0.014328045000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.011604777,
+          0.013885459000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.011237403,
+          0.013504525000000002,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:128(decode_from)",
-          0.010810782000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:126(decode_from)",
+          0.013060198,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:64(__init__)",
-          0.006891011000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:62(__init__)",
+          0.0070904440000000004,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:82(set)",
-          0.006196857,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:80(set)",
+          0.006337428,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.0018879580000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.003039651,
           4000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:86(<genexpr>)",
-          0.0015038480000000001,
-          4000
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:52(decode_from)",
+          0.0021743,
+          1000
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.011935614,
+          0.011858284,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.011567860000000001,
+          0.011499807,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:116(encode_into)",
-          0.006570495,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:114(encode_into)",
+          0.006486523,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:113(encode_size)",
-          0.004056774,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:111(encode_size)",
+          0.0040736620000000005,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.002712808,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.002644997,
           6000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:38(encode_into)",
-          0.0020896910000000003,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:45(encode_into)",
+          0.002143976,
           1000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:224(encode_into)",
-          0.0018570470000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:209(encode_into)",
+          0.001809548,
           4000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:34(encode_size)",
-          0.0015253040000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:41(encode_size)",
+          0.0015401360000000001,
           1000
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.006893604,
+          0.00713842,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:64(__init__)",
-          0.006383730000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:62(__init__)",
+          0.006610974,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:82(set)",
-          0.005733716000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:80(set)",
+          0.005935809,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:86(<genexpr>)",
-          0.0013529520000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:84(<genexpr>)",
+          0.001403395,
           4000
         ],
         [
           "~:0(<built-in method builtins.isinstance>)",
-          0.0012482370000000001,
+          0.0012940380000000002,
           8000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:42(_choice_keys)",
-          0.001208152,
-          2000
-        ],
-        [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:38(_choice_types)",
-          0.0011990220000000001,
+          0.001248771,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:19(__instancecheck__)",
-          0.00036721800000000005,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:42(_choice_keys)",
+          0.0012216170000000001,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:24(__instancecheck__)",
+          0.000378932,
           2000
         ]
       ]
@@ -1399,127 +1399,127 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.042990393,
+          0.070427853,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.041990818,
+          0.06932009800000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.041587511,
+          0.068898971,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/dictionary.py:188(decode_from)",
-          0.041100593000000005,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/dictionary.py:161(decode_from)",
+          0.06836666400000001,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:45(decode_from)",
-          0.021059742000000003,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:52(decode_from)",
+          0.038671069,
           20000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.020013833,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.034107474,
           42000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.004323521,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.018446821000000002,
           42000
         ],
         [
-          "~:0(<method 'decode' of 'bytes' objects>)",
-          0.0019244820000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:78(__new__)",
+          0.007799339000000001,
           20000
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.094251655,
+          0.10645378800000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.093835602,
+          0.10601363600000001,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/dictionary.py:180(encode_into)",
-          0.055317871000000005,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/dictionary.py:153(encode_into)",
+          0.061899579,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:38(encode_into)",
-          0.039386155,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/dictionary.py:147(encode_size)",
+          0.042966844000000004,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:45(encode_into)",
+          0.04130333,
           20000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/dictionary.py:174(encode_size)",
-          0.037406644,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:34(encode_size)",
-          0.028374007000000003,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:41(encode_size)",
+          0.029860252,
           20000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.019404326,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.019953332,
           44000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:224(encode_into)",
-          0.017813813,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:209(encode_into)",
+          0.018591837,
           42000
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.009135224,
+          0.008290663,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/dictionary.py:71(__init__)",
-          0.008564486000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/dictionary.py:69(__init__)",
+          0.007765478,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/dictionary.py:112(update)",
-          0.008113887,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/dictionary.py:91(update)",
+          0.007472132,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/dictionary.py:91(_validate)",
-          0.004703746,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/dictionary.py:72(_validate)",
+          0.004574933000000001,
           20000
         ],
         [
           "~:0(<built-in method builtins.isinstance>)",
-          0.00156922,
+          0.0015716760000000001,
           40000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/dictionary.py:77(_mark_dirty)",
-          0.00024955,
-          2000
-        ],
-        [
-          "~:0(<function Dictionary.update at 0x1010e8fe0>)",
-          0.00024086500000000002,
+          "~:0(<function Dictionary.update at 0x100de4fe0>)",
+          0.00023928100000000002,
           2000
         ],
         [
           "~:0(<method 'items' of 'dict' objects>)",
-          0.000170365,
+          0.000165009,
           2000
+        ],
+        [
+          "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
+          1.925e-05,
+          1
         ]
       ]
     },
@@ -1527,106 +1527,106 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.002573267,
+          0.0030637140000000004,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.002296513,
+          0.00277391,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/enum.py:124(decode)",
-          0.0019767870000000002,
+          0.002450374,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/enum.py:71(decode_from)",
-          0.0016020250000000002,
+          0.0020744970000000002,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.0009070100000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.001348959,
           2000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.000190847,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.0008526720000000001,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:101(_get_small_decode_cache)",
-          0.00011630700000000001,
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.00018970300000000002,
           2000
         ],
         [
           "/Users/prasad/.local/share/uv/python/cpython-3.12.11-macos-aarch64-none/lib/python3.12/typing.py:2187(cast)",
-          8.402500000000001e-05,
+          8.381500000000001e-05,
           2000
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.004255854,
+          0.0040641010000000005,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/enum.py:43(encode)",
-          0.0038890590000000003,
+          0.0037552040000000003,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/enum.py:50(encode_into)",
-          0.002946403,
+          0.0028420890000000003,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.000902434,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.0008724850000000001,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:224(encode_into)",
-          0.0008963630000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:209(encode_into)",
+          0.00086153,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:72(_check_buffer_size)",
-          0.00035007100000000003,
+          0.00032683500000000004,
           2000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.000204667,
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.000198709,
           2000
         ],
         [
           "~:0(<method 'index' of 'list' objects>)",
-          0.000183928,
+          0.00017931200000000002,
           2000
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.00086529,
+          0.0008904900000000001,
           2000
         ],
         [
           "/Users/prasad/.local/share/uv/python/cpython-3.12.11-macos-aarch64-none/lib/python3.12/enum.py:720(__call__)",
-          0.00046542,
+          0.00047525700000000003,
           2000
         ],
         [
           "/Users/prasad/.local/share/uv/python/cpython-3.12.11-macos-aarch64-none/lib/python3.12/enum.py:1128(__new__)",
-          0.000187512,
+          0.00018917,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          8.667e-06,
+          9.417e-06,
           1
         ]
       ]
@@ -1635,66 +1635,66 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.001130946,
+          0.001107967,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.0008307270000000001,
+          0.0008132790000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.000541599,
+          0.0005333310000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/null.py:24(decode_from)",
-          0.000220556,
+          0.00021862700000000002,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          9.292e-06,
+          8.792e-06,
           1
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.001194776,
+          0.001181353,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.0009299320000000001,
+          0.0009214580000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/null.py:18(encode_size)",
-          7.2082e-05,
+          7.303500000000001e-05,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/null.py:21(encode_into)",
-          7.065000000000001e-05,
+          7.1439e-05,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.5666000000000002e-05,
+          2e-05,
           1
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.000289563,
+          0.000280249,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          9.208e-06,
+          9.125e-06,
           1
         ]
       ]
@@ -1703,126 +1703,126 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.012579673000000001,
+          0.013634606,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.012115241,
+          0.013183097000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.011744068,
+          0.012811899000000002,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:128(decode_from)",
-          0.01131003,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:126(decode_from)",
+          0.012378336,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/option.py:21(__init__)",
-          0.00806214,
+          0.008170425,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:64(__init__)",
-          0.007533059000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:62(__init__)",
+          0.007657141,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/option.py:24(set)",
-          0.0068815130000000006,
+          0.006965481000000001,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:82(set)",
-          0.006248974,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:80(set)",
+          0.006339829000000001,
           2000
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.00814919,
+          0.008202865,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.007822725,
+          0.007871004000000001,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:116(encode_into)",
-          0.004356401,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:114(encode_into)",
+          0.004375897,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:113(encode_size)",
-          0.002567656,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:111(encode_size)",
+          0.002583895,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.0018032520000000002,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.0017991090000000001,
           4000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:224(encode_into)",
-          0.001341018,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:209(encode_into)",
+          0.0013493790000000002,
           3000
         ],
         [
           "~:0(<built-in method builtins.isinstance>)",
-          0.0005477510000000001,
+          0.0005480330000000001,
           3000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.00041135000000000005,
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.000401525,
           4000
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.008190469,
+          0.008345626,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/option.py:21(__init__)",
-          0.0076250400000000005,
+          0.0077437040000000006,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:64(__init__)",
-          0.007126485,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:62(__init__)",
+          0.007226084000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/option.py:24(set)",
-          0.006507622,
+          0.006598214000000001,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:82(set)",
-          0.005899257000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:80(set)",
+          0.006037388,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:86(<genexpr>)",
-          0.0014022260000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:84(<genexpr>)",
+          0.001487309,
           4000
         ],
         [
           "~:0(<built-in method builtins.isinstance>)",
-          0.001298901,
+          0.001321895,
           7000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/choice.py:38(_choice_types)",
-          0.001248734,
+          0.001249029,
           2000
         ]
       ]
@@ -1831,126 +1831,126 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.018344463000000002,
+          0.027407743000000002,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.017646459,
+          0.026742184000000002,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.017263571000000002,
+          0.026370352000000003,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:164(decode_from)",
-          0.016756145,
+          0.025878896000000002,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.009325216,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.018169337,
           20000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.0023348500000000003,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.008729792,
+          20000
+        ],
+        [
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.002230881,
           22000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:187(_from_decoded)",
-          0.001541688,
+          0.0015731,
           2000
-        ],
-        [
-          "~:0(<method 'append' of 'list' objects>)",
-          0.0013035100000000001,
-          20000
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.012735445000000001,
+          0.012968853,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.012408779,
+          0.012601565,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:153(encode_into)",
-          0.008444497,
+          0.008543454,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:224(encode_into)",
-          0.006422150000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:209(encode_into)",
+          0.006479171000000001,
           20000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:129(encode_size)",
-          0.0030616840000000003,
+          0.0031136040000000003,
           2000
         ],
         [
           "~:0(<method 'to_bytes' of 'int' objects>)",
-          0.0015663830000000002,
+          0.0015936980000000002,
           20000
         ],
         [
           "~:0(<built-in method builtins.issubclass>)",
-          0.0009159130000000001,
+          0.0009555570000000001,
           4000
         ],
         [
           "<frozen abc>:121(__subclasscheck__)",
-          0.00042302700000000003,
+          0.000445842,
           2000
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.009536439,
+          0.009566400000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:93(__init__)",
-          0.009003599000000001,
+          0.009025515000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:107(extend)",
-          0.008385294,
+          0.008405497000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:80(_validate)",
-          0.005165318,
+          0.005191147,
           20000
         ],
         [
           "~:0(<built-in method builtins.getattr>)",
-          0.0009630400000000001,
+          0.0009641760000000001,
           20000
         ],
         [
           "~:0(<built-in method builtins.isinstance>)",
-          0.0008995300000000001,
+          0.000918518,
           20000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:86(_validate_self)",
-          0.000577909,
+          0.0005791030000000001,
           2000
         ],
         [
           "~:0(<built-in method builtins.len>)",
-          0.000195168,
+          0.00019554400000000002,
           4000
         ]
       ]
@@ -1959,96 +1959,106 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.0034408100000000003,
+          0.00514886,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.003087966,
+          0.0047892640000000005,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:53(decode)",
-          0.00275464,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:62(decode)",
+          0.004431653000000001,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:45(decode_from)",
-          0.0023397170000000003,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:52(decode_from)",
+          0.004011883,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.0010268640000000002,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.0014110540000000001,
           2000
         ],
         [
-          "~:0(<method 'decode' of 'bytearray' objects>)",
-          0.000251322,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.000886368,
           2000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.000205736,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:78(__new__)",
+          0.0007918210000000001,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:101(_get_small_decode_cache)",
-          0.00012673600000000001,
-          2000
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.000412505,
+          4000
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.008036414,
+          0.008035055000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:29(encode)",
-          0.007701463,
+          0.007687793,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:38(encode_into)",
-          0.004019751,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:45(encode_into)",
+          0.0040326070000000006,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:34(encode_size)",
-          0.002967033,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:41(encode_size)",
+          0.002971174,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.0017605600000000002,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.0017774790000000002,
           4000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:224(encode_into)",
-          0.000912624,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:209(encode_into)",
+          0.0009268690000000001,
           2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:34(_utf8_bytes)",
+          0.000734912,
+          4000
         ],
         [
           "~:0(<built-in method builtins.len>)",
-          0.0005984250000000001,
+          0.000619566,
           12000
-        ],
-        [
-          "~:0(<method 'encode' of 'str' objects>)",
-          0.000413438,
-          4000
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.00031543500000000003,
+          0.00114498,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:78(__new__)",
+          0.000707459,
+          2000
+        ],
+        [
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.00019726900000000003,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          9.209000000000001e-06,
+          1.2041e-05,
           1
         ]
       ]
@@ -2057,126 +2067,126 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.01936331,
+          0.027502969000000002,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.018688434,
+          0.026812830000000003,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.018318202000000002,
+          0.026432607,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:164(decode_from)",
-          0.017803453,
+          0.025940294000000003,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.009448098,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.018171632,
           20000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.0022562330000000003,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.008690836,
+          20000
+        ],
+        [
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.0022095120000000003,
           22000
         ],
         [
-          "~:0(<method 'append' of 'list' objects>)",
-          0.0017567330000000001,
-          20000
-        ],
-        [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:187(_from_decoded)",
-          0.0015828180000000002,
+          0.001611879,
           2000
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.012772873,
+          0.013036067,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.012442124,
+          0.012700492,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:153(encode_into)",
-          0.008477631000000001,
+          0.008620982000000001,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:224(encode_into)",
-          0.006437255,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:209(encode_into)",
+          0.006462942,
           20000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:129(encode_size)",
-          0.0030443970000000003,
+          0.003145792,
           2000
         ],
         [
           "~:0(<method 'to_bytes' of 'int' objects>)",
-          0.0015823570000000002,
+          0.0016380470000000001,
           20000
         ],
         [
           "~:0(<built-in method builtins.issubclass>)",
-          0.0009245750000000001,
+          0.000950552,
           4000
         ],
         [
           "<frozen abc>:121(__subclasscheck__)",
-          0.000437645,
+          0.00045056400000000003,
           2000
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.009481902,
+          0.011264714,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:93(__init__)",
-          0.008944238,
+          0.010664182000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:107(extend)",
-          0.008323803000000001,
+          0.010003293,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:80(_validate)",
-          0.005148847000000001,
-          20000
-        ],
-        [
-          "~:0(<built-in method builtins.getattr>)",
-          0.000953782,
-          20000
-        ],
-        [
-          "~:0(<built-in method builtins.isinstance>)",
-          0.0008891610000000001,
+          0.005734106,
           20000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:86(_validate_self)",
-          0.000570442,
+          0.001109166,
           2000
         ],
         [
+          "~:0(<built-in method builtins.getattr>)",
+          0.0010914190000000002,
+          20000
+        ],
+        [
+          "~:0(<built-in method builtins.isinstance>)",
+          0.0009643570000000001,
+          20000
+        ],
+        [
           "~:0(<built-in method builtins.len>)",
-          0.00019566100000000002,
+          0.000224264,
           4000
         ]
       ]
@@ -2185,126 +2195,126 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.019892567,
+          0.030718636,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.019218885,
+          0.029988538000000002,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.018857759,
+          0.029604187,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:164(decode_from)",
-          0.018340512,
+          0.029061214000000002,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.010480009,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.020696953,
           22000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.002452081,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.010133203,
+          22000
+        ],
+        [
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.0025266990000000003,
           24000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:187(_from_decoded)",
-          0.001566331,
+          0.001646887,
           2000
-        ],
-        [
-          "~:0(<built-in method from_bytes>)",
-          0.0013557200000000001,
-          20000
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.018374113,
+          0.018879713000000003,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.018020915000000002,
+          0.018510182,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:153(encode_into)",
-          0.011529833000000001,
+          0.011783369,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:224(encode_into)",
-          0.007598203,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:209(encode_into)",
+          0.007702260000000001,
           22000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:129(encode_size)",
-          0.005526851,
+          0.005727773,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.001888045,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.002018746,
           4000
         ],
         [
           "~:0(<method 'to_bytes' of 'int' objects>)",
-          0.0016446240000000001,
+          0.001672993,
           20000
         ],
         [
           "~:0(<built-in method builtins.issubclass>)",
-          0.000975727,
+          0.001005597,
           4000
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.009516477,
+          0.00983866,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:93(__init__)",
-          0.008981455000000001,
+          0.009290719000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:107(extend)",
-          0.008357297000000001,
+          0.008653952000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:80(_validate)",
-          0.0051257410000000005,
+          0.005345398,
           20000
         ],
         [
           "~:0(<built-in method builtins.getattr>)",
-          0.000946076,
+          0.000989633,
           20000
         ],
         [
           "~:0(<built-in method builtins.isinstance>)",
-          0.0008787640000000001,
+          0.000952668,
           20000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:86(_validate_self)",
-          0.000588135,
+          0.000611119,
           2000
         ],
         [
           "~:0(<built-in method builtins.len>)",
-          0.00020564200000000002,
+          0.000201215,
           4000
         ]
       ]
@@ -2313,126 +2323,126 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.019242732000000002,
+          0.030778623,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.018584898000000002,
+          0.030064970000000003,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.018222081,
+          0.029675693000000003,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:164(decode_from)",
-          0.017712124000000003,
+          0.029069606,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.010091469,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.020543460000000003,
           22000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.002338077,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.009983011,
+          22000
+        ],
+        [
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.002615669,
           24000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:187(_from_decoded)",
-          0.0015707400000000002,
+          0.0018218280000000002,
           2000
-        ],
-        [
-          "~:0(<method 'append' of 'list' objects>)",
-          0.001303764,
-          20000
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.018271554000000002,
+          0.019815615,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.017918653,
+          0.019432801,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:153(encode_into)",
-          0.011403675,
+          0.012379377,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:224(encode_into)",
-          0.007526314,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:209(encode_into)",
+          0.008073641000000001,
           22000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:129(encode_size)",
-          0.0055513210000000006,
+          0.005931322,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.0018646340000000002,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.0020766820000000003,
           4000
         ],
         [
           "~:0(<method 'to_bytes' of 'int' objects>)",
-          0.001626857,
+          0.001714159,
           20000
         ],
         [
           "~:0(<built-in method builtins.issubclass>)",
-          0.0010135930000000001,
+          0.0010675390000000002,
           4000
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.009644382,
+          0.009608386,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:93(__init__)",
-          0.009089203,
+          0.009074321,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:107(extend)",
-          0.008465447000000001,
+          0.008452929000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:80(_validate)",
-          0.005202434000000001,
+          0.005208825,
           20000
         ],
         [
           "~:0(<built-in method builtins.getattr>)",
-          0.000966666,
+          0.0009769400000000001,
           20000
         ],
         [
           "~:0(<built-in method builtins.isinstance>)",
-          0.000923774,
+          0.000906574,
           20000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:86(_validate_self)",
-          0.0006098950000000001,
+          0.000602206,
           2000
         ],
         [
           "~:0(<built-in method builtins.len>)",
-          0.00019489500000000002,
+          0.000193565,
           4000
         ]
       ]
@@ -2441,81 +2451,86 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.001855836,
+          0.0028945560000000004,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.001562051,
+          0.0025867950000000002,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.0012555390000000002,
+          0.002267223,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.000900754,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.0018987930000000002,
           2000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.00019818,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.0009299190000000001,
+          2000
+        ],
+        [
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.00020563000000000002,
           2000
         ],
         [
           "~:0(<built-in method from_bytes>)",
-          0.00012556200000000002,
+          0.000157846,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          9.208e-06,
+          1.6875e-05,
           1
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.000805234,
+          0.000799752,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:198(encode)",
-          0.000531632,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:180(encode)",
+          0.000526236,
           2000
         ],
         [
           "~:0(<method 'to_bytes' of 'int' objects>)",
-          0.00015609600000000002,
+          0.000155923,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          9.917e-06,
+          9.875000000000001e-06,
           1
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.001276268,
+          0.001266785,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.0008429,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.000834435,
           2000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.00019007,
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.000192353,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.0291e-05,
+          1.125e-05,
           1
         ]
       ]
@@ -2524,81 +2539,86 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.0018655210000000002,
+          0.0029648030000000002,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.001573146,
+          0.002618659,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.001269692,
+          0.0022908250000000002,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.0009112980000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.00191875,
           2000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.000201098,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.0009540870000000001,
+          2000
+        ],
+        [
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.00021197500000000002,
           2000
         ],
         [
           "~:0(<built-in method from_bytes>)",
-          0.00013625600000000002,
+          0.000167608,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          9.833e-06,
+          1.6833e-05,
           1
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.000831152,
+          0.000805046,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:198(encode)",
-          0.0005567710000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:180(encode)",
+          0.000535127,
           2000
         ],
         [
           "~:0(<method 'to_bytes' of 'int' objects>)",
-          0.00016657500000000002,
+          0.000155186,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          9.667e-06,
+          1.0708000000000001e-05,
           1
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.00128926,
+          0.0012753410000000001,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.000852981,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.0008413180000000001,
           2000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.000189215,
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.000194346,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          9.958e-06,
+          1.0667000000000001e-05,
           1
         ]
       ]
@@ -2607,81 +2627,86 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.001879063,
+          0.002871139,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.0015842120000000002,
+          0.0025573460000000003,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.001270464,
+          0.0022303600000000002,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.0009151980000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.0018551210000000002,
           2000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.000201217,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.0008999660000000001,
+          2000
+        ],
+        [
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.000206259,
           2000
         ],
         [
           "~:0(<built-in method from_bytes>)",
-          0.000133544,
+          0.00015993500000000002,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.1333000000000001e-05,
+          1.375e-05,
           1
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.000768842,
+          0.0007763430000000001,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:198(encode)",
-          0.0005036190000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:180(encode)",
+          0.000509827,
           2000
         ],
         [
           "~:0(<method 'to_bytes' of 'int' objects>)",
-          0.000146569,
+          0.00014853000000000002,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          8.791000000000001e-06,
+          8.334e-06,
           1
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.0013206420000000001,
+          0.00127497,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.00087553,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.0008403600000000001,
           2000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.00020239700000000002,
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.00018610000000000002,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.7e-05,
+          8.916e-06,
           1
         ]
       ]
@@ -2690,76 +2715,81 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.001433624,
+          0.002300649,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.0011597060000000001,
+          0.001976397,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.00084396,
+          0.001664918,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.000508506,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.0013176870000000001,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:101(_get_small_decode_cache)",
-          0.00010887300000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.000839684,
+          2000
+        ],
+        [
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.000195481,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.6708e-05,
+          1.2292e-05,
           1
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.0007506370000000001,
+          0.000742324,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:198(encode)",
-          0.00048592300000000003,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:180(encode)",
+          0.000483216,
           2000
         ],
         [
           "~:0(<method 'to_bytes' of 'int' objects>)",
-          0.00014522500000000002,
+          0.000141974,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.0042000000000001e-05,
+          9.042e-06,
           1
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.0012302670000000002,
+          0.001169794,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.0008050240000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.000776022,
           2000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.000186381,
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.000182358,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.2e-05,
+          9.084e-06,
           1
         ]
       ]
@@ -2768,91 +2798,91 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.002408692,
+          0.0030032490000000004,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.002093361,
+          0.0026999290000000002,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.001773136,
+          0.002378246,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.001376182,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.002012743,
           2000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.000213126,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.0008873160000000001,
+          2000
+        ],
+        [
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.000201647,
           2000
         ],
         [
           "~:0(<method 'bit_length' of 'int' objects>)",
-          0.000100382,
+          9.868700000000001e-05,
           1200
         ],
         [
           "~:0(<built-in method builtins.len>)",
-          8.3465e-05,
+          7.7799e-05,
           1200
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:101(_get_small_decode_cache)",
-          5.1294e-05,
-          800
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.0013013900000000001,
+          0.001314297,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:198(encode)",
-          0.0010047090000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:180(encode)",
+          0.001019917,
           2000
         ],
         [
           "~:0(<method 'to_bytes' of 'int' objects>)",
-          0.00010319100000000001,
+          0.000102256,
           1200
         ],
         [
           "~:0(<method 'bit_length' of 'int' objects>)",
-          8.1975e-05,
+          9.825900000000001e-05,
           1200
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.4083e-05,
+          9.209000000000001e-06,
           1
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.001344434,
+          0.0012877770000000001,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.000893318,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.0008536100000000001,
           2000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.00019732200000000002,
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.00018704800000000002,
           2000
         ],
         [
           "~:0(<method 'disable' of '_lsprof.Profiler' objects>)",
-          1.1000000000000001e-05,
+          1.0041000000000001e-05,
           1
         ]
       ]
@@ -2861,126 +2891,126 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.019310657000000002,
+          0.029377085,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.018645451,
+          0.028657785,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.018285082,
+          0.02826827,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:164(decode_from)",
-          0.017768578,
+          0.027709579,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.010120768,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.019646573,
           22000
         ],
         [
-          "~:0(<built-in method __new__ of type object at 0x1029e3d00>)",
-          0.002363216,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.009675679000000001,
+          22000
+        ],
+        [
+          "~:0(<built-in method __new__ of type object at 0x1026dbd00>)",
+          0.0024594300000000003,
           24000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:187(_from_decoded)",
-          0.001551618,
+          0.0016493590000000002,
           2000
-        ],
-        [
-          "~:0(<method 'append' of 'list' objects>)",
-          0.001292039,
-          20000
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.018608785000000003,
+          0.018653666000000003,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.018244783,
+          0.018292910000000003,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:153(encode_into)",
-          0.011664201,
+          0.011594892,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:224(encode_into)",
-          0.007679274000000001,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:209(encode_into)",
+          0.007583947000000001,
           22000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:129(encode_size)",
-          0.005611137,
+          0.005674967,
           2000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:113(__new__)",
-          0.0019790840000000003,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:95(__new__)",
+          0.001974978,
           4000
         ],
         [
           "~:0(<method 'to_bytes' of 'int' objects>)",
-          0.00165798,
+          0.0016485340000000001,
           20000
         ],
         [
           "~:0(<built-in method builtins.issubclass>)",
-          0.000985069,
+          0.0009898040000000002,
           4000
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.009742299000000001,
+          0.009797202000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:93(__init__)",
-          0.00919856,
+          0.009251494,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:107(extend)",
-          0.008565976000000001,
+          0.008613158000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:80(_validate)",
-          0.005278552000000001,
+          0.005241245,
           20000
         ],
         [
           "~:0(<built-in method builtins.getattr>)",
-          0.0009793690000000001,
+          0.0009706710000000001,
           20000
         ],
         [
           "~:0(<built-in method builtins.isinstance>)",
-          0.000906697,
+          0.000911606,
           20000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/sequences.py:86(_validate_self)",
-          0.00060826,
+          0.00062571,
           2000
         ],
         [
           "~:0(<built-in method builtins.len>)",
-          0.00019791100000000002,
+          0.000198449,
           4000
         ]
       ]
@@ -2989,126 +3019,126 @@
       "decode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:592(_decode_loop)",
-          0.013102051,
+          0.017092688,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:119(_fn)",
-          0.012673145,
+          0.016617365000000002,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:60(decode)",
-          0.012304434000000001,
+          0.016247234,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/struct.py:43(decode_from)",
-          0.01189011,
+          0.015823234000000002,
           2000
         ],
         [
-          "/Users/prasad/.local/share/uv/python/cpython-3.12.11-macos-aarch64-none/lib/python3.12/dataclasses.py:1278(fields)",
-          0.004424214,
-          4000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/struct.py:24(__init__)",
-          0.003261791,
-          2000
-        ],
-        [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:259(decode_from)",
-          0.002852205,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/integers.py:244(decode_from)",
+          0.005051364,
           6000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:45(decode_from)",
-          0.002410419,
+          "/Users/prasad/.local/share/uv/python/cpython-3.12.11-macos-aarch64-none/lib/python3.12/dataclasses.py:1278(fields)",
+          0.004570915,
+          4000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:52(decode_from)",
+          0.004404941,
+          2000
+        ],
+        [
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/struct.py:24(__init__)",
+          0.0034347360000000003,
           2000
         ]
       ],
       "encode": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:578(_encode_loop)",
-          0.021233995000000002,
+          0.021651450000000003,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/itf/codable.py:34(encode)",
-          0.020863521000000003,
+          0.021263078,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/struct.py:34(encode_into)",
-          0.010522251,
+          0.010701443000000001,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/struct.py:31(encode_size)",
-          0.00934605,
+          0.009544802,
           2000
         ],
         [
           "~:0(<built-in method builtins.sum>)",
-          0.006275745,
+          0.006423176,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/struct.py:32(<genexpr>)",
-          0.005516277,
+          0.005635059,
           8000
         ],
         [
           "/Users/prasad/.local/share/uv/python/cpython-3.12.11-macos-aarch64-none/lib/python3.12/dataclasses.py:1278(fields)",
-          0.00472903,
+          0.004808154,
           4000
         ],
         [
-          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:38(encode_into)",
-          0.004470669,
+          "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/string.py:45(encode_into)",
+          0.004534923000000001,
           2000
         ]
       ],
       "init": [
         [
           "/Users/prasad/projects/tsr/tsrkit-types/benchmarks/bench_types.py:563(_init_loop)",
-          0.004576793,
+          0.0044739540000000005,
           2000
         ],
         [
           "/Users/prasad/projects/tsr/tsrkit-types/tsrkit_types/struct.py:24(__init__)",
-          0.004024509,
+          0.003920584,
           2000
         ],
         [
           "/Users/prasad/.local/share/uv/python/cpython-3.12.11-macos-aarch64-none/lib/python3.12/dataclasses.py:1278(fields)",
-          0.002108081,
+          0.002040722,
           2000
         ],
         [
           "~:0(<method 'get' of 'mappingproxy' objects>)",
-          0.0005230300000000001,
+          0.000507796,
           6000
         ],
         [
           "/Users/prasad/.local/share/uv/python/cpython-3.12.11-macos-aarch64-none/lib/python3.12/dataclasses.py:1293(<genexpr>)",
-          0.00046175700000000003,
+          0.000446067,
           8000
         ],
         [
           "~:0(<method 'values' of 'dict' objects>)",
-          0.000169454,
+          0.000162162,
           2000
         ],
         [
           "<string>:2(__init__)",
-          0.00012217600000000002,
+          0.00011657800000000001,
           2000
         ],
         [
           "~:0(<built-in method builtins.getattr>)",
-          0.000113524,
+          0.00010879100000000001,
           2000
         ]
       ]

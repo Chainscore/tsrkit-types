@@ -8,8 +8,6 @@ serialization capabilities, including integers, strings, containers, and more.
 # Core interfaces
 from .itf.codable import Codable
 
-# Configuration
-from . import config
 
 # Integer types
 from .integers import Uint, U8, U16, U32, U64
@@ -91,8 +89,6 @@ __all__ = [
     # Structure decorator
     "structure", "struct",
 
-    # Config
-    "config",
 ]
 
 # Version information

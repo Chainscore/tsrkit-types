@@ -2,7 +2,6 @@ import abc
 from typing import TypeVar, Type, ClassVar, Tuple, Generic, Optional
 from tsrkit_types.integers import Uint
 from tsrkit_types.itf.codable import Codable
-from tsrkit_types import config as _config
 
 T = TypeVar("T")
 
@@ -80,16 +79,12 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
 
     def _validate(self, value):
         """For TypeChecks - added to fns that alter elements"""
-        if not _config.STRICT_VALIDATE:
-            return
         if getattr(self, "_element_type", None) is not None:
             if not isinstance(value, self._element_type):
                 raise TypeError(f"{value!r} is not an instance of {self._element_type!r}")
 
     def _validate_self(self):
         """For Resultant self check - added to fns that alter size"""
-        if not _config.STRICT_VALIDATE:
-            return
         if  len(self) < self._min_length:
             raise ValueError(f"Vector: Expected sequence size to be >= {self._min_length}, resultant size {len(self)}")
         elif len(self) > self._max_length:
@@ -97,42 +92,27 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
 
     def __init__(self, initial: list[T]):
         super().__init__()
-        if _config.STRICT_VALIDATE:
-            self.extend(initial)
-        else:
-            list.extend(self, initial)
+        self.extend(initial)
 
     def append(self, v: T):
-        if _config.STRICT_VALIDATE:
-            self._validate(v)
-            super().append(v)
-            self._validate_self()
-        else:
-            super().append(v)
+        self._validate(v)
+        super().append(v)
+        self._validate_self()
 
     def insert(self, i, v: T):
-        if _config.STRICT_VALIDATE:
-            self._validate(v)
-            super().insert(i, v)
-            self._validate_self()
-        else:
-            super().insert(i, v)
+        self._validate(v)
+        super().insert(i, v)
+        self._validate_self()
 
     def extend(self, seq: list[T]):
-        if _config.STRICT_VALIDATE:
-            for val in seq:
-                self._validate(val)
-            super().extend(seq)
-            self._validate_self()
-        else:
-            super().extend(seq)
+        for val in seq:
+            self._validate(val)
+        super().extend(seq)
+        self._validate_self()
 
     def __setitem__(self, i, v: T):
-        if _config.STRICT_VALIDATE:
-            self._validate(v)
-            super().__setitem__(i, v)
-        else:
-            super().__setitem__(i, v)
+        self._validate(v)
+        super().__setitem__(i, v)
 
     def __repr__(self):
         return f"{self.__class__.__name__}({list(self)})"
@@ -164,7 +144,7 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
                 return size
 
         for item in self:
-            if _config.STRICT_VALIDATE and not isinstance(item, Codable):
+            if not isinstance(item, Codable):
                 raise TypeError(0, 0, f"Expected Codable, got {type(item)}")
             size += item.encode_size()
 
