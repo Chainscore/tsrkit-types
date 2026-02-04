@@ -57,6 +57,9 @@ Changelog = "https://github.com/chainscore/tsrkit-types/blob/main/CHANGELOG.md"
 requires = ["setuptools>=65.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+packages = { find = { include = ["tsrkit_types*"], exclude = ["wheelhouse*"] } }
+
 [tool.ruff]
 line-length = 100
 target-version = "py311"
