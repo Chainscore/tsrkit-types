@@ -5,6 +5,7 @@ from tsrkit_types.bytes_common import BytesMixin
 
 from tsrkit_types import _native
 
+
 class BytesCheckMeta(abc.ABCMeta):
     """Meta class to check if the instance is a bytes with the same key and value types"""
     def __instancecheck__(cls, instance):
