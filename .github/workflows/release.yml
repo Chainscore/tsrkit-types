@@ -5,11 +5,14 @@ on:
     branches: [ main ]
     tags:
       - "v*"
+  pull_request:
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   test:
     name: Run Tests
+    if: github.event_name != 'pull_request' || startsWith(github.head_ref, 'fix/build-')
     runs-on: ubuntu-latest
 
     steps:
@@ -37,6 +40,7 @@ jobs:
   build_wheels:
     name: Build wheels (${{ matrix.os }})
     needs: test
+    if: github.event_name != 'pull_request' || startsWith(github.head_ref, 'fix/build-')
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
