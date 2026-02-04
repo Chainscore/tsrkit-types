@@ -55,6 +55,12 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Set up QEMU (for aarch64 wheels)
+        if: runner.os == 'Linux'
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
       - name: Set up uv
         uses: astral-sh/setup-uv@v3
         with:
