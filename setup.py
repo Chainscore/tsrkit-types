@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Setup script for tsrkit-types package."""
 
-from setuptools import setup
+from setuptools import Extension, setup
+
+extensions = [Extension("tsrkit_types._native", sources=["tsrkit_types/_native.c"])]
 
 # Use pyproject.toml for configuration
-setup() 
+setup(ext_modules=extensions)

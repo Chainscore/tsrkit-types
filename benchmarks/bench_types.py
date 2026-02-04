@@ -4,7 +4,7 @@ Micro-benchmarks for tsrkit_types init/encode/decode + cProfile summaries.
 
 Usage:
   python benchmarks/bench_types.py
-  python benchmarks/bench_types.py --runs 20000 --profile-runs 2000
+  python benchmarks/bench_types.py --runs 20000 --profile-runs 2000 --op-runs 20000
 """
 
 import argparse
@@ -16,6 +16,7 @@ import pstats
 import time
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Type
+from array import array
 
 from tsrkit_types import (
     Array,
@@ -59,6 +60,11 @@ class Case:
     encode_values: List[Any]
     decode_fn: Optional[Callable[[bytes], Any]]
     decode_buffers: List[bytes]
+    encode_fn: Optional[Callable[[Any], bytes]] = None
+    json_decode: bool = True
+    json_values: Optional[List[Any]] = None
+    json_decode_fn: Optional[Callable[[Any], Any]] = None
+    json_encode_fn: Optional[Callable[[Any], Any]] = None
 
 
 def _make_bytes(length: int, seed: int) -> bytes:
@@ -69,6 +75,194 @@ def _make_ascii(length: int, seed: int) -> str:
     base = "abcdefghijklmnopqrstuvwxyz0123456789"
     chars = [base[(seed + i) % len(base)] for i in range(length)]
     return "".join(chars)
+
+
+def _encode_varint_u64_py(value: int) -> bytes:
+    if value < 0:
+        raise ValueError("Negative value not supported")
+    if value < (1 << 7):
+        return bytes((value,))
+    if value < (1 << 56):
+        length = (value.bit_length() - 1) // 7
+        prefix_base = 256 - (1 << (8 - length))
+        high = value >> (8 * length)
+        prefix = prefix_base + high
+        remaining = value & ((1 << (8 * length)) - 1)
+        return bytes((prefix,)) + remaining.to_bytes(length, "little")
+    if value < (1 << 64):
+        return b"\xff" + value.to_bytes(8, "little")
+    raise ValueError("Value too large for encoding")
+
+
+def _decode_varint_u64_py(buf: bytes, offset: int = 0) -> Tuple[int, int]:
+    tag = buf[offset]
+    if tag < (1 << 7):
+        return tag, 1
+    if tag == 0xFF:
+        if len(buf) - offset < 9:
+            raise ValueError("Buffer too small to decode 64-bit integer")
+        return int.from_bytes(buf[offset + 1 : offset + 9], "little"), 9
+    length = 8 - ((tag ^ 0xFF).bit_length())
+    if len(buf) - offset < length + 1:
+        raise ValueError("Buffer too small to decode varint")
+    alpha = tag + (1 << (8 - length)) - 256
+    if length == 1:
+        beta = buf[offset + 1]
+    elif length == 2:
+        beta = buf[offset + 1] | (buf[offset + 2] << 8)
+    elif length == 3:
+        beta = buf[offset + 1] | (buf[offset + 2] << 8) | (buf[offset + 3] << 16)
+    elif length == 4:
+        beta = (
+            buf[offset + 1]
+            | (buf[offset + 2] << 8)
+            | (buf[offset + 3] << 16)
+            | (buf[offset + 4] << 24)
+        )
+    else:
+        beta = int.from_bytes(buf[offset + 1 : offset + 1 + length], "little")
+    value = (alpha << (length * 8)) | beta
+    return value, length + 1
+
+
+def _encode_fixed_int_py(value: int, size: int) -> bytes:
+    return int(value).to_bytes(size, "little")
+
+
+def _decode_fixed_int_py(buf: bytes, size: int) -> int:
+    return int.from_bytes(buf[:size], "little")
+
+
+def _encode_bytes_var_py(data: bytes) -> bytes:
+    return _encode_varint_u64_py(len(data)) + data
+
+
+def _decode_bytes_var_py(buf: bytes) -> bytes:
+    length, size = _decode_varint_u64_py(buf, 0)
+    end = size + length
+    if len(buf) < end:
+        raise ValueError("Buffer too small to decode bytes")
+    return buf[size:end]
+
+
+def _encode_string_var_py(text: str) -> bytes:
+    data = text.encode("utf-8")
+    return _encode_varint_u64_py(len(data)) + data
+
+
+def _decode_string_var_py(buf: bytes) -> str:
+    length, size = _decode_varint_u64_py(buf, 0)
+    end = size + length
+    if len(buf) < end:
+        raise ValueError("Buffer too small to decode string")
+    return buf[size:end].decode("utf-8")
+
+
+def _pack_bits_py(bits: List[bool], order: str = "msb") -> bytes:
+    bit_len = len(bits)
+    byte_count = (bit_len + 7) // 8
+    out = bytearray(byte_count)
+    idx = 0
+    if order == "msb":
+        for i in range(byte_count):
+            val = 0
+            for j in range(8):
+                if idx < bit_len and bits[idx]:
+                    val |= 1 << (7 - j)
+                idx += 1
+            out[i] = val
+    else:
+        for i in range(byte_count):
+            val = 0
+            for j in range(8):
+                if idx < bit_len and bits[idx]:
+                    val |= 1 << j
+                idx += 1
+            out[i] = val
+    return bytes(out)
+
+
+def _unpack_bits_py(data: bytes, bit_len: int, order: str = "msb") -> List[bool]:
+    out: List[bool] = []
+    for byte in data:
+        if order == "msb":
+            out.extend(bool((byte >> (7 - i)) & 1) for i in range(8))
+        else:
+            out.extend(bool((byte >> i) & 1) for i in range(8))
+    return out[:bit_len]
+
+
+def _encode_bits_var_py(bits: List[bool], order: str = "msb") -> bytes:
+    packed = _pack_bits_py(bits, order=order)
+    return _encode_varint_u64_py(len(bits)) + packed
+
+
+def _decode_bits_var_py(buf: bytes, order: str = "msb") -> List[bool]:
+    bit_len, size = _decode_varint_u64_py(buf, 0)
+    byte_count = (bit_len + 7) // 8
+    end = size + byte_count
+    if len(buf) < end:
+        raise ValueError("Buffer too small to decode bits")
+    return _unpack_bits_py(buf[size:end], bit_len, order=order)
+
+
+def _encode_bits_fixed_py(bits: List[bool], order: str = "msb") -> bytes:
+    return _pack_bits_py(bits, order=order)
+
+
+def _decode_bits_fixed_py(buf: bytes, bit_len: int, order: str = "msb") -> List[bool]:
+    byte_count = (bit_len + 7) // 8
+    if len(buf) < byte_count:
+        raise ValueError("Buffer too small to decode bits")
+    return _unpack_bits_py(buf[:byte_count], bit_len, order=order)
+
+
+def _encode_u16_list_py(values: List[int]) -> bytes:
+    return b"".join(_encode_fixed_int_py(v, 2) for v in values)
+
+
+def _decode_u16_list_py(buf: bytes) -> List[int]:
+    if len(buf) % 2:
+        raise ValueError("Buffer length must be multiple of 2")
+    return [int.from_bytes(buf[i : i + 2], "little") for i in range(0, len(buf), 2)]
+
+
+def _encode_u16_array_py(values: List[int]) -> bytes:
+    arr = array("H", values)
+    return arr.tobytes()
+
+
+def _decode_u16_array_py(buf: bytes) -> array:
+    arr = array("H")
+    arr.frombytes(buf)
+    return arr
+
+
+def _encode_dict_str_u16_py(data: Dict[str, int]) -> bytes:
+    out = bytearray()
+    out.extend(_encode_varint_u64_py(len(data)))
+    for key in sorted(data):
+        key_bytes = key.encode("utf-8")
+        out.extend(_encode_varint_u64_py(len(key_bytes)))
+        out.extend(key_bytes)
+        out.extend(_encode_fixed_int_py(data[key], 2))
+    return bytes(out)
+
+
+def _decode_dict_str_u16_py(buf: bytes) -> Dict[str, int]:
+    count, size = _decode_varint_u64_py(buf, 0)
+    offset = size
+    result: Dict[str, int] = {}
+    for _ in range(count):
+        key_len, inc = _decode_varint_u64_py(buf, offset)
+        offset += inc
+        key_bytes = buf[offset : offset + key_len]
+        offset += key_len
+        key = key_bytes.decode("utf-8")
+        value = int.from_bytes(buf[offset : offset + 2], "little")
+        offset += 2
+        result[key] = value
+    return result
 
 
 def _timed_loop(runs: int, fn: Callable[[int], None]) -> float:
@@ -108,12 +302,147 @@ def _stats_top(stats: pstats.Stats, limit: int = 8) -> List[Tuple[str, float, in
     return top
 
 
+def _bench_container_ops(runs: int) -> Dict[str, float]:
+    ops: Dict[str, float] = {}
+
+    def run(name: str, factory: Callable[[], Any], op: Callable[[Any], None]) -> None:
+        def _loop(_: int) -> None:
+            obj = factory()
+            op(obj)
+        ops[name] = _timed_loop(runs, _loop)
+
+    # Typed vector ops
+    vec_cls = TypedVector[U16]
+    run(
+        "typed_vector_append",
+        lambda: vec_cls([U16(1), U16(2), U16(3)]),
+        lambda v: v.append(U16(4)),
+    )
+    run(
+        "typed_vector_extend",
+        lambda: vec_cls([U16(1), U16(2), U16(3)]),
+        lambda v: v.extend([U16(4), U16(5)]),
+    )
+    run(
+        "typed_vector_insert",
+        lambda: vec_cls([U16(1), U16(2), U16(3)]),
+        lambda v: v.insert(0, U16(9)),
+    )
+    run(
+        "typed_vector_setitem",
+        lambda: vec_cls([U16(1), U16(2), U16(3)]),
+        lambda v: v.__setitem__(1, U16(9)),
+    )
+    run(
+        "typed_vector_pop",
+        lambda: vec_cls([U16(1), U16(2), U16(3)]),
+        lambda v: v.pop(),
+    )
+
+    # Dictionary ops
+    dict_cls = Dictionary[String, U16]
+    run(
+        "dictionary_setitem",
+        lambda: dict_cls({String("a"): U16(1), String("b"): U16(2)}),
+        lambda d: d.__setitem__(String("c"), U16(3)),
+    )
+    run(
+        "dictionary_pop",
+        lambda: dict_cls({String("a"): U16(1), String("b"): U16(2)}),
+        lambda d: d.pop(String("a")),
+    )
+
+    # ByteArray ops
+    run(
+        "bytearray_append",
+        lambda: ByteArray(b"abcd"),
+        lambda b: b.append(0xEE),
+    )
+    run(
+        "bytearray_extend",
+        lambda: ByteArray(b"abcd"),
+        lambda b: b.extend(b"efgh"),
+    )
+
+    # Bits ops
+    run(
+        "bits_append",
+        lambda: Bits([True, False, True, False]),
+        lambda b: b.append(True),
+    )
+    run(
+        "bits_extend",
+        lambda: Bits([True, False, True, False]),
+        lambda b: b.extend([False, True]),
+    )
+
+    # Native Python container ops
+    run(
+        "py_list_append",
+        lambda: [1, 2, 3],
+        lambda v: v.append(4),
+    )
+    run(
+        "py_list_extend",
+        lambda: [1, 2, 3],
+        lambda v: v.extend([4, 5]),
+    )
+    run(
+        "py_list_insert",
+        lambda: [1, 2, 3],
+        lambda v: v.insert(0, 9),
+    )
+    run(
+        "py_list_setitem",
+        lambda: [1, 2, 3],
+        lambda v: v.__setitem__(1, 9),
+    )
+    run(
+        "py_list_pop",
+        lambda: [1, 2, 3],
+        lambda v: v.pop(),
+    )
+    run(
+        "py_dict_setitem",
+        lambda: {"a": 1, "b": 2},
+        lambda d: d.__setitem__("c", 3),
+    )
+    run(
+        "py_dict_pop",
+        lambda: {"a": 1, "b": 2},
+        lambda d: d.pop("a"),
+    )
+    run(
+        "py_bytearray_append",
+        lambda: bytearray(b"abcd"),
+        lambda b: b.append(0xEE),
+    )
+    run(
+        "py_bytearray_extend",
+        lambda: bytearray(b"abcd"),
+        lambda b: b.extend(b"efgh"),
+    )
+    run(
+        "py_bits_list_append",
+        lambda: [True, False, True, False],
+        lambda b: b.append(True),
+    )
+    run(
+        "py_bits_list_extend",
+        lambda: [True, False, True, False],
+        lambda b: b.extend([False, True]),
+    )
+
+    return ops
+
+
 def _encode_buffers(values: Iterable[Any]) -> List[bytes]:
     return [v.encode() for v in values]
 
 
 def _args_from_values(values: Iterable[Any]) -> List[Tuple[Tuple[Any, ...], Dict[str, Any]]]:
     return [((v,), {}) for v in values]
+
 
 def _decode_via_decode(cls: Type[Any]) -> Callable[[bytes], Any]:
     def _fn(buf: bytes, _cls: Type[Any] = cls) -> Any:
@@ -477,6 +806,7 @@ def _build_cases() -> List[Case]:
             encode_values=[choice_cls(choice_vals[0]), choice_cls(choice_vals[1])],
             decode_fn=_decode_via_decode(choice_cls),
             decode_buffers=_encode_buffers([choice_cls(choice_vals[0]), choice_cls(choice_vals[1])]),
+            json_decode=False,
         )
     )
 
@@ -535,6 +865,241 @@ def _build_cases() -> List[Case]:
         )
     )
 
+    # -------------------------------------------------------------------------- #
+    # Native Python baselines (stdlib / CPython)
+    # -------------------------------------------------------------------------- #
+    cases.append(
+        Case(
+            name="PyInt(varint)",
+            ctor=int,
+            init_args=_args_from_values(uint_vals),
+            encode_values=[int(v) for v in uint_vals],
+            encode_fn=_encode_varint_u64_py,
+            decode_fn=lambda b: _decode_varint_u64_py(b, 0)[0],
+            decode_buffers=[_encode_varint_u64_py(v) for v in uint_vals],
+        )
+    )
+    cases.append(
+        Case(
+            name="PyU8(to_bytes)",
+            ctor=int,
+            init_args=_args_from_values(u8_vals),
+            encode_values=[int(v) for v in u8_vals],
+            encode_fn=lambda v: _encode_fixed_int_py(v, 1),
+            decode_fn=lambda b: _decode_fixed_int_py(b, 1),
+            decode_buffers=[_encode_fixed_int_py(v, 1) for v in u8_vals],
+        )
+    )
+    cases.append(
+        Case(
+            name="PyU16(to_bytes)",
+            ctor=int,
+            init_args=_args_from_values(u16_vals),
+            encode_values=[int(v) for v in u16_vals],
+            encode_fn=lambda v: _encode_fixed_int_py(v, 2),
+            decode_fn=lambda b: _decode_fixed_int_py(b, 2),
+            decode_buffers=[_encode_fixed_int_py(v, 2) for v in u16_vals],
+        )
+    )
+    cases.append(
+        Case(
+            name="PyU32(to_bytes)",
+            ctor=int,
+            init_args=_args_from_values(u32_vals),
+            encode_values=[int(v) for v in u32_vals],
+            encode_fn=lambda v: _encode_fixed_int_py(v, 4),
+            decode_fn=lambda b: _decode_fixed_int_py(b, 4),
+            decode_buffers=[_encode_fixed_int_py(v, 4) for v in u32_vals],
+        )
+    )
+    cases.append(
+        Case(
+            name="PyU64(to_bytes)",
+            ctor=int,
+            init_args=_args_from_values(u64_vals),
+            encode_values=[int(v) for v in u64_vals],
+            encode_fn=lambda v: _encode_fixed_int_py(v, 8),
+            decode_fn=lambda b: _decode_fixed_int_py(b, 8),
+            decode_buffers=[_encode_fixed_int_py(v, 8) for v in u64_vals],
+        )
+    )
+
+    cases.append(
+        Case(
+            name="PyString(var)",
+            ctor=str,
+            init_args=_args_from_values(str_vals),
+            encode_values=[str(v) for v in str_vals],
+            encode_fn=_encode_string_var_py,
+            decode_fn=_decode_string_var_py,
+            decode_buffers=[_encode_string_var_py(v) for v in str_vals],
+        )
+    )
+
+    py_bytes_vals = [_make_bytes(64, i) for i in range(2048)]
+    cases.append(
+        Case(
+            name="PyBytes(var,64B)",
+            ctor=bytes,
+            init_args=_args_from_values(py_bytes_vals),
+            encode_values=[bytes(v) for v in py_bytes_vals],
+            encode_fn=_encode_bytes_var_py,
+            decode_fn=_decode_bytes_var_py,
+            decode_buffers=[_encode_bytes_var_py(v) for v in py_bytes_vals],
+        )
+    )
+    cases.append(
+        Case(
+            name="PyBytes16",
+            ctor=bytes,
+            init_args=_args_from_values([_make_bytes(16, i) for i in range(512)]),
+            encode_values=[_make_bytes(16, i) for i in range(512)],
+            encode_fn=lambda v: bytes(v),
+            decode_fn=lambda b: b[:16],
+            decode_buffers=[_make_bytes(16, i) for i in range(512)],
+        )
+    )
+    cases.append(
+        Case(
+            name="PyBytes32",
+            ctor=bytes,
+            init_args=_args_from_values([_make_bytes(32, i) for i in range(512)]),
+            encode_values=[_make_bytes(32, i) for i in range(512)],
+            encode_fn=lambda v: bytes(v),
+            decode_fn=lambda b: b[:32],
+            decode_buffers=[_make_bytes(32, i) for i in range(512)],
+        )
+    )
+    cases.append(
+        Case(
+            name="PyBytes64",
+            ctor=bytes,
+            init_args=_args_from_values([_make_bytes(64, i) for i in range(512)]),
+            encode_values=[_make_bytes(64, i) for i in range(512)],
+            encode_fn=lambda v: bytes(v),
+            decode_fn=lambda b: b[:64],
+            decode_buffers=[_make_bytes(64, i) for i in range(512)],
+        )
+    )
+    cases.append(
+        Case(
+            name="PyBytes128",
+            ctor=bytes,
+            init_args=_args_from_values([_make_bytes(128, i) for i in range(256)]),
+            encode_values=[_make_bytes(128, i) for i in range(256)],
+            encode_fn=lambda v: bytes(v),
+            decode_fn=lambda b: b[:128],
+            decode_buffers=[_make_bytes(128, i) for i in range(256)],
+        )
+    )
+    cases.append(
+        Case(
+            name="PyBytes256",
+            ctor=bytes,
+            init_args=_args_from_values([_make_bytes(256, i) for i in range(128)]),
+            encode_values=[_make_bytes(256, i) for i in range(128)],
+            encode_fn=lambda v: bytes(v),
+            decode_fn=lambda b: b[:256],
+            decode_buffers=[_make_bytes(256, i) for i in range(128)],
+        )
+    )
+    cases.append(
+        Case(
+            name="PyBytes512",
+            ctor=bytes,
+            init_args=_args_from_values([_make_bytes(512, i) for i in range(64)]),
+            encode_values=[_make_bytes(512, i) for i in range(64)],
+            encode_fn=lambda v: bytes(v),
+            decode_fn=lambda b: b[:512],
+            decode_buffers=[_make_bytes(512, i) for i in range(64)],
+        )
+    )
+    cases.append(
+        Case(
+            name="PyBytes1024",
+            ctor=bytes,
+            init_args=_args_from_values([_make_bytes(1024, i) for i in range(32)]),
+            encode_values=[_make_bytes(1024, i) for i in range(32)],
+            encode_fn=lambda v: bytes(v),
+            decode_fn=lambda b: b[:1024],
+            decode_buffers=[_make_bytes(1024, i) for i in range(32)],
+        )
+    )
+
+    py_ba_vals = [_make_bytes(64, i) for i in range(512)]
+    cases.append(
+        Case(
+            name="PyByteArray(var,64B)",
+            ctor=bytearray,
+            init_args=_args_from_values(py_ba_vals),
+            encode_values=[bytearray(v) for v in py_ba_vals],
+            encode_fn=lambda v: _encode_bytes_var_py(bytes(v)),
+            decode_fn=_decode_bytes_var_py,
+            decode_buffers=[_encode_bytes_var_py(v) for v in py_ba_vals],
+        )
+    )
+
+    py_bits_list = [[bool((i + j) & 1) for j in range(64)] for i in range(128)]
+    cases.append(
+        Case(
+            name="PyBits(var,64b)",
+            ctor=list,
+            init_args=_args_from_values(py_bits_list),
+            encode_values=[list(b) for b in py_bits_list],
+            encode_fn=_encode_bits_var_py,
+            decode_fn=lambda b: _decode_bits_var_py(b, "msb"),
+            decode_buffers=[_encode_bits_var_py(b) for b in py_bits_list],
+        )
+    )
+    cases.append(
+        Case(
+            name="PyBits[64,msb]",
+            ctor=list,
+            init_args=_args_from_values(py_bits_list),
+            encode_values=[list(b) for b in py_bits_list],
+            encode_fn=_encode_bits_fixed_py,
+            decode_fn=lambda b: _decode_bits_fixed_py(b, 64, "msb"),
+            decode_buffers=[_encode_bits_fixed_py(b) for b in py_bits_list],
+        )
+    )
+
+    py_u16_list = [int(v) for v in range(10)]
+    cases.append(
+        Case(
+            name="PyList[U16,N=10]",
+            ctor=list,
+            init_args=[((py_u16_list,), {})],
+            encode_values=[list(py_u16_list)],
+            encode_fn=_encode_u16_list_py,
+            decode_fn=_decode_u16_list_py,
+            decode_buffers=[_encode_u16_list_py(py_u16_list)],
+        )
+    )
+    cases.append(
+        Case(
+            name="PyArray('H',10)",
+            ctor=array,
+            init_args=[(("H", py_u16_list), {})],
+            encode_values=[py_u16_list],
+            encode_fn=_encode_u16_array_py,
+            decode_fn=_decode_u16_array_py,
+            decode_buffers=[_encode_u16_array_py(py_u16_list)],
+        )
+    )
+
+    py_dict_val = {f"k{i}": i for i in range(10)}
+    cases.append(
+        Case(
+            name="PyDict[str,U16]",
+            ctor=dict,
+            init_args=[((py_dict_val,), {})],
+            encode_values=[dict(py_dict_val)],
+            encode_fn=_encode_dict_str_u16_py,
+            decode_fn=_decode_dict_str_u16_py,
+            decode_buffers=[_encode_dict_str_u16_py(py_dict_val)],
+        )
+    )
+
     return cases
 
 
@@ -542,6 +1107,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--runs", type=int, default=20000)
     parser.add_argument("--profile-runs", type=int, default=2000)
+    parser.add_argument("--op-runs", type=int, default=20000)
     parser.add_argument("--profile", action="store_true", default=True)
     parser.add_argument("--no-profile", action="store_false", dest="profile")
     parser.add_argument("--output-dir", default=os.path.join("benchmarks", "out"))
@@ -574,9 +1140,14 @@ def main() -> int:
         if case.encode_values:
             vals = case.encode_values
             n = len(vals)
+            encode_fn = case.encode_fn
 
             def _encode_loop(i: int) -> None:
-                vals[i % n].encode()
+                v = vals[i % n]
+                if encode_fn is None:
+                    v.encode()
+                else:
+                    encode_fn(v)
 
             encode_seconds = _timed_loop(args.runs, _encode_loop)
             results[case.name]["encode_s"] = encode_seconds
@@ -599,6 +1170,46 @@ def main() -> int:
                 stats = _profile_loop(args.profile_runs, _decode_loop)
                 profiles.setdefault(case.name, {})["decode"] = _stats_top(stats)
 
+        if case.encode_values and case.ctor:
+            vals = case.encode_values
+            n = len(vals)
+            if case.json_encode_fn is not None:
+                json_vals = case.json_values or [case.json_encode_fn(v) for v in vals]
+
+                def _json_encode_loop(i: int) -> None:
+                    case.json_encode_fn(vals[i % n])
+            elif hasattr(vals[0], "to_json"):
+                json_vals = case.json_values or [v.to_json() for v in vals]
+
+                def _json_encode_loop(i: int) -> None:
+                    vals[i % n].to_json()
+            else:
+                json_vals = None
+            if json_vals is not None:
+                json_encode_seconds = _timed_loop(args.runs, _json_encode_loop)
+                results[case.name]["json_encode_s"] = json_encode_seconds
+
+                if args.profile:
+                    stats = _profile_loop(args.profile_runs, _json_encode_loop)
+                    profiles.setdefault(case.name, {})["json_encode"] = _stats_top(stats)
+
+                json_decode_fn = case.json_decode_fn
+                if json_decode_fn is None and case.json_decode and hasattr(case.ctor, "from_json"):
+                    json_decode_fn = case.ctor.from_json
+
+                if case.json_decode and json_decode_fn is not None:
+                    def _json_decode_loop(i: int) -> None:
+                        json_decode_fn(json_vals[i % n])
+
+                    json_decode_seconds = _timed_loop(args.runs, _json_decode_loop)
+                    results[case.name]["json_decode_s"] = json_decode_seconds
+
+                    if args.profile:
+                        stats = _profile_loop(args.profile_runs, _json_decode_loop)
+                        profiles.setdefault(case.name, {})["json_decode"] = _stats_top(stats)
+
+    container_ops = _bench_container_ops(args.op_runs)
+
     # Write results to disk
     results_path = os.path.join(args.output_dir, "bench_results.json")
     with open(results_path, "w", encoding="utf-8") as f:
@@ -606,7 +1217,9 @@ def main() -> int:
             {
                 "runs": args.runs,
                 "profile_runs": args.profile_runs,
+                "op_runs": args.op_runs,
                 "results": results,
+                "container_ops": container_ops,
             },
             f,
             indent=2,
@@ -628,12 +1241,18 @@ def main() -> int:
 
     # Print a compact summary table to stdout
     print("Benchmark results (seconds for %d runs):" % args.runs)
-    print("name, init_s, encode_s, decode_s")
+    print("name, init_s, encode_s, decode_s, json_encode_s, json_decode_s")
     for name, vals in results.items():
         init_s = vals.get("init_s", 0.0)
         enc_s = vals.get("encode_s", 0.0)
         dec_s = vals.get("decode_s", 0.0)
-        print("%s, %.6f, %.6f, %.6f" % (name, init_s, enc_s, dec_s))
+        json_enc_s = vals.get("json_encode_s", 0.0)
+        json_dec_s = vals.get("json_decode_s", 0.0)
+        print("%s, %.6f, %.6f, %.6f, %.6f, %.6f" % (name, init_s, enc_s, dec_s, json_enc_s, json_dec_s))
+
+    print("Container ops (seconds for %d runs):" % args.op_runs)
+    for name, secs in container_ops.items():
+        print("%s, %.6f" % (name, secs))
 
     return 0
 
