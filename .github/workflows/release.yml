@@ -2,87 +2,225 @@ name: Release
 
 on:
   push:
+    branches: [ main ]
     tags:
-      - 'v*'
+      - "v*"
+  workflow_dispatch:
 
 jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.11", "3.12"]
 
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-        
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install .[dev]
-        
-    - name: Run tests
-      run: |
-        pytest tests/
+      - uses: actions/checkout@v4
 
-  build-n-publish:
-    name: Build and Publish to PyPI
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: |
+          uv pip install --system setuptools wheel
+          uv pip install --system -e ".[dev]"
+          python setup.py build_ext --inplace
+
+      - name: Run tests
+        run: pytest tests/
+
+  build_wheels:
+    name: Build wheels (${{ matrix.os }})
+    needs: test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Set release version
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          tag = os.environ["RELEASE_TAG"]
+          version = tag[1:] if tag.startswith("v") else tag
+          pyproject = Path("pyproject.toml")
+          init_py = Path("tsrkit_types/__init__.py")
+          before_pp = pyproject.read_text()
+          before_init = init_py.read_text()
+
+          def replace_line(text: str, prefix: str) -> tuple[str, bool]:
+              replaced = False
+              lines = []
+              for line in text.splitlines():
+                  if line.startswith(prefix):
+                      lines.append(f'{prefix}"{version}"')
+                      replaced = True
+                  else:
+                      lines.append(line)
+              out = "\n".join(lines)
+              if text.endswith("\n"):
+                  out += "\n"
+              return out, replaced
+
+          new_pp, rep_pp = replace_line(before_pp, "version = ")
+          new_init, rep_init = replace_line(before_init, "__version__ = ")
+
+          if not rep_pp or not rep_init:
+              raise SystemExit("Version line not found; aborting release build.")
+
+          pyproject.write_text(new_pp)
+          init_py.write_text(new_init)
+
+          if f'version = "{version}"' not in new_pp:
+              raise SystemExit("Failed to set pyproject version.")
+          if f'__version__ = "{version}"' not in new_init:
+              raise SystemExit("Failed to set __version__.")
+
+          print(f"Set version to {version}")
+          PY
+
+      - name: Install cibuildwheel
+        run: uv pip install --system cibuildwheel
+
+      - name: Build wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_BUILD: "cp312-*"
+          CIBW_SKIP: "*musllinux*"
+          CIBW_ARCHS_LINUX: "x86_64 aarch64"
+          CIBW_ARCHS_MACOS: "x86_64 arm64"
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}
+          path: wheelhouse/*.whl
+
+  build_sdist:
+    name: Build sdist
     needs: test
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
-      contents: write
-
+    if: startsWith(github.ref, 'refs/tags/v')
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.12"
-        
-    - name: Install build dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install build toml
-        
-    - name: Set version from tag
-      run: |
-        # Extract version from tag (remove 'v' prefix)
-        VERSION=${GITHUB_REF#refs/tags/v}
-        echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
-        echo "Setting version to $VERSION"
+      - uses: actions/checkout@v4
 
-    - name: Bump version in files
-      run: |
-        # Update pyproject.toml
-        # Using simple sed for standard format: version = "0.0.0"
-        sed -i 's/^version = ".*"/version = "'${RELEASE_VERSION}'"/' pyproject.toml
-        
-        # Update __init__.py
-        # Using sed for: __version__ = "0.0.0"
-        sed -i 's/^__version__ = ".*"/__version__ = "'${RELEASE_VERSION}'"/' tsrkit_types/__init__.py
-        
-        # Verify changes
-        grep "version =" pyproject.toml
-        grep "__version__ =" tsrkit_types/__init__.py
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-    - name: Build package
-      run: |
-        python -m build
-        
-    - name: Publish package distributions to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      # Note: We rely on Trusted Publishing (OIDC). 
-      # verification: configured in PyPI project settings.
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
 
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: dist/*
-        generate_release_notes: true
+      - name: Set release version
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          tag = os.environ["RELEASE_TAG"]
+          version = tag[1:] if tag.startswith("v") else tag
+          pyproject = Path("pyproject.toml")
+          init_py = Path("tsrkit_types/__init__.py")
+          before_pp = pyproject.read_text()
+          before_init = init_py.read_text()
+
+          def replace_line(text: str, prefix: str) -> tuple[str, bool]:
+              replaced = False
+              lines = []
+              for line in text.splitlines():
+                  if line.startswith(prefix):
+                      lines.append(f'{prefix}"{version}"')
+                      replaced = True
+                  else:
+                      lines.append(line)
+              out = "\n".join(lines)
+              if text.endswith("\n"):
+                  out += "\n"
+              return out, replaced
+
+          new_pp, rep_pp = replace_line(before_pp, "version = ")
+          new_init, rep_init = replace_line(before_init, "__version__ = ")
+
+          if not rep_pp or not rep_init:
+              raise SystemExit("Version line not found; aborting release build.")
+
+          pyproject.write_text(new_pp)
+          init_py.write_text(new_init)
+
+          if f'version = "{version}"' not in new_pp:
+              raise SystemExit("Failed to set pyproject version.")
+          if f'__version__ = "{version}"' not in new_init:
+              raise SystemExit("Failed to set __version__.")
+
+          print(f"Set version to {version}")
+          PY
+
+      - name: Build sdist
+        run: |
+          uv pip install --system build
+          python -m build --sdist --outdir dist
+
+      - name: Upload sdist
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: dist/*.tar.gz
+
+  publish_pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: [build_wheels, build_sdist]
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+      - name: Download wheels
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+
+      - name: Download sdist
+        uses: actions/download-artifact@v4
+        with:
+          name: sdist
+          path: dist
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*
+          generate_release_notes: true

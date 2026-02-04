@@ -1,7 +1,7 @@
 import abc
-from decimal import Decimal
-import math
 from typing import Any, Optional, Tuple, Union, Callable
+
+from tsrkit_types import _native
 
 try:
     from typing import Self
@@ -86,7 +86,7 @@ class Int(int, Codable, metaclass=IntCheckMeta):
         return type(f"U{size}" if size else "Int", (cls,), {
             "byte_size": size // 8, 
             "signed": signed, 
-            "_bound": 1 << size if size > 0 else 1 << 64
+            "_bound": 1 << size if size > 0 else 1 << 64,
         })
 
     def __new__(cls, value: Any):
@@ -148,8 +148,11 @@ class Int(int, Codable, metaclass=IntCheckMeta):
     #                                  Serialization                               #
     # ---------------------------------------------------------------------------- #
     @staticmethod
-    def l(x):
-        return math.floor(Decimal(x).ln() / (Decimal(7) * Decimal(2).ln()))
+    def l(x: int) -> int:
+        """Return variable-length byte count helper for non-trivial encoding."""
+        if x <= 0:
+            return 0
+        return (int(x).bit_length() - 1) // 7
     
     def to_unsigned(self) -> "Int":
         if not self.signed: return self
@@ -159,78 +162,33 @@ class Int(int, Codable, metaclass=IntCheckMeta):
         if self.byte_size > 0:
             return self.byte_size 
         else:
-            value = self.to_unsigned()
-            if value < 2**7:
+            value = int(self)
+            if self.signed:
+                value += (self._bound >> 1)
+            if value < (1 << 7):
                 return 1
-            elif value < 2 ** (7 * 9):
-                return 1 + self.l(self)
-            elif value < 2**64:
+            elif value < (1 << 56):
+                return 1 + ((value.bit_length() - 1) // 7)
+            elif value < (1 << 64):
                 return 9
             else:
                 raise ValueError("Value too large for encoding. General Int support up to 2**64 - 1")
 
-    def encode_into(self, buffer: bytearray, offset: int = 0) -> int:
-        if self.byte_size > 0:
-            buffer[offset:offset+self.byte_size] = self.to_bytes(self.byte_size, "little")
-            return self.byte_size
-        else:
-            if self < 2**7:
-                buffer[offset:offset+1] = self.to_bytes(1, "little")
-                return 1
+    def encode(self) -> bytes:
+        return _native.uint_encode(int(self), self.byte_size, bool(self.signed))
 
-            size = self.encode_size()
-            self._check_buffer_size(buffer, size, offset)
-            if self < 2 ** (7 * 8):
-                _l = self.l(self)
-                # Create temporary U8 for encoding the prefix
-                prefix_value = (2**8 - 2 ** (8 - _l) + 
-                               math.floor(Decimal(self) / (Decimal(2) ** (_l * 8))))
-                buffer[offset] = int(prefix_value)
-                offset += 1
-                # Encode the remaining bytes
-                remaining = self % (2 ** (_l * 8))
-                remaining_bytes = remaining.to_bytes(_l, "little")
-                buffer[offset : offset + _l] = remaining_bytes
-            elif self < 2**64:
-                buffer[offset] = 2**8 - 1  # Full 64-bit marker
-                offset += 1
-                buffer[offset : offset + 8] = self.to_bytes(8, "little")
-            else:
-                raise ValueError(
-                    f"Value too large for encoding. General Uint support up to 2**64 - 1, got {self}"
-                )
-            return size
+    def encode_into(self, buffer: bytearray, offset: int = 0) -> int:
+        data = _native.uint_encode(int(self), self.byte_size, bool(self.signed))
+        self._check_buffer_size(buffer, len(data), offset)
+        buffer[offset : offset + len(data)] = data
+        return len(data)
     
     @classmethod
     def decode_from(
             cls, buffer: Union[bytes, bytearray, memoryview], offset: int = 0
     ) -> Tuple[Any, int]:
-        if cls.byte_size > 0:
-            value, size = int.from_bytes(buffer[offset : offset + cls.byte_size], "little"), cls.byte_size
-            return cls.__new__(cls, value), size
-        else:
-            tag = int.from_bytes(buffer[offset:offset+1], "little")
-
-            if tag < 2**7:
-                return cls(tag), 1
-
-            if tag == 2**8 - 1:
-                # Full 64-bit encoding
-                if len(buffer) - offset < 9:
-                    raise ValueError("Buffer too small to decode 64-bit integer")
-                value = int.from_bytes(buffer[offset + 1 : offset + 9], "little")
-                return cls(value), 9
-            else:
-                # Variable length encoding
-                _l = math.floor(
-                    Decimal(8) - (Decimal(2**8) - Decimal(tag)).ln() / Decimal(2).ln()
-                )
-                if len(buffer) - offset < _l + 1:
-                    raise ValueError("Buffer too small to decode variable-length integer")
-                alpha = tag + 2 ** (8 - _l) - 2**8
-                beta = int.from_bytes(buffer[offset + 1 : offset + 1 + _l], "little")
-                value = alpha * 2 ** (_l * 8) + beta
-                return cls(value), _l + 1
+        value, size = _native.uint_decode(buffer, offset, cls.byte_size, bool(cls.signed))
+        return cls(value), size
             
     def to_bits(self, bit_order: str = "msb") -> list[bool]:
         """Convert an int to bits"""

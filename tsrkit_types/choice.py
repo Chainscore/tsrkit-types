@@ -51,9 +51,7 @@ class Choice(Codable):
             for op in opt_t:
                 _opt_types.append((None, op))
         name = f"Choice[{'/'.join(op[1].__class__.__name__ for op in _opt_types)}]"
-        return type(name,
-                    (Choice,),
-                    {"_opt_types": tuple(_opt_types)})
+        return type(name, (Choice,), {"_opt_types": tuple(_opt_types)})
     
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)

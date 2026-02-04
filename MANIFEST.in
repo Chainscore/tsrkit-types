@@ -2,11 +2,13 @@ include README.md
 include LICENSE
 include CHANGELOG.md
 include CONTRIBUTING.md
+include benchmark.md
 include pytest.ini
 include pyproject.toml
 include setup.py
 
 recursive-include tsrkit_types *.py
+recursive-include tsrkit_types *.c
 recursive-include tests *.py
 
 exclude .gitignore

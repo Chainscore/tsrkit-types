@@ -2,6 +2,7 @@ import abc
 from typing import TypeVar, Type, ClassVar, Tuple, Generic, Optional
 from tsrkit_types.integers import Uint
 from tsrkit_types.itf.codable import Codable
+from tsrkit_types import _native
 
 T = TypeVar("T")
 
@@ -13,7 +14,8 @@ class SeqCheckMeta(abc.ABCMeta):
         _matches_element_type = str(getattr(cls, "_element_type", None)) == str(getattr(instance, "_element_type", None))
         _matches_min_length = getattr(cls, "_min_length", 0) == getattr(instance, "_min_length", 0)
         _matches_max_length = getattr(cls, "_max_length", 2**64) == getattr(instance, "_max_length", 2**64)
-        return isinstance(instance, list) and _matches_element_type and _matches_min_length and _matches_max_length
+        is_seq = isinstance(instance, (list, _native.NativeTypedSeq))
+        return is_seq and _matches_element_type and _matches_min_length and _matches_max_length
 
 
 class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
@@ -71,7 +73,17 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
 
         name = f"{cls.__name__}[{','.join(parts)}]"
 
-        return type(name, (cls,), {
+        base = cls
+        if (
+            elem_t is not None
+            and isinstance(elem_t, type)
+            and issubclass(elem_t, int)
+            and issubclass(elem_t, Codable)
+            and getattr(elem_t, "byte_size", 0)
+        ):
+            base = _native.NativeTypedSeq
+
+        return SeqCheckMeta(name, (base,), {
             "_element_type": elem_t,
             "_min_length": min_l,
             "_max_length": max_l,
@@ -80,8 +92,7 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
     def _validate(self, value):
         """For TypeChecks - added to fns that alter elements"""
         if getattr(self, "_element_type", None) is not None:
-            if not isinstance(value, self._element_type):
-                raise TypeError(f"{value!r} is not an instance of {self._element_type!r}")
+            _native.seq_validate_one(value, self._element_type)
 
     def _validate_self(self):
         """For Resultant self check - added to fns that alter size"""
@@ -105,8 +116,11 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
         self._validate_self()
 
     def extend(self, seq: list[T]):
-        for val in seq:
-            self._validate(val)
+        if getattr(self, "_element_type", None) is not None:
+            _native.seq_validate(seq, self._element_type)
+        else:
+            for val in seq:
+                self._validate(val)
         super().extend(seq)
         self._validate_self()
 
@@ -132,7 +146,17 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
         # If length is not defined
         if self._length is None:
             size += Uint(len(self)).encode_size()
-            
+
+        elem_t = getattr(self, "_element_type", None)
+        if isinstance(elem_t, type):
+            fixed_byte_size = getattr(elem_t, "byte_size", 0)
+            if fixed_byte_size and issubclass(elem_t, int) and issubclass(elem_t, Codable):
+                return size + (len(self) * fixed_byte_size)
+            if issubclass(elem_t, Codable):
+                for item in self:
+                    size += item.encode_size()
+                return size
+
         for item in self:
             if not isinstance(item, Codable):
                 raise TypeError(0, 0, f"Expected Codable, got {type(item)}")
@@ -146,9 +170,19 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
         if(self._min_length != self._max_length):
             current_offset += Uint(len(self)).encode_into(buffer, current_offset)
 
+        elem_t = getattr(self, "_element_type", None)
+        if (
+            isinstance(elem_t, type)
+            and issubclass(elem_t, int)
+            and issubclass(elem_t, Codable)
+            and getattr(elem_t, "byte_size", 0)
+        ):
+            data = _native.encode_fixed_array(self, elem_t.byte_size)
+            buffer[current_offset : current_offset + len(data)] = data
+            return current_offset + len(data) - offset
+
         for item in self:
-            written = item.encode_into(buffer, current_offset)
-            current_offset += written
+            current_offset += item.encode_into(buffer, current_offset)
 
         return current_offset - offset
     
@@ -165,13 +199,36 @@ class Seq(list, Codable, Generic[T], metaclass=SeqCheckMeta):
             _len, _inc_offset = Uint.decode_from(buffer, current_offset)
             current_offset += _inc_offset
 
-        items = []
-        for _ in range(_len):
-            item, _inc_offset = cls._element_type.decode_from(buffer, current_offset)
-            current_offset += _inc_offset
-            items.append(item)
+        elem_t = getattr(cls, "_element_type", None)
+        if (
+            _native is not None
+            and isinstance(elem_t, type)
+            and issubclass(elem_t, int)
+            and issubclass(elem_t, Codable)
+            and getattr(elem_t, "byte_size", 0)
+        ):
+            items, size = _native.decode_fixed_array(buffer, current_offset, _len, elem_t.byte_size, elem_t)
+            current_offset += size
+            return cls._from_decoded(items), current_offset - offset
 
-        return cls(items), current_offset - offset
+        items = []
+        append_item = items.append
+        decode_item = cls._element_type.decode_from
+        for _ in range(_len):
+            item, _inc_offset = decode_item(buffer, current_offset)
+            current_offset += _inc_offset
+            append_item(item)
+
+        return cls._from_decoded(items), current_offset - offset
+
+    @classmethod
+    def _from_decoded(cls, items: list[T]) -> "Seq":
+        if cls.__init__ is Seq.__init__:
+            inst = cls.__new__(cls)
+            list.__init__(inst, items)
+            inst._validate_self()
+            return inst
+        return cls(items)
 
     # ---------------------------------------------------------------------------- #
     #                                  JSON Serde                                  #
