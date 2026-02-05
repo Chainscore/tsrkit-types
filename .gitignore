@@ -5,6 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
+*.so.*
 
 # Distribution / packaging
 .Python
@@ -227,6 +228,7 @@ $RECYCLE.BIN/
 # Project-specific
 .benchmarks/
 .ruff_cache/
+benchmarks/out/bench_profiles.json
 
 # Publishing artifacts (for development only)
 .twine/

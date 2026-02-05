@@ -6,7 +6,7 @@ class NullType(Codable):
         return "Null"
 
     def __eq__(self, other):
-        return not other
+        return isinstance(other, NullType)
 
     def __bool__(self):
         return False

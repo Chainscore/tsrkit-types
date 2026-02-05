@@ -1,7 +1,7 @@
 import abc
+import math
+import struct
 from typing import Any, Optional, Tuple, Union, Callable
-
-from tsrkit_types import _native
 
 try:
     from typing import Self
@@ -25,8 +25,8 @@ class IntCheckMeta(abc.ABCMeta):
 class Int(int, Codable, metaclass=IntCheckMeta):
     """
     Unsigned integer type.
-    
-    
+
+
     Usage:
         >>> # Fixed Integer with defined class
         >>> U8 = Uint[8]
@@ -47,7 +47,7 @@ class Int(int, Codable, metaclass=IntCheckMeta):
         U8(10)
 
 
-        >>> # If you want to use the General Integer (supports up to 2**64 - 1), 
+        >>> # If you want to use the General Integer (supports up to 2**64 - 1),
         >>> # you can use the Uint class without specifying the byte size.
         >>>
         >>> num = Uint(10)
@@ -65,6 +65,14 @@ class Int(int, Codable, metaclass=IntCheckMeta):
     byte_size: int = 0
     signed = False
     _bound = 1 << 64
+
+    # Cached struct objects for fast encoding/decoding of fixed-size integers
+    _struct_cache = {
+        1: struct.Struct('<B'),  # unsigned char
+        2: struct.Struct('<H'),  # unsigned short
+        4: struct.Struct('<I'),  # unsigned int
+        8: struct.Struct('<Q'),  # unsigned long long
+    }
     
     @classmethod
     def __class_getitem__(cls, data: Optional[Union[int, tuple, bool]]):
@@ -86,7 +94,7 @@ class Int(int, Codable, metaclass=IntCheckMeta):
         return type(f"U{size}" if size else "Int", (cls,), {
             "byte_size": size // 8, 
             "signed": signed, 
-            "_bound": 1 << size if size > 0 else 1 << 64,
+            "_bound": 1 << size if size > 0 else 1 << 64
         })
 
     def __new__(cls, value: Any):
@@ -148,11 +156,13 @@ class Int(int, Codable, metaclass=IntCheckMeta):
     #                                  Serialization                               #
     # ---------------------------------------------------------------------------- #
     @staticmethod
-    def l(x: int) -> int:
-        """Return variable-length byte count helper for non-trivial encoding."""
-        if x <= 0:
+    def l(x):
+        """Calculate length parameter using bit operations instead of logarithm."""
+        if x < 128:  # 2^7
             return 0
-        return (int(x).bit_length() - 1) // 7
+        # For variable length encoding: l = floor((bit_length - 1) / 7)
+        # This is mathematically equivalent to floor(log_2(x) / 7)
+        return (x.bit_length() - 1) // 7
     
     def to_unsigned(self) -> "Int":
         if not self.signed: return self
@@ -160,35 +170,109 @@ class Int(int, Codable, metaclass=IntCheckMeta):
 
     def encode_size(self) -> int:
         if self.byte_size > 0:
-            return self.byte_size 
+            return self.byte_size
         else:
-            value = int(self)
-            if self.signed:
-                value += (self._bound >> 1)
-            if value < (1 << 7):
+            value = self.to_unsigned()
+            if value < 128:  # 2**7
                 return 1
-            elif value < (1 << 56):
-                return 1 + ((value.bit_length() - 1) // 7)
-            elif value < (1 << 64):
+            elif value < 2 ** 56:  # 2 ** (7 * 8)
+                # Calculate length using bit operations
+                _l = (value.bit_length() - 1) // 7
+                return 1 + _l
+            elif value < 2**64:
                 return 9
             else:
                 raise ValueError("Value too large for encoding. General Int support up to 2**64 - 1")
 
-    def encode(self) -> bytes:
-        return _native.uint_encode(int(self), self.byte_size, bool(self.signed))
-
     def encode_into(self, buffer: bytearray, offset: int = 0) -> int:
-        data = _native.uint_encode(int(self), self.byte_size, bool(self.signed))
-        self._check_buffer_size(buffer, len(data), offset)
-        buffer[offset : offset + len(data)] = data
-        return len(data)
+        if self.byte_size > 0:
+            # Fast path: use cached struct for common sizes
+            s = self._struct_cache.get(self.byte_size)
+            if s:
+                s.pack_into(buffer, offset, int(self))
+            else:
+                buffer[offset:offset+self.byte_size] = self.to_bytes(self.byte_size, "little")
+            return self.byte_size
+        else:
+            value = int(self)
+
+            # Fast path: single byte
+            if value < 128:  # 2^7
+                buffer[offset] = value
+                return 1
+
+            size = self.encode_size()
+            self._check_buffer_size(buffer, size, offset)
+
+            if value < 2 ** 56:  # 2^(7*8)
+                _l = (value.bit_length() - 1) // 7
+
+                # Calculate prefix using bit shifts instead of Decimal division
+                alpha = value >> (_l * 8)
+                prefix = (256 - (1 << (8 - _l))) + alpha
+                buffer[offset] = prefix
+                offset += 1
+
+                # Encode the remaining bytes using mask
+                beta = value & ((1 << (_l * 8)) - 1)
+                remaining_bytes = beta.to_bytes(_l, "little")
+                buffer[offset : offset + _l] = remaining_bytes
+            elif value < 2**64:
+                buffer[offset] = 255  # 2**8 - 1, Full 64-bit marker
+                offset += 1
+                buffer[offset : offset + 8] = value.to_bytes(8, "little")
+            else:
+                raise ValueError(
+                    f"Value too large for encoding. General Uint support up to 2**64 - 1, got {value}"
+                )
+            return size
     
     @classmethod
     def decode_from(
             cls, buffer: Union[bytes, bytearray, memoryview], offset: int = 0
     ) -> Tuple[Any, int]:
-        value, size = _native.uint_decode(buffer, offset, cls.byte_size, bool(cls.signed))
-        return cls(value), size
+        if cls.byte_size > 0:
+            # Check buffer has enough bytes
+            if len(buffer) < offset + cls.byte_size:
+                raise ValueError(f"Buffer too small: need {cls.byte_size} bytes at offset {offset}, but buffer has only {len(buffer)} bytes")
+
+            # Fast path: use cached struct for common sizes
+            s = cls._struct_cache.get(cls.byte_size)
+            if s:
+                value = s.unpack_from(buffer, offset)[0]
+            else:
+                value = int.from_bytes(buffer[offset : offset + cls.byte_size], "little")
+            return cls.__new__(cls, value), cls.byte_size
+        else:
+            tag = int.from_bytes(buffer[offset:offset+1], "little")
+
+            if tag < 128:  # 2^7
+                return cls(tag), 1
+
+            if tag == 255:  # 2**8 - 1
+                # Full 64-bit encoding
+                if len(buffer) - offset < 9:
+                    raise ValueError("Buffer too small to decode 64-bit integer")
+                value = int.from_bytes(buffer[offset + 1 : offset + 9], "little")
+                return cls(value), 9
+            else:
+                # Variable length encoding - use bit operations
+                # Calculate _l from tag: _l = floor(8 - log2(256 - tag))
+                # bit_length() = floor(log2(x)) + 1, but floor doesn't distribute over subtraction
+                # Special case: if (256-tag) is a power of 2, use 9-bit_length; otherwise 8-bit_length
+                x = 256 - tag
+                if x > 0 and (x & (x - 1)) == 0:  # x is a power of 2
+                    _l = 9 - x.bit_length()
+                else:
+                    _l = 8 - x.bit_length()
+
+                if len(buffer) - offset < _l + 1:
+                    raise ValueError("Buffer too small to decode variable-length integer")
+
+                alpha = tag + (1 << (8 - _l)) - 256
+                beta = int.from_bytes(buffer[offset + 1 : offset + 1 + _l], "little")
+                value = (alpha << (_l * 8)) + beta
+                return cls(value), _l + 1
             
     def to_bits(self, bit_order: str = "msb") -> list[bool]:
         """Convert an int to bits"""
