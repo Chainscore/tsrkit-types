@@ -81,7 +81,16 @@ def structure(_cls=None, *, frozen=False, **kwargs):
         if not new_cls.__dict__.get("from_json"):
             new_cls.from_json = from_json
 
-        new_cls = type(new_cls.__name__, (Codable, new_cls), dict(new_cls.__dict__))
+        # If the class is already a Codable, we don't need to add it again, 
+        # Modified method resolution order (MRO) for bases Codable
+        bases: tuple[type, ...]
+        if issubclass(new_cls, Codable):
+            bases = (new_cls,)                      # already a Codable
+        else:
+            bases = (new_cls, Codable)              # dataclass first, then ABC
+
+        new_cls = type(new_cls.__name__, bases, dict(new_cls.__dict__))
+
 
         return new_cls
 
