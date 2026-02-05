@@ -109,14 +109,25 @@ class Choice(Codable):
     # ---------------------------------------------------------------------------- #
 
     def encode_size(self) -> int:
-        return Uint(len(self._opt_types)).encode_size() + self._value.encode_size()
+        # Avoid creating Uint object for small discriminators
+        num_types = len(self._opt_types)
+        if num_types < 128:  # Single byte encoding
+            discriminator_size = 1
+        else:
+            discriminator_size = Uint(num_types).encode_size()
+        return discriminator_size + self._value.encode_size()
 
     def encode_into(self, buf: bytearray, offset: int = 0) -> int:
         current_offset = offset
         # Find the index of the (key, type) pair that matches our current choice
         for i, (key, choice_type) in enumerate(self._opt_types):
             if self._choice_key == key and isinstance(self._value, choice_type):
-                current_offset += Uint(i).encode_into(buf, current_offset)
+                # Avoid creating Uint object for small indices
+                if i < 128:  # Single byte encoding
+                    buf[current_offset] = i
+                    current_offset += 1
+                else:
+                    current_offset += Uint(i).encode_into(buf, current_offset)
                 break
         else:
             raise ValueError(f"Value {self._value} with key {self._choice_key} is not a valid choice")

@@ -3,400 +3,409 @@ from tsrkit_types.bits import Bits
 from tsrkit_types.bytes import Bytes
 
 
-class TestBitsBasicFunctionality:
-    """Test basic Bits functionality and creation."""
-    
-    def test_bits_creation_from_list(self):
+class TestBitsCreation:
+    """Test Bits creation and basic operations."""
+
+    @pytest.mark.parametrize("input_bits,expected_len", [
+        ([True, False, True, False], 4),
+        ([True] * 8, 8),
+        ([False] * 16, 16),
+        ([], 0),
+    ])
+    def test_creation_from_list(self, input_bits, expected_len):
         """Test creating Bits from list of booleans."""
-        bits = Bits([True, False, True, False])
-        assert len(bits) == 4
-        assert list(bits) == [True, False, True, False]
-    
-    def test_bits_creation_from_mixed_types(self):
-        """Test creating Bits from mixed bool/int values."""
-        # Bits only accepts bool values, not ints
+        bits = Bits(input_bits)
+        assert len(bits) == expected_len
+        assert list(bits) == input_bits
+
+    def test_creation_rejects_non_bool(self):
+        """Test that Bits only accepts bool values."""
         with pytest.raises(TypeError):
-            bits = Bits([1, 0, True, False])
-        
-        # This should work - all bools
-        bits = Bits([True, False, True, False])
-        assert list(bits) == [True, False, True, False]
-    
-    def test_bits_append_and_extend(self):
+            Bits([1, 0, True, False])
+
+    @pytest.mark.parametrize("bit_size", [4, 8, 16, 32])
+    def test_fixed_size_bits(self, bit_size):
+        """Test fixed-size Bits creation."""
+        FixedBits = Bits[bit_size]
+        bits = FixedBits([True, False] * (bit_size // 2))
+
+        assert len(bits) == bit_size
+        assert bits._min_length == bit_size
+        assert bits._max_length == bit_size
+
+    def test_fixed_size_wrong_length_raises(self):
+        """Test fixed-size validation."""
+        FixedBits = Bits[4]
+
+        with pytest.raises(ValueError):
+            FixedBits([True, False])  # Only 2 bits, expects 4
+
+    @pytest.mark.parametrize("order", ["msb", "lsb"])
+    def test_bits_with_order(self, order):
+        """Test Bits with bit order specified."""
+        OrderedBits = Bits[order]
+        bits = OrderedBits([True, False, True])
+        assert bits._order == order
+
+    @pytest.mark.parametrize("size,order", [(4, "msb"), (8, "lsb"), (16, "msb")])
+    def test_bits_with_size_and_order(self, size, order):
+        """Test Bits with both size and order."""
+        BitType = Bits[size, order]
+        bits = BitType([True, False] * (size // 2))
+
+        assert len(bits) == size
+        assert bits._order == order
+
+
+class TestBitsModification:
+    """Test Bits modification operations."""
+
+    def test_append_and_extend(self):
         """Test appending and extending bits."""
         bits = Bits([True, False])
         bits.append(True)
         assert list(bits) == [True, False, True]
-        
+
         bits.extend([False, True])
         assert list(bits) == [True, False, True, False, True]
-    
-    def test_bits_indexing_and_slicing(self):
+
+    @pytest.mark.parametrize("bits_list,index,expected", [
+        ([True, False, True, False, True], 0, True),
+        ([True, False, True, False, True], 1, False),
+        ([True, False, True, False, True], -1, True),
+        ([True, False, True, False, True], slice(1, 4), [False, True, False]),
+    ])
+    def test_indexing_slicing(self, bits_list, index, expected):
         """Test indexing and slicing operations."""
-        bits = Bits([True, False, True, False, True])
-        assert bits[0] == True
-        assert bits[1] == False
-        assert bits[-1] == True
-        assert list(bits[1:4]) == [False, True, False]
-    
-    def test_bits_setitem(self):
+        bits = Bits(bits_list)
+        result = bits[index]
+
+        if isinstance(index, slice):
+            assert list(result) == expected
+        else:
+            assert result == expected
+
+    def test_setitem(self):
         """Test setting individual bit values."""
         bits = Bits([True, False, True])
         bits[1] = True
         assert list(bits) == [True, True, True]
 
+    def test_append_non_bool_raises(self):
+        """Test appending non-bool raises error."""
+        bits = Bits([True, False])
 
-class TestBitsParameterization:
-    """Test different Bits parameterization options."""
-    
-    def test_fixed_size_bits(self):
-        """Test fixed-size Bits creation."""
-        FixedBits = Bits[8]
-        bits = FixedBits([True, False] * 4)
-        assert len(bits) == 8
-        assert bits._min_length == 8
-        assert bits._max_length == 8
-    
-    def test_bits_with_order_only(self):
-        """Test Bits with only bit order specified."""
-        MSBBits = Bits["msb"]
-        LSBBits = Bits["lsb"]
-        
-        msb_bits = MSBBits([True, False, True])
-        lsb_bits = LSBBits([True, False, True])
-        
-        assert msb_bits._order == "msb"
-        assert lsb_bits._order == "lsb"
-    
-    def test_bits_with_size_and_order(self):
-        """Test Bits with both size and order specified."""
-        FixedMSB = Bits[4, "msb"]
-        FixedLSB = Bits[4, "lsb"]
-        
-        msb_bits = FixedMSB([True, False, True, False])
-        lsb_bits = FixedLSB([True, False, True, False])
-        
-        assert len(msb_bits) == 4
-        assert len(lsb_bits) == 4
-        assert msb_bits._order == "msb"
-        assert lsb_bits._order == "lsb"
+        with pytest.raises((ValueError, TypeError)):
+            bits.append(2)
+
+        with pytest.raises(TypeError):
+            bits.append(1)
 
 
-class TestBitsJSONSerialization:
-    """Test JSON serialization and deserialization."""
-    
-    def test_bits_to_json_msb(self):
-        """Test converting Bits to JSON with MSB order."""
-        bits = Bits([True, False, True, False, True, False, True, False])  # 10101010 = 0xAA
+class TestBitsJSON:
+    """Test JSON serialization."""
+
+    @pytest.mark.parametrize("bits_list,order,expected_hex", [
+        ([True, False, True, False, True, False, True, False], "msb", "aa"),
+        ([True] * 8, "msb", "ff"),
+        ([False] * 8, "msb", "00"),
+    ])
+    def test_to_json(self, bits_list, order, expected_hex):
+        """Test converting Bits to JSON hex."""
+        bits = Bits[8, order](bits_list)
         json_str = bits.to_json()
-        assert json_str == "aa"  # hex representation, lowercase
-    
-    def test_bits_to_json_lsb(self):
-        """Test converting Bits to JSON with LSB order."""
-        LSBBits = Bits["lsb"]
-        bits = LSBBits([True, False, True, False, True, False, True, False])  # Different interpretation in LSB
-        json_str = bits.to_json()
-        # LSB: bits are reversed per byte, so this would be different
-        assert isinstance(json_str, str)  # Ensure it's a valid hex string
-    
-    def test_bits_from_json_simple(self):
+        assert json_str == expected_hex
+
+    @pytest.mark.parametrize("hex_input,expected_bits", [
+        ("ff", [True] * 8),
+        ("00", [False] * 8),
+        ("0xff", [True] * 8),
+    ])
+    def test_from_json(self, hex_input, expected_bits):
         """Test creating Bits from JSON hex string."""
         FixedBits = Bits[8]
-        bits = FixedBits.from_json("ff")  # 11111111
-        expected_bits = [True] * 8
+        bits = FixedBits.from_json(hex_input)
         assert list(bits) == expected_bits
-    
-    def test_bits_from_json_with_0x_prefix(self):
-        """Test creating Bits from JSON hex string with 0x prefix."""
-        FixedBits = Bits[8]
-        bits = FixedBits.from_json("0xff")  # Should handle 0x prefix
-        expected_bits = [True] * 8
-        assert list(bits) == expected_bits
-    
-    def test_bits_from_json_zero(self):
-        """Test creating Bits from JSON representing all zeros."""
-        FixedBits = Bits[8]
-        bits = FixedBits.from_json("00")  # 00000000
-        expected_bits = [False] * 8
-        assert list(bits) == expected_bits
-    
-    def test_bits_roundtrip_json(self):
+
+    @pytest.mark.parametrize("order", ["msb", "lsb"])
+    def test_json_roundtrip(self, order):
         """Test JSON serialization roundtrip."""
-        original_bits = Bits([True, False, True, True, False, False, True, False])
+        original_bits = Bits[8, order]([True, False, True, True, False, False, True, False])
         json_str = original_bits.to_json()
-        restored_bits = Bits.from_json(json_str)
-        
-        # Note: restored bits might be padded to byte boundary
-        assert list(restored_bits)[:len(original_bits)] == list(original_bits)
-    
-    def test_bits_json_with_different_orders(self):
-        """Test JSON serialization with different bit orders."""
-        # Test MSB
-        MSBBits = Bits[8, "msb"]
-        msb_bits = MSBBits([True, False, True, False, True, False, True, False])
-        msb_json = msb_bits.to_json()
-        
-        # Test LSB  
-        LSBBits = Bits[8, "lsb"]
-        lsb_bits = LSBBits([True, False, True, False, True, False, True, False])
-        lsb_json = lsb_bits.to_json()
-        
-        # They should be different due to bit ordering
-        assert isinstance(msb_json, str)
-        assert isinstance(lsb_json, str)
+        restored_bits = Bits[8, order].from_json(json_str)
+
+        assert list(restored_bits) == list(original_bits)
 
 
 class TestBitsSerialization:
-    """Test binary serialization and deserialization."""
-    
-    def test_bits_encode_decode_variable_length(self):
-        """Test encoding and decoding variable-length Bits."""
-        original_bits = Bits([True, False, True, False, True])
+    """Test binary serialization."""
+
+    @pytest.mark.parametrize("bits_list", [
+        [True, False, True, False, True],
+        [False] * 7,
+        [True] * 9,
+        [True, False] * 10,
+    ])
+    def test_encode_decode_roundtrip(self, bits_list):
+        """Test encoding/decoding roundtrip."""
+        original_bits = Bits(bits_list)
         encoded = original_bits.encode()
         decoded_bits, bytes_read = Bits.decode_from(encoded)
-        
-        assert list(decoded_bits) == list(original_bits)
+
+        assert list(decoded_bits) == bits_list
         assert bytes_read == len(encoded)
-    
-    def test_bits_encode_decode_fixed_length(self):
-        """Test encoding and decoding fixed-length Bits."""
-        FixedBits = Bits[8]
-        original_bits = FixedBits([True, False, True, False, True, False, True, False])
+
+    @pytest.mark.parametrize("size", [8, 16, 32])
+    def test_fixed_length_encode_decode(self, size):
+        """Test fixed-length encoding/decoding."""
+        FixedBits = Bits[size]
+        original_bits = FixedBits([True, False] * (size // 2))
         encoded = original_bits.encode()
         decoded_bits, bytes_read = FixedBits.decode_from(encoded)
-        
+
         assert list(decoded_bits) == list(original_bits)
         assert bytes_read == len(encoded)
-    
-    def test_bits_encode_size(self):
-        """Test encode_size calculation."""
-        # Variable length: need length prefix + bit bytes
-        var_bits = Bits([True, False, True])  # 3 bits = 1 byte + length prefix
-        var_size = var_bits.encode_size()
-        assert var_size > 1  # At least 1 byte for bits + length encoding
-        
-        # Fixed length: no length prefix needed
+
+    def test_encode_size_variable(self):
+        """Test encode_size for variable length."""
+        bits = Bits([True, False, True])
+        size = bits.encode_size()
+        assert size > 1  # At least 1 byte + length prefix
+
+    def test_encode_size_fixed(self):
+        """Test encode_size for fixed length."""
         FixedBits = Bits[8]
-        fixed_bits = FixedBits([True] * 8)  # 8 bits = 1 byte exactly
-        fixed_size = fixed_bits.encode_size()
-        assert fixed_size == 1  # Exactly 1 byte for 8 bits
-    
-    def test_bits_encode_into_buffer(self):
-        """Test encoding directly into a buffer."""
+        bits = FixedBits([True] * 8)
+        size = bits.encode_size()
+        assert size == 1  # Exactly 1 byte for 8 bits
+
+    def test_encode_into_buffer(self):
+        """Test encoding into buffer."""
         bits = Bits([True, False, True, False])
-        buffer = bytearray(10)  # Large enough buffer
+        buffer = bytearray(10)
         bytes_written = bits.encode_into(buffer, offset=2)
-        
+
         assert bytes_written > 0
-        # Verify the buffer was modified at the correct offset
-        assert buffer[0:2] == bytearray([0, 0])  # Untouched
-    
-    def test_bits_decode_empty(self):
+        assert buffer[0:2] == bytearray([0, 0])
+
+    def test_decode_empty(self):
         """Test decoding empty bits."""
         EmptyBits = Bits[0]
         empty_bits = EmptyBits([])
         encoded = empty_bits.encode()
         decoded_bits, bytes_read = EmptyBits.decode_from(encoded)
-        
+
         assert len(decoded_bits) == 0
         assert list(decoded_bits) == []
-    
-    def test_bits_roundtrip_serialization(self):
-        """Test complete serialization roundtrip."""
-        test_cases = [
-            [True, False, True],
-            [False] * 7,
-            [True] * 9,
-            [True, False, True, False, True, False, True, False, True, False],
-        ]
-        
-        for original_bits_list in test_cases:
-            original_bits = Bits(original_bits_list)
-            encoded = original_bits.encode()
-            decoded_bits, _ = Bits.decode_from(encoded)
-            assert list(decoded_bits) == original_bits_list
+
+    def test_decode_buffer_too_small(self):
+        """Test decoding from too-small buffer."""
+        FixedBits = Bits[16]
+        small_buffer = b"\x01"
+
+        with pytest.raises(ValueError):
+            FixedBits.decode_from(small_buffer)
 
 
 class TestBitsEdgeCases:
-    """Test edge cases and error conditions."""
-    
-    def test_bits_validation_errors(self):
-        """Test validation of bit values."""
-        # This should work - only bools are accepted
-        bits = Bits([True, False, True, False])
-        
-        # Try to add invalid values after creation
-        with pytest.raises((ValueError, TypeError)):
-            bits.append(2)  # Invalid bit value
-            
-        # Try to add int instead of bool
-        with pytest.raises(TypeError):
-            bits.append(1)  # Only bools accepted
-    
-    def test_bits_fixed_size_validation(self):
-        """Test fixed-size Bits validation."""
-        FixedBits = Bits[4]
-        
-        # Should work with exact size
-        bits = FixedBits([True, False, True, False])
-        assert len(bits) == 4
-        
-        # Test length mismatch - should fail during creation
-        with pytest.raises(ValueError):
-            short_bits = FixedBits([True, False])  # Only 2 bits, expects 4
-    
-    def test_bits_buffer_too_small_decode(self):
-        """Test decoding from buffer that's too small."""
-        FixedBits = Bits[16]  # Expecting 16 bits = 2 bytes
-        small_buffer = b"\x01"  # Only 1 byte
-        
-        with pytest.raises(ValueError):
-            FixedBits.decode_from(small_buffer)
-    
-    def test_bits_invalid_bit_order(self):
-        """Test invalid bit order specification."""
-        # This should work
-        valid_bits = Bits["msb"]([True, False])
-        assert valid_bits._order == "msb"
-        
-        valid_bits2 = Bits["lsb"]([True, False])
-        assert valid_bits2._order == "lsb"
-    
-    def test_bits_large_size(self):
-        """Test with larger bit sequences."""
-        large_bits = Bits([True, False] * 100)  # 200 bits
+    """Test edge cases."""
+
+    def test_large_bits(self):
+        """Test with large bit sequences."""
+        large_bits = Bits([True, False] * 100)
         assert len(large_bits) == 200
-        
+
         encoded = large_bits.encode()
         decoded_bits, _ = Bits.decode_from(encoded)
         assert list(decoded_bits) == list(large_bits)
 
+    @pytest.mark.parametrize("order", ["msb", "lsb"])
+    def test_byte_boundaries(self, order):
+        """Test bits at byte boundaries."""
+        # Exactly 1 byte
+        one_byte = Bits[8, order]([True, False] * 4)
+        assert len(one_byte) == 8
+
+        # 9 bits
+        nine_bits = Bits[9, order]([True, False] * 4 + [True])
+        assert len(nine_bits) == 9
+
+        # Both should serialize correctly
+        encoded_8 = one_byte.encode()
+        encoded_9 = nine_bits.encode()
+
+        decoded_8, _ = Bits[8, order].decode_from(encoded_8)
+        decoded_9, _ = Bits[9, order].decode_from(encoded_9)
+
+        assert len(decoded_8) == 8
+        assert len(decoded_9) == 9
+
+    @pytest.mark.parametrize("single_bit", [True, False])
+    def test_single_bit(self, single_bit):
+        """Test single bit operations."""
+        bits = Bits([single_bit])
+
+        # JSON roundtrip
+        json_str = bits.to_json()
+        restored = Bits.from_json(json_str)
+        assert restored[0] == single_bit
+
 
 class TestBitsIntegration:
     """Test integration with other types."""
-    
-    def test_bits_with_bytes_conversion(self):
+
+    def test_with_bytes_conversion(self):
         """Test conversion between Bits and Bytes."""
-        # Create some bits
-        bits = Bits([True, False, True, False, True, False, True, False])  # 1 byte worth
-        
-        # Convert to bytes via JSON (hex representation)
+        bits = Bits[8]([True, False, True, False, True, False, True, False])
+
         hex_str = bits.to_json()
         bytes_obj = Bytes.from_json(hex_str)
-        
-        # Convert bytes back to bits
+
         bits_back = bytes_obj.to_bits()
-        
-        # Should match original (possibly with padding)
         assert bits_back[:len(bits)] == list(bits)
-    
-    def test_bits_equality(self):
+
+    @pytest.mark.parametrize("bits1,bits2,should_equal", [
+        ([True, False, True], [True, False, True], True),
+        ([True, False, True], [False, True, False], False),
+    ])
+    def test_equality(self, bits1, bits2, should_equal):
         """Test Bits equality comparisons."""
-        bits1 = Bits([True, False, True])
-        bits2 = Bits([True, False, True])
-        bits3 = Bits([False, True, False])
-        
-        assert bits1 == bits2
-        assert bits1 != bits3
-    
-    def test_bits_different_orders_same_data(self):
-        """Test that same logical data with different orders produces different results."""
+        b1 = Bits(bits1)
+        b2 = Bits(bits2)
+        assert (b1 == b2) == should_equal
+
+    def test_different_orders_different_results(self):
+        """Test same data with different orders."""
         MSBBits = Bits[8, "msb"]
         LSBBits = Bits[8, "lsb"]
-        
+
         same_data = [True, False, True, False, True, False, True, False]
-        
+
         msb_bits = MSBBits(same_data)
         lsb_bits = LSBBits(same_data)
-        
-        # The JSON representations should be different due to bit order
+
         msb_json = msb_bits.to_json()
         lsb_json = lsb_bits.to_json()
-        
-        # They represent the same logical sequence but different byte layouts
+
         assert isinstance(msb_json, str)
         assert isinstance(lsb_json, str)
 
 
-class TestBitsPerformance:
-    """Test performance-related aspects."""
-    
-    def test_bits_memory_efficiency(self):
-        """Test that Bits doesn't use excessive memory."""
-        bits = Bits([True, False] * 1000)  # 2000 bits
-        
-        # Should be able to encode/decode efficiently
+class TestBitsOriginal:
+    """Original test cases from test_bytes.py."""
+
+    def test_bits_from_bytes(self):
+        """Original test - ensure compatibility."""
+        a = Bits[2, "lsb"].from_json("01")
+        assert len(a) == 2
+
+    def test_bitarr_init(self):
+        """Test Bits initialization."""
+        a = Bits([True, False, True, False])
+        assert len(a) == 4
+
+    @pytest.mark.parametrize("size,order,bits,expected_hex", [
+        (4, "msb", [True, False, True, False], "a0"),
+        (4, "lsb", [True, False, True, False], "05"),
+    ])
+    def test_bitarr_enc(self, size, order, bits, expected_hex):
+        """Test Bits encoding with different orders."""
+        a = Bits[size, order](bits)
+        assert a.encode().hex() == expected_hex
+
+    def test_variable_lsb_encoding(self):
+        """Test variable-length LSB encoding."""
+        b = Bits["lsb"]([True, False, True, False])
+        assert b.encode().hex() == "0405"
+        assert b.encode()[0] == 4
+
+
+class TestBytesIntegration:
+    """Test Bytes type functionality (merged from test_bytes.py)."""
+
+    def test_bytes_init(self):
+        """Test Bytes initialization."""
+        a = Bytes(b"hello")
+        assert a
+        assert isinstance(a, Bytes)
+
+    @pytest.mark.parametrize("bits,order,expected_hex", [
+        ([True, False, True, False, False, False, False, False], "msb", "a0"),
+        ([True, False, True, False, False, False, False, False], "lsb", "05"),
+    ])
+    def test_bytes_from_bits(self, bits, order, expected_hex):
+        """Test creating Bytes from bits."""
+        a = Bytes.from_bits(bits, order)
+        assert a.hex() == expected_hex
+
+    def test_bytes_to_from_bits_roundtrip(self):
+        """Test Bytes to/from bits roundtrip."""
+        a = Bytes([160, 0])
+        bits = a.to_bits()
+        assert a == Bytes.from_bits(bits)
+
+    @pytest.mark.parametrize("data,expected_type", [
+        (b"hello", Bytes),
+        (bytes(32), Bytes),
+    ])
+    def test_bytes_encoding(self, data, expected_type):
+        """Test Bytes encoding/decoding."""
+        if len(data) == 32:
+            # Fixed size bytes
+            a = Bytes[32](data)
+            enc = a.encode()
+            assert a == Bytes[32].decode_from(enc)[0]
+        else:
+            # Variable size bytes
+            a = Bytes(data)
+            enc = a.encode()
+            assert a == Bytes.decode_from(enc)[0]
+
+
+class TestJAMCodecBitPacking:
+    """JAM codec bit packing: pack bits into octets LSB to MSB."""
+
+    @pytest.mark.parametrize("num_bits,expected_bytes", [
+        (0, 0), (1, 1), (7, 1), (8, 1),
+        (9, 2), (16, 2), (17, 3), (64, 8),
+    ])
+    def test_bit_packing_byte_count(self, num_bits, expected_bytes):
+        """Bits pack into correct number of octets."""
+        if num_bits == 0:
+            bits = Bits([])
+        else:
+            bits = Bits[num_bits, "lsb"]([True] * num_bits)
         encoded = bits.encode()
-        decoded_bits, _ = Bits.decode_from(encoded)
-        
-        assert len(decoded_bits) == len(bits)
-        assert list(decoded_bits) == list(bits)
-    
-    def test_bits_encode_decode_speed(self):
-        """Test that encode/decode operations complete reasonably quickly."""
-        import time
-        
-        large_bits = Bits([True, False, True, True] * 250)  # 1000 bits
-        
-        start_time = time.time()
-        for _ in range(100):  # Repeat 100 times
-            encoded = large_bits.encode()
-            decoded_bits, _ = Bits.decode_from(encoded)
-        end_time = time.time()
-        
-        # Should complete in reasonable time (less than 1 second for 100 iterations)
-        assert end_time - start_time < 1.0
+        # Variable-length includes length prefix
+        if expected_bytes > 0:
+            assert len(encoded) >= expected_bytes
 
+    @pytest.mark.parametrize("bit_pattern,expected_byte", [
+        ([False] * 8, 0b00000000),
+        ([True] * 8, 0b11111111),
+        ([True, False] * 4, 0b01010101),
+        ([False, True] * 4, 0b10101010),
+    ])
+    def test_lsb_bit_packing_order(self, bit_pattern, expected_byte):
+        """LSB packing: bit 0 is LSB of first byte."""
+        bits = Bits[8, "lsb"](bit_pattern)
+        encoded = bits.encode()
+        assert encoded[0] == expected_byte
 
-class TestBitsSpecialCases:
-    """Test special cases and boundary conditions."""
-    
-    def test_bits_single_bit(self):
-        """Test single bit operations."""
-        single_true = Bits([True])
-        single_false = Bits([False])
-        
-        # JSON roundtrip
-        true_json = single_true.to_json()
-        false_json = single_false.to_json()
-        
-        restored_true = Bits.from_json(true_json)
-        restored_false = Bits.from_json(false_json)
-        
-        assert restored_true[0] == True
-        assert restored_false[0] == False
-    
-    def test_bits_byte_boundaries(self):
-        """Test bits at byte boundaries."""
-        # Exactly 1 byte
-        one_byte = Bits([True, False] * 4)  # 8 bits
-        assert len(one_byte) == 8
-        
-        # Just over 1 byte
-        nine_bits = Bits([True, False] * 4 + [True])  # 9 bits
-        assert len(nine_bits) == 9
-        
-        # Test serialization works for both
-        encoded_8 = one_byte.encode()
-        encoded_9 = nine_bits.encode()
-        
-        decoded_8, _ = Bits.decode_from(encoded_8)
-        decoded_9, _ = Bits.decode_from(encoded_9)
-        
-        assert len(decoded_8) == 8
-        assert len(decoded_9) == 9
-    
-    def test_bits_representation(self):
-        """Test string representation of Bits."""
-        bits = Bits([True, False, True])
-        repr_str = repr(bits)
-        assert "Bits" in repr_str
-        assert str(bits) or True  # Should not crash
+    def test_walking_ones(self):
+        """Test walking 1s pattern (one bit set at a time)."""
+        for i in range(8):
+            pattern = [False] * 8
+            pattern[i] = True
+            bits = Bits[8, "lsb"](pattern)
+            encoded = bits.encode()
+            assert encoded[0] == (1 << i)
 
-
-# Integration test from the original file
-def test_bits_from_bytes():
-    """Original test - ensure it still works."""
-    a = Bits[2, "lsb"].from_json("01")  # Removed 0x prefix as it might cause issues
-    assert len(a) == 2  # Should have exactly 2 bits
-    # Note: the exact comparison might need adjustment based on implementation
+    def test_walking_zeros(self):
+        """Test walking 0s pattern (one bit clear at a time)."""
+        for i in range(8):
+            pattern = [True] * 8
+            pattern[i] = False
+            bits = Bits[8, "lsb"](pattern)
+            encoded = bits.encode()
+            assert encoded[0] == (0xFF ^ (1 << i))

@@ -1,201 +1,337 @@
 import pytest
+from dataclasses import dataclass
 from tsrkit_types.integers import Uint
 
 
-def test_fixed_size_integers():
-    """Test fixed-size integer types and their usage."""
-    # Pre-defined integer types
-    age = Uint[8](25)        # 8-bit: 0-255
-    port = Uint[16](8080)    # 16-bit: 0-65535
-    user_id = Uint[32](123456789)  # 32-bit
-    timestamp = Uint[64](1703001234567)  # 64-bit
-    
-    assert age == 25
-    assert port == 8080
-    assert user_id == 123456789
-    assert timestamp == 1703001234567
-    
-    # Custom bit sizes
-    U24 = Uint[24]  # 24-bit integer (3 bytes)
-    U128 = Uint[128]  # 128-bit integer (16 bytes)
-    
-    color_value = U24(0xFF00FF)  # 24-bit color value
-    big_number = U128(12345678901234567890)
-    
-    assert color_value == 0xFF00FF
-    assert big_number == 12345678901234567890
+class TestIntegerTypes:
+    """Test integer type creation and basic operations."""
 
+    @pytest.mark.parametrize("bit_size,value,expected_bytes", [
+        (8, 28, 1),
+        (8, 100, 1),
+        (8, 255, 1),
+        (16, 8080, 2),
+        (16, 65535, 2),
+        (32, 123456789, 4),
+        (32, 4294967295, 4),
+        (64, 1703001234567, 8),
+        (64, 18446744073709551615, 8),
+    ])
+    def test_fixed_size_integers(self, bit_size, value, expected_bytes):
+        """Test fixed-size integer types with various bit sizes."""
+        IntType = Uint[bit_size]
+        num = IntType(value)
 
-def test_variable_size_integers():
-    """Test variable-size general integers."""
-    # Variable-size integers (up to 2^64 - 1)
-    small = Uint(10)        # Uses 1 byte
-    medium = Uint(1000)     # Uses 2 bytes  
-    large = Uint(1000000)   # Uses 3 bytes
-    huge = Uint(2**32)      # Uses 5 bytes
-    
-    numbers = [small, medium, large, huge]
-    expected_values = [10, 1000, 1000000, 2**32]
-    
-    for num, expected in zip(numbers, expected_values):
-        assert num == expected
+        assert num == value
+        assert num.byte_size == expected_bytes
+
+        # Test encoding
         encoded = num.encode()
-        assert len(encoded) > 0  # Should encode to some bytes
+        assert len(encoded) == expected_bytes
+
+        # Test decoding
+        decoded, bytes_read = IntType.decode_from(encoded)
+        assert decoded == num
+        assert bytes_read == expected_bytes
+
+    @pytest.mark.parametrize("value,max_bytes", [
+        (10, 1),
+        (127, 1),
+        (128, 2),
+        (255, 2),
+        (256, 2),
+        (1000, 2),
+        (1000000, 3),
+        (2**32, 5),
+    ])
+    def test_variable_size_integers(self, value, max_bytes):
+        """Test variable-size general integers."""
+        num = Uint(value)
+        assert num == value
+
+        encoded = num.encode()
+        assert len(encoded) <= max_bytes
+
+        decoded, _ = Uint.decode_from(encoded)
+        assert decoded == num
 
 
-def test_encoding_decoding():
-    """Test encoding and decoding operations."""
-    # Fixed-size encoding
-    value = Uint[16](12345)
-    encoded = value.encode()
-    decoded = Uint[16].decode(encoded)
-    
-    assert len(encoded) == 2  # U16 should be 2 bytes
-    assert decoded == value
-    
-    # Variable-size encoding
-    var_value = Uint(12345)
-    var_encoded = var_value.encode()
-    var_decoded = Uint.decode(var_encoded)
-    
-    assert var_decoded == var_value
-    assert len(var_encoded) > 0
-
-
-def test_arithmetic_operations():
+class TestIntegerArithmetic:
     """Test arithmetic operations that preserve types."""
-    a = Uint[8](100)
-    b = Uint[8](50)
-    
-    # All operations preserve the U8 type
-    assert isinstance(a + b, Uint[8])
-    assert isinstance(a - b, Uint[8])
-    assert isinstance(a * Uint[8](2), Uint[8])
-    assert isinstance(a // Uint[8](3), Uint[8])
-    assert isinstance(a & Uint[8](0xFF), Uint[8])
-    assert isinstance(a | Uint[8](0x0F), Uint[8])
-    assert isinstance(a ^ Uint[8](0xAA), Uint[8])
-    
-    # Test actual values
-    assert a + b == 150
-    assert a - b == 50
-    assert a * Uint[8](2) == 200
+
+    @pytest.mark.parametrize("op,a_val,b_val,expected", [
+        (lambda a, b: a + b, 100, 50, 150),
+        (lambda a, b: a - b, 100, 50, 50),
+        (lambda a, b: a - b, 100, 80, 20),
+        (lambda a, b: a * b, 100, 2, 200),
+        (lambda a, b: a // b, 100, 3, 33),
+        (lambda a, b: a & b, 100, 0xFF, 100),
+        (lambda a, b: a | b, 100, 0x0F, 111),
+        (lambda a, b: a ^ b, 100, 0xAA, 206),
+    ])
+    def test_arithmetic_operations(self, op, a_val, b_val, expected):
+        """Test arithmetic operations preserve U8 type."""
+        a = Uint[8](a_val)
+        b = Uint[8](b_val)
+        result = op(a, b)
+
+        assert isinstance(result, Uint[8])
+        assert result == expected
 
 
-def test_json_serialization():
-    """Test JSON serialization of integers."""
-    values = [Uint[8](255), Uint[16](65535), Uint[32](12345), Uint(1000000)]
-    
-    for value in values:
-        json_data = value.to_json()
-        restored = type(value).from_json(str(json_data))
-        
-        assert restored == value
-        assert isinstance(restored, type(value))
-
-
-def test_range_validation():
-    """Test range validation for fixed-size integers."""
-    # Valid values
-    valid_u8 = Uint[8](255)  # Maximum value for U8
-    assert valid_u8 == 255
-    
-    # Invalid values should raise ValueError
-    with pytest.raises(ValueError):
-        Uint[8](256)  # exceeds maximum
-    
-    with pytest.raises(ValueError):
-        Uint[8](-1)  # below minimum
-    
-    with pytest.raises(ValueError):
-        Uint[16](70000)  # exceeds maximum
-    
-    with pytest.raises(ValueError):
-        Uint(-5)  # negative value
-
-
-def test_integer_types_comprehensive():
-    """Comprehensive test of all integer type features."""
-    # Test each predefined type
-    types_and_values = [
-        (Uint[8], 255, 1),
-        (Uint[16], 65535, 2),
-        (Uint[32], 4294967295, 4),
-        (Uint[64], 18446744073709551615, 8),
-    ]
-    
-    for int_type, max_val, expected_size in types_and_values:
-        # Test maximum value
-        max_instance = int_type(max_val)
-        assert max_instance == max_val
-        
-        # Test encoding size
-        encoded = max_instance.encode()
-        assert len(encoded) == expected_size
-        
-        # Test round-trip
-        decoded = int_type.decode(encoded)
-        assert decoded == max_instance
-        
-        # Test JSON round-trip
-        json_data = max_instance.to_json()
-        json_restored = int_type.from_json(str(json_data))
-        assert json_restored == max_instance
-
-
-def test_custom_integer_sizes():
-    """Test custom integer bit sizes."""
-    # Test various custom sizes (must be multiples of 8)
-    U16_custom = Uint[16]  # 16-bit (2 bytes)
-    U24_custom = Uint[24]  # 24-bit (3 bytes) 
-    U32_custom = Uint[32]  # 32-bit (4 bytes)
-    
-    # Test maximum values for each size
-    val_16 = U16_custom(2**16 - 1)  # 65535
-    val_24 = U24_custom(2**24 - 1)  # 16777215
-    val_32 = U32_custom(2**32 - 1)  # 4294967295
-    
-    assert val_16 == 65535
-    assert val_24 == 16777215
-    assert val_32 == 4294967295
-    
-    # Test encoding/decoding
-    for val in [val_16, val_24, val_32]:
-        encoded = val.encode()
-        decoded = type(val).decode(encoded)
-        assert decoded == val
-
-
-def test_integer_comparison():
+class TestIntegerComparison:
     """Test integer comparison operations."""
-    a = Uint[16](100)
-    b = Uint[16](200)
-    c = Uint[16](100)
-    
-    assert a == c
-    assert a != b
-    assert a < b
-    assert b > a
-    assert a <= c
-    assert a >= c
+
+    @pytest.mark.parametrize("a_val,b_val,expected_eq,expected_lt,expected_gt", [
+        (100, 100, True, False, False),
+        (100, 200, False, True, False),
+        (200, 100, False, False, True),
+    ])
+    def test_comparison_with_same_type(self, a_val, b_val, expected_eq, expected_lt, expected_gt):
+        """Test comparisons between same integer types."""
+        a = Uint[16](a_val)
+        b = Uint[16](b_val)
+
+        assert (a == b) == expected_eq
+        assert (a < b) == expected_lt
+        assert (a > b) == expected_gt
+        assert (a <= b) == (expected_eq or expected_lt)
+        assert (a >= b) == (expected_eq or expected_gt)
+
+    @pytest.mark.parametrize("uint_val,int_val,op,expected", [
+        (100, 80, "gt", True),
+        (100, 120, "lt", True),
+        (100, 100, "ge", True),
+        (100, 100, "le", True),
+        (100, 101, "ne", True),
+        (100, 100, "eq", True),
+    ])
+    def test_comparison_with_int(self, uint_val, int_val, op, expected):
+        """Test comparisons with regular Python ints."""
+        a = Uint[8](uint_val)
+
+        if op == "gt":
+            assert (a > int_val) == expected
+        elif op == "lt":
+            assert (a < int_val) == expected
+        elif op == "ge":
+            assert (a >= int_val) == expected
+        elif op == "le":
+            assert (a <= int_val) == expected
+        elif op == "ne":
+            assert (a != int_val) == expected
+        elif op == "eq":
+            assert (a == int_val) == expected
+
+    def test_min_max_functions(self):
+        """Test min/max with Uint values."""
+        assert min(Uint[8](100), Uint[8](80)) == Uint[8](80)
+        assert max(Uint[8](100), Uint[8](80)) == Uint[8](100)
+
+    def test_different_sizes_equal_values(self):
+        """Test that different sizes with same value are equal."""
+        assert Uint[8](10) == Uint[16](10)
+        # But types are different
+        assert type(Uint[8](10)) != type(Uint[16](10))
 
 
-def test_integer_encoding_efficiency():
-    """Test that variable-size integers encode efficiently."""
-    # Small values should use fewer bytes
-    small = Uint(10)
-    medium = Uint(1000)
-    large = Uint(1000000)
-    
-    small_encoded = small.encode()
-    medium_encoded = medium.encode()
-    large_encoded = large.encode()
-    
-    # Smaller values should generally use fewer bytes
-    assert len(small_encoded) <= len(medium_encoded)
-    assert len(medium_encoded) <= len(large_encoded)
-    
-    # All should round-trip correctly
-    assert Uint.decode(small_encoded) == small
-    assert Uint.decode(medium_encoded) == medium
-    assert Uint.decode(large_encoded) == large 
+class TestIntegerEncoding:
+    """Test encoding and decoding operations."""
+
+    @pytest.mark.parametrize("bit_size,value", [
+        (8, 100),
+        (16, 12345),
+        (32, 12345),
+        (64, 12345),
+    ])
+    def test_encode_decode_roundtrip(self, bit_size, value):
+        """Test encoding/decoding roundtrip for fixed sizes."""
+        IntType = Uint[bit_size]
+        original = IntType(value)
+        encoded = original.encode()
+        decoded = IntType.decode(encoded)
+
+        assert decoded == original
+
+    def test_variable_encoding_efficiency(self):
+        """Test that variable-size integers encode efficiently."""
+        small = Uint(10)
+        medium = Uint(1000)
+        large = Uint(1000000)
+
+        small_enc = small.encode()
+        medium_enc = medium.encode()
+        large_enc = large.encode()
+
+        # Smaller values use fewer bytes
+        assert len(small_enc) <= len(medium_enc) <= len(large_enc)
+
+        # All roundtrip correctly
+        assert Uint.decode(small_enc) == small
+        assert Uint.decode(medium_enc) == medium
+        assert Uint.decode(large_enc) == large
+
+
+class TestIntegerJSON:
+    """Test JSON serialization."""
+
+    @pytest.mark.parametrize("int_type,value", [
+        (Uint[8], 255),
+        (Uint[16], 65535),
+        (Uint[32], 12345),
+        (Uint, 1000000),
+    ])
+    def test_json_roundtrip(self, int_type, value):
+        """Test JSON serialization roundtrip."""
+        original = int_type(value)
+        json_data = original.to_json()
+        restored = int_type.from_json(str(json_data))
+
+        assert restored == original
+        assert isinstance(restored, int_type)
+
+
+class TestIntegerValidation:
+    """Test range validation for integers."""
+
+    @pytest.mark.parametrize("bit_size,invalid_value", [
+        (8, 256),
+        (8, -1),
+        (16, 70000),
+        (16, -5),
+    ])
+    def test_out_of_range_raises(self, bit_size, invalid_value):
+        """Test that out-of-range values raise ValueError."""
+        with pytest.raises(ValueError):
+            Uint[bit_size](invalid_value)
+
+    def test_variable_negative_raises(self):
+        """Test that negative values raise for variable Uint."""
+        with pytest.raises(ValueError):
+            Uint(-5)
+
+
+class TestIntegerBits:
+    """Test bit conversion operations."""
+
+    def test_to_bits_and_from_bits(self):
+        """Test converting integers to/from bits."""
+        a = Uint[8](160)
+        bits = a.to_bits()
+        restored = Uint[8].from_bits(bits)
+        assert a == restored
+
+
+class TestIntegerInstance:
+    """Test instance checks and type behavior."""
+
+    def test_instance_checks(self):
+        """Test isinstance behavior."""
+        class U8(Uint[8]): ...
+
+        assert isinstance(U8(10), U8)
+        assert isinstance(Uint[8](10), int)
+        assert not isinstance(Uint[8](10), Uint[16])
+
+    def test_static_type_hints(self):
+        """Test usage with dataclasses and type hints."""
+        @dataclass
+        class DataStore:
+            a: Uint[8]
+            b: Uint[16]
+
+        # These should work
+        DataStore(a=Uint[8](19), b=Uint[16](288))
+        # Type checker would flag these but they'll run
+        DataStore(a=19, b=288)
+        DataStore(a=Uint[16](19), b=Uint[32](288))
+
+
+class TestIntegerCustomSizes:
+    """Test custom integer bit sizes."""
+
+    @pytest.mark.parametrize("bit_size,max_value", [
+        (24, 2**24 - 1),  # 16777215
+        (128, 2**128 - 1),
+    ])
+    def test_custom_sizes(self, bit_size, max_value):
+        """Test custom bit sizes work correctly."""
+        IntType = Uint[bit_size]
+        value = IntType(max_value)
+
+        assert value == max_value
+
+        # Test roundtrip
+        encoded = value.encode()
+        decoded = IntType.decode(encoded)
+        assert decoded == value
+
+
+class TestIntegerRepr:
+    """Test string representation."""
+
+    def test_repr_format(self):
+        """Test that repr shows type and value."""
+        a = Uint[8](100)
+        b = Uint[8](80)
+
+        assert str(a - b) == 'U8(20)'
+
+
+class TestJAMCodecCompliance:
+    """JAM codec edge cases: boundaries, LE encoding, variable-length ranges."""
+
+    @pytest.mark.parametrize("value,expected_bytes", [
+        (0, b'\x00'),
+        (1, b'\x01'),
+        (255, b'\xff'),
+        (256, b'\x00\x01'),  # LE: low byte first
+        (0x1234, b'\x34\x12'),
+        (0x12345678, b'\x78\x56\x34\x12'),
+    ])
+    def test_little_endian_encoding(self, value, expected_bytes):
+        """Verify little-endian byte order per JAM spec."""
+        bit_size = len(expected_bytes) * 8
+        num = Uint[bit_size](value)
+        assert num.encode() == expected_bytes
+
+    @pytest.mark.parametrize("boundary", [
+        2**7 - 1, 2**7,      # 127/128: 1-byte to 2-byte boundary
+        2**14 - 1, 2**14,    # 2-byte to 3-byte
+        2**21 - 1, 2**21,    # 3-byte to 4-byte
+        2**28 - 1, 2**28,    # 4-byte to 5-byte
+        2**35 - 1, 2**35,    # 5-byte to 6-byte
+        2**56 - 1, 2**56,    # Before/after [255] prefix
+    ])
+    def test_variable_length_boundaries(self, boundary):
+        """Test variable-length encoding at critical boundaries."""
+        num = Uint(boundary)
+        encoded = num.encode()
+        decoded, _ = Uint.decode_from(encoded)
+        assert decoded == num
+        # Verify encoding is compact
+        assert len(encoded) <= 9
+
+    @pytest.mark.parametrize("IntType,max_val", [
+        (Uint[8], 0xff),
+        (Uint[16], 0xffff),
+        (Uint[32], 0xffffffff),
+        (Uint[64], 0xffffffffffffffff),
+    ])
+    def test_max_values_encode_correctly(self, IntType, max_val):
+        """Test maximum values for each size."""
+        num = IntType(max_val)
+        decoded = IntType.decode(num.encode())
+        assert decoded == num
+        assert decoded == max_val
+
+    def test_zero_special_case(self):
+        """Variable Uint(0) encodes as single zero byte."""
+        assert Uint(0).encode() == b'\x00'
+
+    @pytest.mark.parametrize("power", range(64))
+    def test_powers_of_two(self, power):
+        """Test all powers of 2 from 2^0 to 2^63."""
+        value = 2 ** power
+        num = Uint(value)
+        assert Uint.decode(num.encode()) == num

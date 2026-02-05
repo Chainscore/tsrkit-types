@@ -338,6 +338,16 @@ def _bench_container_ops(runs: int) -> Dict[str, float]:
         lambda: vec_cls([U16(1), U16(2), U16(3)]),
         lambda v: v.pop(),
     )
+    run(
+        "typed_vector_getitem",
+        lambda: vec_cls([U16(1), U16(2), U16(3)]),
+        lambda v: v[1],
+    )
+    run(
+        "typed_vector_iter",
+        lambda: vec_cls([U16(1), U16(2), U16(3), U16(4), U16(5)]),
+        lambda v: list(v),
+    )
 
     # Dictionary ops
     dict_cls = Dictionary[String, U16]
@@ -350,6 +360,26 @@ def _bench_container_ops(runs: int) -> Dict[str, float]:
         "dictionary_pop",
         lambda: dict_cls({String("a"): U16(1), String("b"): U16(2)}),
         lambda d: d.pop(String("a")),
+    )
+    run(
+        "dictionary_get",
+        lambda: dict_cls({String("a"): U16(1), String("b"): U16(2), String("c"): U16(3)}),
+        lambda d: d.get(String("b")),
+    )
+    run(
+        "dictionary_keys",
+        lambda: dict_cls({String("a"): U16(1), String("b"): U16(2), String("c"): U16(3)}),
+        lambda d: list(d.keys()),
+    )
+    run(
+        "dictionary_values",
+        lambda: dict_cls({String("a"): U16(1), String("b"): U16(2), String("c"): U16(3)}),
+        lambda d: list(d.values()),
+    )
+    run(
+        "dictionary_items",
+        lambda: dict_cls({String("a"): U16(1), String("b"): U16(2), String("c"): U16(3)}),
+        lambda d: list(d.items()),
     )
 
     # ByteArray ops
@@ -431,6 +461,71 @@ def _bench_container_ops(runs: int) -> Dict[str, float]:
         "py_bits_list_extend",
         lambda: [True, False, True, False],
         lambda b: b.extend([False, True]),
+    )
+
+    # String operations
+    run(
+        "string_concat",
+        lambda: String("hello"),
+        lambda s: s + String(" world"),
+    )
+    run(
+        "string_upper",
+        lambda: String("hello"),
+        lambda s: s.upper() if hasattr(s, "upper") else s,
+    )
+    run(
+        "string_lower",
+        lambda: String("HELLO"),
+        lambda s: s.lower() if hasattr(s, "lower") else s,
+    )
+
+    # Enum operations
+    class TestColor(Enum):
+        RED = 1
+        GREEN = 2
+        BLUE = 3
+
+    run(
+        "enum_eq",
+        lambda: TestColor.RED,
+        lambda e: e == TestColor.RED,
+    )
+    run(
+        "enum_value",
+        lambda: TestColor.RED,
+        lambda e: e.value,
+    )
+
+    # Option operations
+    opt_cls_ops = Option[U16]
+    run(
+        "option_unwrap_some",
+        lambda: opt_cls_ops(U16(42)),
+        lambda o: o.unwrap() if hasattr(o, "unwrap") else o.value if hasattr(o, "value") else None,
+    )
+    run(
+        "option_is_some",
+        lambda: opt_cls_ops(U16(42)),
+        lambda o: o.is_some() if hasattr(o, "is_some") else True,
+    )
+    run(
+        "option_is_none",
+        lambda: opt_cls_ops(),
+        lambda o: o.is_none() if hasattr(o, "is_none") else True,
+    )
+
+    # Choice operations
+    choice_cls_ops = Choice[U8, String]
+    run(
+        "choice_set_variant1",
+        lambda: choice_cls_ops(U8(42)),
+        lambda c: c.set(String("hello")) if hasattr(c, "set") else None,
+    )
+    run(
+        "choice_get_value",
+        lambda: choice_cls_ops(U8(42)),
+        lambda c: c.value if hasattr(c, "value") else c,
     )
 
     return ops
@@ -690,6 +785,47 @@ def _build_cases() -> List[Case]:
         )
     )
 
+    # Additional Bits variants
+    bits_lsb_cls = Bits[64, "lsb"]
+    bits_lsb_vals = [bits_lsb_cls(b) for b in bits_list]
+    cases.append(
+        Case(
+            name="Bits[64,lsb]",
+            ctor=bits_lsb_cls,
+            init_args=_args_from_values(bits_list),
+            encode_values=bits_lsb_vals,
+            decode_fn=_decode_via_decode(bits_lsb_cls),
+            decode_buffers=_encode_buffers(bits_lsb_vals),
+        )
+    )
+
+    bits_8_list = [[bool((i + j) & 1) for j in range(8)] for i in range(256)]
+    bits_8_msb_cls = Bits[8, "msb"]
+    bits_8_msb_vals = [bits_8_msb_cls(b) for b in bits_8_list]
+    cases.append(
+        Case(
+            name="Bits[8,msb]",
+            ctor=bits_8_msb_cls,
+            init_args=_args_from_values(bits_8_list),
+            encode_values=bits_8_msb_vals,
+            decode_fn=_decode_via_decode(bits_8_msb_cls),
+            decode_buffers=_encode_buffers(bits_8_msb_vals),
+        )
+    )
+
+    bits_8_lsb_cls = Bits[8, "lsb"]
+    bits_8_lsb_vals = [bits_8_lsb_cls(b) for b in bits_8_list]
+    cases.append(
+        Case(
+            name="Bits[8,lsb]",
+            ctor=bits_8_lsb_cls,
+            init_args=_args_from_values(bits_8_list),
+            encode_values=bits_8_lsb_vals,
+            decode_fn=_decode_via_decode(bits_8_lsb_cls),
+            decode_buffers=_encode_buffers(bits_8_lsb_vals),
+        )
+    )
+
     # Sequence types
     u16_items = [U16(i) for i in range(10)]
 
@@ -795,6 +931,33 @@ def _build_cases() -> List[Case]:
         )
     )
 
+    # Additional Dictionary variants
+    dict_u8_str_cls = Dictionary[U8, String]
+    dict_u8_str_val = dict_u8_str_cls({U8(i): String(f"v{i}") for i in range(10)})
+    cases.append(
+        Case(
+            name="Dictionary[U8,String]",
+            ctor=dict_u8_str_cls,
+            init_args=[(({U8(i): String(f'v{i}') for i in range(10)},), {})],
+            encode_values=[dict_u8_str_val],
+            decode_fn=_decode_via_decode(dict_u8_str_cls),
+            decode_buffers=_encode_buffers([dict_u8_str_val]),
+        )
+    )
+
+    dict_str_str_cls = Dictionary[String, String]
+    dict_str_str_val = dict_str_str_cls({String(f"k{i}"): String(f"v{i}") for i in range(10)})
+    cases.append(
+        Case(
+            name="Dictionary[String,String]",
+            ctor=dict_str_str_cls,
+            init_args=[(({String(f'k{i}'): String(f'v{i}') for i in range(10)},), {})],
+            encode_values=[dict_str_str_val],
+            decode_fn=_decode_via_decode(dict_str_str_cls),
+            decode_buffers=_encode_buffers([dict_str_str_val]),
+        )
+    )
+
     # Choice / Option
     choice_cls = Choice[U8, String]
     choice_vals = [U8(42), String("hello")]
@@ -820,6 +983,29 @@ def _build_cases() -> List[Case]:
             encode_values=[opt_cls(opt_val), opt_cls()],
             decode_fn=_decode_via_decode(opt_cls),
             decode_buffers=_encode_buffers([opt_cls(opt_val), opt_cls()]),
+        )
+    )
+
+    # Additional Choice variant
+    choice_3_cls = Choice[U8, U16, String]
+    choice_3_vals = [
+        choice_3_cls(U8(42)),
+        choice_3_cls(U16(1000)),
+        choice_3_cls(String("test")),
+    ]
+    cases.append(
+        Case(
+            name="Choice[U8,U16,String]",
+            ctor=choice_3_cls,
+            init_args=[
+                ((U8(42),), {}),
+                ((U16(1000),), {}),
+                ((String("test"),), {}),
+            ],
+            encode_values=choice_3_vals,
+            decode_fn=_decode_via_decode(choice_3_cls),
+            decode_buffers=_encode_buffers(choice_3_vals),
+            json_decode=False,
         )
     )
 
@@ -862,6 +1048,110 @@ def _build_cases() -> List[Case]:
             encode_values=person_vals,
             decode_fn=_decode_via_decode(Person),
             decode_buffers=_encode_buffers(person_vals),
+        )
+    )
+
+    # Nested structure
+    @structure
+    class Address:
+        street: String
+        city: String
+        zipcode: U32
+
+    @structure
+    class Employee:
+        name: String
+        age: U8
+        address: Address
+
+    employee_vals = [
+        Employee(
+            name=String("alice"),
+            age=U8(30),
+            address=Address(
+                street=String("123 Main St"),
+                city=String("NYC"),
+                zipcode=U32(10001)
+            )
+        ),
+        Employee(
+            name=String("bob"),
+            age=U8(25),
+            address=Address(
+                street=String("456 Oak Ave"),
+                city=String("LA"),
+                zipcode=U32(90001)
+            )
+        ),
+    ]
+    cases.append(
+        Case(
+            name="structure(Nested)",
+            ctor=Employee,
+            init_args=[
+                ((
+                    String("alice"),
+                    U8(30),
+                    Address(String("123 Main St"), String("NYC"), U32(10001))
+                ), {}),
+                ((
+                    String("bob"),
+                    U8(25),
+                    Address(String("456 Oak Ave"), String("LA"), U32(90001))
+                ), {}),
+            ],
+            encode_values=employee_vals,
+            decode_fn=_decode_via_decode(Employee),
+            decode_buffers=_encode_buffers(employee_vals),
+        )
+    )
+
+    # Structure with defaults
+    @structure
+    class Config:
+        name: String
+        value: U16 = U16(100)
+        enabled: Bool = Bool(True)
+
+    config_vals = [
+        Config(name=String("opt1"), value=U16(50), enabled=Bool(False)),
+        Config(name=String("opt2")),
+    ]
+    cases.append(
+        Case(
+            name="structure(Defaults)",
+            ctor=Config,
+            init_args=[
+                ((String("opt1"),), {"value": U16(50), "enabled": Bool(False)}),
+                ((String("opt2"),), {}),
+            ],
+            encode_values=config_vals,
+            decode_fn=_decode_via_decode(Config),
+            decode_buffers=_encode_buffers(config_vals),
+        )
+    )
+
+    # Frozen structure
+    @structure(frozen=True)
+    class Point:
+        x: U16
+        y: U16
+
+    point_vals = [
+        Point(x=U16(10), y=U16(20)),
+        Point(x=U16(100), y=U16(200)),
+    ]
+    cases.append(
+        Case(
+            name="structure(Frozen)",
+            ctor=Point,
+            init_args=[
+                ((U16(10), U16(20)), {}),
+                ((U16(100), U16(200)), {}),
+            ],
+            encode_values=point_vals,
+            decode_fn=_decode_via_decode(Point),
+            decode_buffers=_encode_buffers(point_vals),
         )
     )
 
